@@ -1,0 +1,15 @@
+version : '3.7'
+services : 
+  nginx :
+    build: '.'
+    container_name : 'nginx'
+    ports :
+      - target : 80
+        published : 80
+        protocol : 'tcp'
+    volumes :
+      - type : 'bind'
+        source : './test-markdowns'
+        target : '/app/'
+
+
