@@ -1,7 +1,9 @@
 version : '3.7'
 services : 
   nginx :
-    build: '.'
+    build: 
+      context : '.'
+      dockerfile : './Dockerfile.dev'
     container_name : 'nginx'
     ports :
       - target : 80
@@ -9,7 +11,7 @@ services :
         protocol : 'tcp'
     volumes :
       - type : 'bind'
-        source : './test-markdowns'
-        target : '/app/'
+        source : './build'
+        target : '/app/resources'
 
 
