@@ -3,7 +3,7 @@ services :
   nginx : 
     build : 
       context : './nginx'
-      dockerfile : './Dockerfile.prod'
+      dockerfile : './Dockerfile.dev'
     container_name : 'nginx'
     networks:
       - mondo
@@ -18,12 +18,14 @@ services :
   post :    
     build :
       context : './post'
-      dockerfile : './Dockerfile.prod'
+      dockerfile : './Dockerfile.dev'
     container_name : 'post'
     networks:
       - mondo 
-    expose :
-      - 8080
+    ports :
+      - target : 5000
+        published : 5000
+        protocol : 'tcp'
     volumes :
       - type : 'bind'
         source : './post/'

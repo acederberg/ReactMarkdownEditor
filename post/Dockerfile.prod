@@ -1,0 +1,17 @@
+FROM python 
+
+RUN mkdir /app/ /app/app
+WORKDIR /app/
+# Eventually to be replaced by git clone
+COPY requirements.txt .
+COPY .flaskenv .
+COPY run.yaml .
+COPY run.py .
+COPY setup.py .
+COPY app ./app
+
+RUN pip install -r requirements.txt
+RUN pip install .
+
+ENTRYPOINT [ "uwsgi" ]
+CMD [ "--yaml", "run.yaml" ]
