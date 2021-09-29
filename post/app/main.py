@@ -45,19 +45,19 @@ def create_everything():
     serialize_many = serial( many = True )
     serialize_one = serial()
 
-    @app.route( '/', methods = [ 'GET' ] )
+    @app.route( '/new/', methods = [ 'GET' ] )
     def show_all():
         "content will be pushed out by nginx, we don't have to worry about that here."
         data  = registry.query.all()
         return serialize_many.dumps( data )
        
-    @app.route( '/<filename>/', methods = [ 'GET' ] )
+    @app.route( '/new/<filename>/', methods = [ 'GET' ] )
     def show_one( filename = None ):
         print( filename )
         data = registry.query.filter( registry.filename == filename ).first()
-        return serialize_one.dumps( data )
+        return serialize_one.dumps( data ) if data else bad_request()
 
-    @app.route( '/', methods = [ 'PUT' ] )
+    @app.route( '/new/', methods = [ 'PUT' ] )
     def modify():
         "Replace a previous version of the markdown"
         data = request.get_json()
@@ -68,7 +68,7 @@ def create_everything():
         write_content( data, override = True )
         return good_request()
 
-    @app.route( '/', methods = [ 'POST' ] )
+    @app.route( '/new/', methods = [ 'POST' ] )
     def process(): 
         data = request.get_json( force = True )
         fix_data( data )
