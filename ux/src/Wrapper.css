@@ -1,5 +1,72 @@
+@import 'bootstrap/dist/css/bootstrap.min.css' ;
+:root {
+	--size : x-large;
+	--padding : 5% ;
+}
+
+/* Media queries for size along bs breakpoints */
+@media ( max-width : 992px ) and ( min-width : 1200px ){
+	:root {
+		--size : large ;
+		--padding : 3% ;
+	}
+}
+@media ( max-width : 992px ) and ( min-width : 576px ){
+	:root {
+		--size : medium ;
+		--padding : 2% ;
+	}
+}
+@media ( max-width : 576px ){
+	:root {
+		--size : small ;
+		--padding : 13px;
+	}
+}
+
 .Wrapper {
-	padding : 5% ;
-	margin : 8% ;
-	background : #edffff ;
+	font-size : var( --size ) ;
+	padding-right : var( --padding ) ;
+	padding-left : var( --padding ) ;
+}
+.Wrapper p,
+.Wrapper ul,
+.Wrapper li,
+.Wrapper pre,
+.Wrapper h1,
+.Wrapper h2,
+.Wrapper h3,
+.Wrapper p {
+	margin-top : 1% ;
+	margin-bottom : 1% ;
+	padding-top : 2%;
+	padding-bottom : 2%;
+}
+.Wrapper h1
+{
+	color : var( --bs-primary );
+}
+.Wrapper h1 a
+{
+	color : var( --bs-pink );
+}
+.Wrapper h2
+{
+	color : var( --bs-secondary );
+}
+.Wrapper h3
+{
+	color : var( --bs-secondary );
+}
+.Wrapper code{
+	color : var( --bs-pink );
+	background : var( --bs-gray-200 );
+}
+.Wrapper pre code{
+	background : var( --bs-gray-000 );
+}
+.Wrapper pre {
+	margin-top: 0% ;
+	padding-top : 5% ;
+	margin-bottom : 5% ;
 }

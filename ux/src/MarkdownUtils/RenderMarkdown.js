@@ -1,4 +1,3 @@
-import { Component } from 'react'
 import ReactDom from 'react-dom'
 import ReactMarkdown from 'react-markdown'
 

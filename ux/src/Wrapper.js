@@ -1,5 +1,10 @@
 import './Wrapper.css';
-import RenderMarkdown from './MarkdownUtils/RenderMarkdown.js'
+import Navbar from './Components/Navbar.js'
 
-export default function Wrapper(props) { return ( <div className = "Wrapper" { ...props } ></div>) }
+export default function Wrapper(props) { return ( 
+	<>
+	<Navbar/>
+	<div className = "bg-light text-dark Wrapper" { ...props } ></div>
+	</>
+) }
 
