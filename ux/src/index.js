@@ -7,7 +7,7 @@ import RenderMarkdown from './MarkdownUtils/RenderMarkdown.js'
 
 ReactDOM.render( <Wrapper id = 'wrapper' />, document.getElementById('root'))
 
-RenderMarkdown( 'test0.md', document.getElementById( 'wrapper' ) )
+RenderMarkdown( 'test3.md', document.getElementById( 'wrapper' ) )
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
