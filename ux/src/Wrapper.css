@@ -1,20 +1,20 @@
 @import 'bootstrap/dist/css/bootstrap.min.css' ;
 :root {
 	--size : x-large;
-	--padding : 5% ;
+	--padding : 21% ;
 }
 
 /* Media queries for size along bs breakpoints */
 @media ( max-width : 992px ) and ( min-width : 1200px ){
 	:root {
 		--size : large ;
-		--padding : 3% ;
+		--padding : 8% ;
 	}
 }
 @media ( max-width : 992px ) and ( min-width : 576px ){
 	:root {
 		--size : medium ;
-		--padding : 2% ;
+		--padding : 3% ;
 	}
 }
 @media ( max-width : 576px ){
@@ -60,10 +60,10 @@
 }
 .Wrapper code{
 	color : var( --bs-pink );
-	background : var( --bs-gray-200 );
 }
-.Wrapper pre code{
-	background : var( --bs-gray-000 );
+.Wrapper pre {
+	font-size: small ;
+	background: inherit ;
 }
 .Wrapper pre {
 	margin-top: 0% ;
