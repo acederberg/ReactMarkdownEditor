@@ -7,7 +7,7 @@ import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import get_path from './fetchMarkdown.js'
 
 
-export default async function RenderMarkdown( filename, into ){
+export default async function ViewMarkdown( filename, into ){
 	// Get data. Make markdown with highlighyinh
 	const data = await get_path( filename, ( raw_markdown ) => <ReactMarkdown
 		components={{

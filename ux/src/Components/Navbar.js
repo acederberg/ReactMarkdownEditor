@@ -1,6 +1,5 @@
-import { make_uri, get_markdowns } from '../MarkdownUtils/fetchMarkdown.js'
+import { get_markdowns } from './fetchMarkdown.js'
 import { Component } from 'react'
-import { Link, Router } from 'react-router-dom'
 
 class NavMenu extends Component { 
 	
