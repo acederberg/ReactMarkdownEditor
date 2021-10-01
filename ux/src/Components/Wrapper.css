@@ -29,6 +29,11 @@
 	padding-right : var( --padding ) ;
 	padding-left : var( --padding ) ;
 }
+.Wrapper button{
+	margin-top : 2%;
+	margin-bottom : 2% ;
+	margin-right: 1% ;
+}
 .Wrapper p,
 .Wrapper ul,
 .Wrapper li,
@@ -65,6 +70,24 @@
 .Wrapper pre {
 	font-size: small ;
 	background: inherit ;
+	background-color: rgb(253, 246, 227);
+	font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace; 
+	text-align: left; 
+	white-space: pre; 
+	word-spacing: normal; 
+	word-break: normal; 	 
+	overflow-wrap: normal; 
+	line-height: 1.5; 
+	tab-size: 4; 
+	hyphens: none; 
+	padding: 1em; 
+	margin: 0.5em 0px; 
+	overflow: auto; 
+	border-radius: 0.3em; 
+        word-break: normal;
+}
+.Wrapper pre code {
+	font-size: var( --size );
 }
 .Wrapper pre {
 	margin-top: 0% ;

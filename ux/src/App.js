@@ -12,7 +12,7 @@ const App = () =>
 		>
 		</Route>
 		<Route
-			path = '/edit/'
+			path = '/edit/:filename'
 			component = { Edit }
 		>
 		</Route>
