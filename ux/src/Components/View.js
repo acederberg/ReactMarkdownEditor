@@ -4,10 +4,8 @@ import ViewMarkdown from './ViewMarkdown.js'
 const View = ({match:{params:{filename}}}) => {
 
         let wrapper = document.getElementById( 'wrapper' )
-        console.log( filename )
-        console.log( `wrapper = ${wrapper}` )
         ViewMarkdown( filename, wrapper )
-        return <div></div>
+        return <div>This is a test</div>
 
 }
 
