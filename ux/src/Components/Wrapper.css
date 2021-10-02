@@ -1,6 +1,7 @@
 @import 'bootstrap/dist/css/bootstrap.min.css' ;
 :root {
-	--size : x-large;
+	--size : x-large ;
+	--code-size : large ;
 	--padding : 21% ;
 }
 
@@ -8,18 +9,21 @@
 @media ( max-width : 992px ) and ( min-width : 1200px ){
 	:root {
 		--size : large ;
+		--code-size : medium ;
 		--padding : 8% ;
 	}
 }
 @media ( max-width : 992px ) and ( min-width : 576px ){
 	:root {
 		--size : medium ;
+		--code-size : medium ;
 		--padding : 3% ;
 	}
 }
 @media ( max-width : 576px ){
 	:root {
 		--size : small ;
+		--code-size : small ;
 		--padding : 13px;
 	}
 }
@@ -87,7 +91,7 @@
         word-break: normal;
 }
 .Wrapper pre code {
-	font-size: var( --size );
+	font-size: var( --code-size );
 }
 .Wrapper pre {
 	margin-top: 0% ;

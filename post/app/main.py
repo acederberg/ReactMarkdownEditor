@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from uuid import uuid4
 from os import listdir, remove
+from shutil import move
 from os.path import join, dirname
 
 RESOURCES = '.resources'
@@ -21,10 +22,11 @@ def fix_data( data ):
 
 def write_content( data, override = False, previous_filename = None ):
     filepath = join( RESOURCES, data[ filename ] )
-    if override : remove( filepath if not previous_filename else join( RESOURCES, previous_filename ) )
-    print( filepath )
-    with open( filepath , 'w' ) as file: file.write( data[content] )
-
+    if not previous_filename:
+        with open( filepath , 'w' ) as file: file.write( data[content] )
+    else:
+        move( join( RESOURCES, previous_filename ), filepath )
+        
 def create_everything():
 
     app = Flask( __name__ )
@@ -81,13 +83,6 @@ def create_everything():
         )
         return good_request()
             
-
-    @app.route('/new/', methods = ['PUT'] )
-    def rename():
-        data = request.json()
-        data = { key : data[ key ] for key in ( source, value ) }
-        print( f'{data = }' )
-
 
     @app.route( '/new/', methods = [ 'POST' ] )
     def process(): 

@@ -4,14 +4,20 @@ import { Component } from 'react'
 import { Button } from 'react-bootstrap'
 import ReactDOM from 'react-dom'
 import RenderMarkdown from './RenderMarkdown.js'
-import { get_markdown, get_markdowns, post_markdown } from './fetchMarkdown.js'
+import { delete_markdown, get_markdown, get_markdowns, post_markdown } from './fetchMarkdown.js'
 
 class Editor extends Component{
 
 	// I like the closure design pattern
 	constructor( props ){
 		super( props )
-		this.state = { content : '', exists : false, filename : this.props.filename }
+		this.state = { 
+			content : '', 
+ 			exists : false, 
+			filename : this.props.filename ,
+			current_filename : this.props.filename,
+			filename_changed : false
+		}
 		console.log( `filename = ${ this.props.filename }` )
 	}
 	getContent = async () => {
@@ -23,6 +29,24 @@ class Editor extends Component{
 			content => this.setState({ content : content }) 
 		) 
 	}
+	deleteContent = async () => {
+		this.state.current_filename && delete_markdown( { target : this.state.current_filename } ) 
+		this.setState({ exists : false })
+	}
+	postContent = async () => {
+		if ( this.state.exists ) { await post_markdown( 
+			{ content : this.state.content, filename : this.state.current_filename },
+			null,
+			!this.state.exists
+		) }
+		if ( !this.state.filename_changed ){ return ; }
+
+		await post_markdown(
+			{ source : this.state.current_filename, target : this.state.filename },
+			null,
+			false
+		).then( () => this.setState({ current_filename : this.state.filename, exists : true }) )
+	}
 	componentDidMount(){ 
 		this.getContent()
 	}
@@ -31,8 +55,10 @@ class Editor extends Component{
 		var data = {}
 		data[ key ] = event.target.value
 		this.setState( data )
+		console.log("state = ", this.state) 
 	}
 	render(){ 
+		// Recall that the save button will use `post_markdown` which uses the arguement `override` determining if it should `PUT` or `POST`.
 		return (<>
 		<h1>Markdown Editor</h1>
 
@@ -42,7 +68,10 @@ class Editor extends Component{
 			<br/>
 			<TextInput
 				id = 'filename'
-				onChange = { ( event ) => this.onChange( event, 'filename' ) }
+				onChange = { ( event ) => {
+					this.setState({ filename_changed : true } ) ;
+					this.onChange( event, 'filename' ) ;
+				} }
 				value = { this.state.exists ? this.state.filename : undefined }
 			/>
 		</Pane>  
@@ -52,7 +81,8 @@ class Editor extends Component{
 			<Label htmlFor = 'content'>Content</Label>
 			<TextArea
 				id = 'content'
-				onChange = { (event) => this.onChange( event, 'content' ) }
+				onChange = { (event) => this.onChange( event, 'content' )
+				} 
 				placeholder = "# Example"
 				value = { this.state.exists ? this.state.content : undefined }
 				rows = "48"
@@ -60,17 +90,18 @@ class Editor extends Component{
 			</TextArea>
 			<div>
 				<Button 
-					varient = "primary"
-					onClick = { () => post_markdown( 
-						{ content : this.state.content, filename : this.props.filename },
-						null,
-						!this.state.exists
-					) }
+					variant = "primary"
+					onClick = { this.postContent
+					}
 				>Save</Button>
 				<Button 
-					varient = "warning"
+					variant = "primary"
 					onClick = { this.getContent }
 				>Revert</Button>
+				<Button
+					variant = "danger"
+					onClick = { this.deleteContent }
+				>Delete</Button>
 			</div>
 		</Pane>
 
