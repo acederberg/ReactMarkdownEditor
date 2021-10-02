@@ -7,6 +7,7 @@ from os.path import join, dirname
 
 RESOURCES = '.resources'
 name, filename, content = 'name', 'filename', 'content'
+source, target = 'source', 'target'
 
 bad_request = lambda : make_response( 'Cannot make coffee in a teapot', 418 )
 good_request = lambda : make_response( 'OK', 200 )
@@ -18,9 +19,9 @@ def fix_data( data ):
     if content not in data: return requires_content()
     if filename not in data and name in data: data[ filename ] = f'{ data[ name ] }.md' if name in data else uuid4()
 
-def write_content( data, override = False ):
+def write_content( data, override = False, previous_filename = None ):
     filepath = join( RESOURCES, data[ filename ] )
-    if override : remove( filepath )
+    if override : remove( filepath if not previous_filename else join( RESOURCES, previous_filename ) )
     print( filepath )
     with open( filepath , 'w' ) as file: file.write( data[content] )
 
@@ -60,13 +61,33 @@ def create_everything():
     @app.route( '/new/', methods = [ 'PUT' ] )
     def modify():
         "Replace a previous version of the markdown"
-        data = request.get_json()
-        fix_data( data )
-        print( data ) 
-        doc = registry.query.filter( registry.filename == data[ filename ] ).first()
+        data = request.get_json() 
+        get = lambda key : registry.query.filter( registry.filename == data[ key ] )
+        
+        if filename in data and content in data:
+            fix_data( data )
+            doc = get( filename ).first()
+        elif source in data and target in data:
+            data[ filename ] = data[ target ]
+            doc = get( source ).update( { 'filename' : data[ filename ] } )
+            db.session.commit()
+        else: return bad_request()
+
         if not doc : return bad_request()
-        write_content( data, override = True )
+        write_content( 
+                data, 
+                override = True, 
+                previous_filename = data[ source ] if source in data else None 
+        )
         return good_request()
+            
+
+    @app.route('/new/', methods = ['PUT'] )
+    def rename():
+        data = request.json()
+        data = { key : data[ key ] for key in ( source, value ) }
+        print( f'{data = }' )
+
 
     @app.route( '/new/', methods = [ 'POST' ] )
     def process(): 
@@ -80,7 +101,18 @@ def create_everything():
 
         return good_request()
 
-    
+
+    @app.route( '/new/', methods = [ 'DELETE' ] )
+    def remove():
+        data = request.get_json( force = True )
+        if not data or target not in data: return bad_request()
+
+        filenames = data[ target ]
+        if type( filenames ) == str : filenames = [ filenames ]
+        for name in filenames: registry.query.filter( registry.filename == name ).delete()
+        db.session.commit()
+        return good_request()
+
     return { 
             'app' : app, 
             'db' : db, 
