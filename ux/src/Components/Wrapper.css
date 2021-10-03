@@ -2,7 +2,7 @@
 :root {
 	--size : x-large ;
 	--code-size : large ;
-	--padding : 21% ;
+	--padding : 8% ;
 }
 
 /* Media queries for size along bs breakpoints */
@@ -10,7 +10,7 @@
 	:root {
 		--size : large ;
 		--code-size : medium ;
-		--padding : 8% ;
+		--padding : 5% ;
 	}
 }
 @media ( max-width : 992px ) and ( min-width : 576px ){
@@ -33,11 +33,20 @@
 	padding-right : var( --padding ) ;
 	padding-left : var( --padding ) ;
 }
+.Wrapper .Scrollable{
+	padding-left : 1.5% ;
+	padding-right : 1.5% ;
+	height : 1024px ;
+	overflow-x : auto ;
+	border : solid var( --bs-gray-400 ) 1px ;
+	border-radius : 3px ;
+}
 .Wrapper button{
 	margin-top : 2%;
 	margin-bottom : 2% ;
 	margin-right: 1% ;
 }
+.Wrapper .Warning
 .Wrapper p,
 .Wrapper ul,
 .Wrapper li,
@@ -46,11 +55,30 @@
 .Wrapper h1,
 .Wrapper h2,
 .Wrapper h3,
+.Wrapper blockquote,
 .Wrapper p {
 	margin-top : 1% ;
 	margin-bottom : 1% ;
 	padding-top : 2%;
 	padding-bottom : 2%;
+}
+.Wrapper .Warning
+{
+	padding-left : 2% ;
+	font-size : small ;
+	color : var( --bs-danger ) ;
+}
+.Wrapper blockquote{
+	padding-left : 10%;
+	padding-right : 2% ;
+	font-style: italic ;
+}
+.Wrapper .Warning,
+.Wrapper pre div ,
+.Wrapper blockquote
+{
+	background : rgb( 253, 246, 227 ) ; 
+	border-left : solid var( --bs-primary ) 4px;
 }
 .Wrapper h1
 {
@@ -71,10 +99,12 @@
 .Wrapper code{
 	color : var( --bs-pink );
 }
+.Wraper p em strong{
+	color : var( --bs-primary );
+}
 .Wrapper pre {
 	font-size: small ;
 	background: inherit ;
-	background-color: rgb(253, 246, 227);
 	font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace; 
 	text-align: left; 
 	white-space: pre; 
@@ -97,4 +127,8 @@
 	margin-top: 0% ;
 	padding-top : 5% ;
 	margin-bottom : 5% ;
+}
+.Wrapper label {
+	font-size: var( --size );
+
 }

@@ -17,14 +17,14 @@ class NavMenu extends Component {
 		this.setState( { loading : false } )
 	}
 	componentDidMount(){
-		get_markdowns( this.setChildren )
+		get_markdowns( this.setChildren ).catch( () => this.children = null )
 	}
 	render(){ 
 		console.log( 'rendering...' )
 		return (
 		<div className = "collapse navbar-collapse" id = "markdowns" { ...this.props }>
 			<ul className = "navbar-nav ms-auto" >
-			{ this.children }
+				{ this.children ? this.children : <li>No articals.</li> }
 			</ul>
 		</div>
 	) }
