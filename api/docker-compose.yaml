@@ -1,0 +1,36 @@
+version : '3.7'
+services :
+  api :
+    build : 
+      context : '.'
+      dockerfile : 'Dockerfile.dev'
+    container_name : 'api'
+    environment :
+      PORT : 8000
+      DB_URI : 'mongodb://dev:goofy@mongodb?directConnection=true&serverSelectionTimeoutMS=2000'
+    networks :
+      mondo : {}
+    ports : 
+      - published : 8000
+        target : 8000
+        protocol : 'tcp'
+    tty : True
+    volumes :
+      - type : 'bind'
+        source : '.'
+        target : '/app/'
+  mongodb :
+    container_name : 'mongodb'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME : 'dev'
+      MONGO_INITDB_ROOT_PASSWORD : 'goofy'
+    image : 'mongo'
+    networks :
+      mondo : {}
+    ports :
+      - 27017
+networks : 
+  mondo :
+    driver : 'bridge'
+    attachable : true
+
