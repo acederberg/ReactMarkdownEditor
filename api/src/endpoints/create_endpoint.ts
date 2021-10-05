@@ -7,12 +7,12 @@
 
 import { EndpointInterface, endpoint_keys, RequestInterface, request_keys } from './types'
 import { ContentDocument } from './model/types'
-import models from './model/model'
+import { models } from './model/model'
+
+console.log( `models =`, models )
 
 const check_keys = ( endpoint, request ) => {
-	console.log( request.body )
-	const that = Object.keys( request.body ).find( key => { console.log( key ) ; return endpoint.keys.includes(key) } )
-       	console.log( `that = ${ that }` )
+	const that = Object.keys( request.body ).find( key => { return endpoint.keys.includes(key) } )
 	return that
 }
 const get_collection = ( endpoint, request ) => {
@@ -25,7 +25,6 @@ const default_clean = ( data ) => data
 export const create_endpoint_default_args = {
 	requires_collection : true
 }
-
 export function create_endpoint( endpoint : EndpointInterface, args) : Function {
 	// Stupid destructuring doesn't work. kms
 	const { requires_collection } = args
@@ -41,6 +40,7 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 		}
 		// Get collection if it actually exists. If not, leave.
 		const collection = get_collection( endpoint, request )
+  		console.log( `collection = ${ collection }` )
 		if ( requires_collection && !collection ){ 
 			result.status( 400 )
 			result.send( 'CollectionDoesNotExist' )

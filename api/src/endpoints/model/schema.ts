@@ -2,19 +2,20 @@ import { Schema } from "mongoose"
 
 const metadata_schema_args = {
         active : Boolean,
+	author : String,
         created : Date,
         description : String,
         modified : {
-		type : [ Date ],
+		type : [Date],
 		required : false
 	},
         title : String,
         tags : {
-		type : [ String ],
+		type : [String],
 		required : false
 	},
         repo : {
-		type : [ String ],
+		type : [String],
 		required : false      
 	}
 } 
