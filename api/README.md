@@ -62,3 +62,23 @@ each catagory will be its own collection. Since this will be a blog there is no 
 ## Implementation
 
 I think either `express` with `typescript` and `mongoose` or `Flask` with `PyMongo` is an option. The problem with typescript is that I am still a bit of a noob. However it would be good for some larger projects I plan on implementing. Since there is only one schema that is needed I think it will be relatively quick to implement.
+
+I have decided on first of the choices. I have a plan for designing the enpoints in a susinct way. Each endpoint requires four stages:
+
+1. Validation.
+	* Every request must contain a `collection` at a minimum and most will have the option for a `filter` and an `_id`. If validation fails, repond with 400 status.
+	* Make sure that the collection exists. If it does not, respond with 400 status. 
+2. Finding. This step will be determined generically (by using the `filter` or `_id`) or with a specified callback. If this fails, return with a 400 status.
+3. Cleaning. This step by default do nothing. A second callback will be specified with this. If this fails, return with 500 status.
+
+I came to this conclusion after messing around with express for a bit. I was also considering that each endpoint could be represented as serialized data:
+
+~~~json
+{
+	method : <String. a CRUD HTTP method>,
+	keys : <Keys which the request must contain, specified by an interface.>
+	find : <Function. logic for finding>,
+	clean : <Object to make the returned data fit to, shape must be an subinterface of the document interface>,
+}
+~~~
+
