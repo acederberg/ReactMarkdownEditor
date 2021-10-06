@@ -13,6 +13,9 @@ export const endpoint_keys = [ 'keys', 'find', 'clean' ]
 export interface EndpointInterface {
 	// Keys in request body
 	keys : Array<String>,
+	requires_all_keys ?: Boolean,
+	metadata_keys ?: Array<String>,
+	requires_all_metadata_keys ?: Boolean,
 	find : Function,
 	clean ?: Function
 }
