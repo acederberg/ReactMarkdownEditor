@@ -6,7 +6,8 @@ export interface RequestInterface {
         collection : String,
 	filter ?: ContentInterface,
 	max_count ?: Number,
-	random ?: Boolean
+	random ?: Boolean,
+	content ?: ContentInterface
 }
 
 export const endpoint_keys = [ 'keys', 'find', 'clean' ]
@@ -18,4 +19,9 @@ export interface EndpointInterface {
 	requires_all_metadata_keys ?: Boolean,
 	find : Function,
 	clean ?: Function
+}
+
+export interface EndpointsInterface {
+	route : String,
+	methods : Object
 }
