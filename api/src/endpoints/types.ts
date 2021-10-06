@@ -22,6 +22,6 @@ export interface EndpointInterface {
 }
 
 export interface EndpointsInterface {
-	route : String,
+	route : string,
 	methods : Object
 }

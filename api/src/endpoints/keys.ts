@@ -10,7 +10,7 @@ function arr_contains( A, B ) : Boolean {
 	console.log( A, B, C )
         return C.length === B.length
 }
-function arr_intersects( A, B ) : Boolean {
+function arr_intersects( A, B )  {
         // Tests if the intersection is non-empty
         // Look for one element that is contained in both.
 	console.log( "called arr_intersects" )

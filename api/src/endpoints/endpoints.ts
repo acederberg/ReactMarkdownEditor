@@ -38,7 +38,7 @@ const DELETE : EndpointInterface = {
 	keys : [ id ],
 	requires_all_keys : false,
 	find : function ( model : any , raw : RequestInterface ){
-		model.findByIdAndDelete( raw[ id ] )
+		return model.findByIdAndDelete( raw[ id ] )
 	}
 }
 const PUT : EndpointInterface = {
