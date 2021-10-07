@@ -7,7 +7,7 @@ import { ContentDocument } from './types'
 export function content_model( name : string ){ return model<ContentDocument>( name, content_schema ) }
 
 export const models = {
-       	tests : content_model( 'tests' ),
-	python : content_model( 'python' )
+       	tests : content_model( 'A' ),
+	python : content_model( 'B' )
 }
 

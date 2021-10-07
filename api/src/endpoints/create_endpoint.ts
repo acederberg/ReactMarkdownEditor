@@ -5,24 +5,29 @@
 // * Call the `EndpointInterface.find` method, a call to mongodb.
 // * Call the `EndpointInterface.clean` method if it is provided.
 
-import { EndpointInterface, endpoint_keys, RequestInterface, request_keys } from './types'
+// Model imports
 import { ContentDocument } from './model/types'
-import { models } from './model/model'
+import { models } from './model'
+
+// Local imports
+import { EndpointInterface, endpoint_keys, RequestInterface, request_keys } from './types'
 import create_key_checkers from './keys'
 
+// Get the model
 const get_model = ( endpoint, request ) => models[ request.body.collection ]
-
-// Trivial mapping
 const default_clean = ( data ) => data
 export const create_endpoint_default_args = { requires_collection : true, can_be_empty : false }
 
 export function create_endpoint( endpoint : EndpointInterface, args) : Function {
+
 	// Locals
 	const { requires_collection, can_be_empty } = args
 	const { check_keys, check_keys_metadata } = create_key_checkers( endpoint )
 	const clean = endpoint.clean ? endpoint.clean : default_clean
+
 	// decorated function
 	const wrapper = async ( request, result ) => {
+
 		// Check the keys
 		if ( !can_be_empty ){
 			if ( ( !check_keys( endpoint, request ) ) || !check_keys_metadata( endpoint, request ) ){ 
@@ -31,6 +36,7 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 				return
 			}
 		}
+
 		// Get collection if it actually exists. If not and is needed, leave.
 		const model = get_model( endpoint, request )
 		// If a collection is required and the model was found, do stuff

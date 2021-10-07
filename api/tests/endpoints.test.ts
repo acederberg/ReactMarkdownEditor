@@ -1,6 +1,6 @@
 import request from 'supertest'
 import app from '../src/app'
-import endpoints from '../src/endpoints/endpoints'
+import { content_endpoints as endpoints } from '../src/endpoints'
 
 const id = '_id'
 
