@@ -6,9 +6,7 @@ function arr_contains( A, B ) : Boolean {
 	// Returns true if A contains B, or False/undefined/None otherwise.
         // First get the intersection  ( a in A such that a is in B ).
         // If this intersection is has the same size as B, B has lost no elements through the intersection, meaning all of its elements must be contained by B
-	console.log( "called arr_contains" )
         const C = A.filter( value => B.includes( value ) )
-	console.log( A, B, C )
         return C.length === B.length
 
 }
@@ -18,7 +16,6 @@ function arr_intersects( A, B )  {
 
         // Tests if the intersection is non-empty
         // Look for one element that is contained in both.
-	console.log( "called arr_intersects" )
 	const C = A.find( key => B.includes( key ) )
         return !!C
 

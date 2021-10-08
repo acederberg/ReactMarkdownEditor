@@ -52,7 +52,6 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 				return
 			}
 			// Clean and return data.
-			console.log( data ) 
 			result.send( clean( data ) )
 		}
 		// If a collection is required but the model was not found, let the client know the that the collection they specified has no corresponding model

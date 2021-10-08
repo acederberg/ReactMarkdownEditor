@@ -1,4 +1,5 @@
 import { EndpointsInterface, EndpointInterface, RequestInterface } from './types'
+import { ContentInterface } from './model/types'
 import { metadata_keys } from './model/types'
 
 const id = '_id'
@@ -28,7 +29,15 @@ const POST : EndpointInterface = {
 	metadata_keys : [ "title", "description", "author" ],
 	requires_all_metadata_keys : true,
 	find : function ( model : any , raw : RequestInterface ){
-		const posted = new model( raw )
+		// Ensure that the data has the correct shape.
+		raw['metadata'][ 'created' ] = new Date() 
+		let processed : ContentInterface = {
+			body : raw[ 'body' ],
+			metadata : raw[ 'metadata' ]
+		}
+		console.log( processed )
+		// Instantiate a model. Call the `.save` method to make it exist.
+		const posted = new model( processed )
 		return posted.save()
 	} 
 }
@@ -70,6 +79,8 @@ const endpoints : EndpointsInterface = {
 		post : POST,
 		delete : DELETE
 	}
-} ;
+} 
+
+
 export default endpoints ;
 

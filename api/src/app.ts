@@ -11,7 +11,7 @@ const app = create_app()
 const db = create_db()
 
 // Set up endpoints
-extras( app, db )
+extras( app )
 consume_endpoints( app, content_endpoints )
 
 export default app;

@@ -13,3 +13,9 @@ export default function create_db(){
 
 
 }
+export const listCollections = async () => {
+	
+	const collections = await connection.db.listCollections().toArray()
+	return collections.map( item => item.name )
+
+}
