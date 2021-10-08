@@ -1,7 +1,0 @@
-uwsgi:
-  wsgi-file : /app/run.py
-  socket : :8080
-  socket-chmod : 660
-  vacuum : true
-  processes : 4
-  threads : 2
