@@ -1,7 +1,7 @@
 // Tools for checking keys.
 import { EndpointInterface } from './types'
 
-function arr_contains( A, B ) : Boolean {
+export function arr_contains( A, B ) : Boolean {
 
 	// Returns true if A contains B, or False/undefined/None otherwise.
         // First get the intersection  ( a in A such that a is in B ).
@@ -12,7 +12,7 @@ function arr_contains( A, B ) : Boolean {
 }
 
 
-function arr_intersects( A, B )  {
+export function arr_intersects( A, B )  {
 
         // Tests if the intersection is non-empty
         // Look for one element that is contained in both.
@@ -21,7 +21,10 @@ function arr_intersects( A, B )  {
 
 }
 
+export const check_keys = ( endpoint, request ) => arr_intersects( Object.keys( request.body ) , endpoint.keys )
+export const check_optional = ( endpoint, request ) => arr_intersects( Object.keys( request.body ), endpoint.keys )
 
+/*
 const arr_decide = ( bool ) => bool ? arr_contains : arr_intersects
 
 export default function create_key_checkers( endpoint : EndpointInterface ) {
@@ -36,3 +39,5 @@ export default function create_key_checkers( endpoint : EndpointInterface ) {
         }
 
 }
+*/
+

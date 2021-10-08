@@ -1,16 +1,11 @@
-import request from 'supertest'
+ import request from 'supertest'
 import app from '../src/app'
 import { content_endpoints as endpoints } from '../src/endpoints'
 
 const id = '_id'
 
-const get_ids = () => request( app )
-.get( '/markdown/' )
-.then( request => request.body )
-.then( data => data.map( item => item[ id ] ) )
-
 describe( "Testing the /markdowns/ endpoint.", () => {
-	let random_id ;
+	let ids ;
 	it( "Empty post should return nothing", () => {
 		return request( app ).post( endpoints.route )
 		.expect( 400 )
@@ -22,17 +17,18 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 			return request( app ).post( endpoints.route )
 			.send( {
 				body : `# Test ${k}`,
+				collection : 'tests',
 				metadata : {
 					author : 'sum dood',
 					title : 'sum thing',
 					description : 'whatevwer'
 				}
 			} )
-			expect( 200 )
+			.expect( 200 )
 		} )
 		k = k + 1
 	}
-	it( "Getting an id from the tests collection", () => {
+	/*it( "Getting an id from the tests collection", () => {
 		return request( app ).get( endpoints.route )
 		.send({ collection : 'tests', 'max-count' : 1 })
 		.expect( 200 )
@@ -43,15 +39,19 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 						_id : expect.any( String ),
 						body : expect.any( String ),
 						metadata : expect.objectContaining( {
-							author : expect.any( String ),
 							title : expect.any( String ),
-							description : expect.any( String )
+							tags : [],
+							repo : [],
+							modified : [],
+							description : expect.any( String ),
+							created : expect.any( Date ),
+							author : expect.any( String )
 						} )
 					} )
 				] )
 			)
 		} )
-	} )
+	} )*/
 	it( "Testing GET /markdowns/ with no args", () => {
 		return request( app ).get( endpoints.route )
 		.send()
@@ -84,11 +84,36 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 		return request( app ).post( endpoints.route ).send( body ).expect( 200 )
 
 	} )
+	it( "Sending a GET request to clean up tests", () => request( app ).get( endpoints.route )
+		.send( { collection : 'tests' } )
+		.expect( 200 ) 
+		.then( request => { 
+			ids = request.body.map( item => item._id ) 
+			return !!ids
+		} )
+	)	
+	it( "DELETING the tests.", () => {
+		console.log( ids )
+		return ids.find( id => {
+			request( app ).delete( endpoints.route ) 
+			.send( { collection : 'tests', id : id } )
+			.expect( 200 )
+		} )
+	} )
+	/*
+	it( "Sending a GET request to make sure the tests were actually destroyed.", () => {
+		return request( app ).get( endpoints.route )
+		.send( { collection : 'tests' } )
+		.expect( 200 )
+		.then( request => expect( request.body ).toEqual([]) )
+	} )
+       */
 } )
-
+/*
 describe( "Testing the /metadata/ endpoint/", () => {
 	it( "Testing GET /metadata/", () => {
 			
 
 	})
 } )
+*/

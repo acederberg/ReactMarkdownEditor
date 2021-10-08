@@ -5,7 +5,7 @@ import models from './model'
 export const GET : EndpointInterface = {
 	keys : [ 'catagory', 'filter' ],
 	find : () => {
-
+		
 
 	}
 }

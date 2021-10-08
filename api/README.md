@@ -49,15 +49,14 @@ each catagory will be its own collection. Since this will be a blog there is no 
 ## Endpoints
 
 1. `/latest/` -- Get the latest articals.
-	* `GET` -- **Parameters: `<String> catagory`, `<Object> filter`, `<Boolean> _id_only`, `<Number> maxcount`, `<Boolean> random`**. The most recent articals as a list of `ObjectIds`.
-2. `/metadata/` -- Requests to modify the metadata for each artical.
-	* `GET` -- **Parameters: `<String> catagory`, `<Object> filter`, `<ObjectId> _id`, <Boolean> _id_only`, `<Number> maxcount`.**. Get the metadata for the latest articals by default. Otherwise get data from the optional specified catagory with the optional filter statement. 
-	* `PUT` -- **Parameters: `<String> catagory`, `<Object> filter`, `<ObjectId> _id`**. Modify the metadata with the specified `_id`, `catagory`, or `filter`. `filter` and `catagory` may be used together however using `_id` in combination with either will only use the `_id`.
+	* `GET` -- **Parameters: `<String> catagory`, `<Object> filter`, `<Number> maxcount`**. The most recent articals as a list of `ObjectIds`.
 3. `/markdown/` -- Requests for markdowns.
-	* `GET` -- **Parameteres: `catagory`, `<ObjectId> _id`, `<Boolean> random`.** Get an artical by its `_id` or grab a random artical. `filter` can be specified in the `filter`.
+	* `GET` -- **Parameteres: `catagory`, `<ObjectId> _id`.** Get an artical by its `_id` or grab a random artical. `filter` can be specified in the `filter`.
 	* `POST` -- **Parameters: Catagory and all schema keys.** Create artical and metadata for an artical.
 	* `PUT` -- **Parameters: `<String> catagory`, `<Object> filter`, `<ObjectId> _id`.** Modify an existing markdown and the metadata.
 	* `DELETE` -- **Parameters: `<ObjectId> _id`.** Remove an artical and its metadata by `_id`.
+
+After some consideration, the metadata route will not be needed in its current form. It would be cool to write some endpoints that report the state of the collections, e.g. how many total articals exist, etc.. Such a thing however seems like an API for this web API.
 
 ## Implementation
 
@@ -65,7 +64,7 @@ I think either `express` with `typescript` and `mongoose` or `Flask` with `PyMon
 
 I have decided on first of the choices. I have a plan for designing the enpoints in a susinct way. Each endpoint requires four stages:
 
-1. Validation.
+e jest.setTimeout(newTim1. Validation.
 	* Every request must contain a `collection` at a minimum and most will have the option for a `filter` and an `_id`. If validation fails, repond with 400 status.
 	* Make sure that the collection exists. If it does not, respond with 400 status. 
 2. Finding. This step will be determined generically (by using the `filter` or `_id`) or with a specified callback. If this fails, return with a 400 status.

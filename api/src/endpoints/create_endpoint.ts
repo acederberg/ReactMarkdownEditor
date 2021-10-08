@@ -6,12 +6,13 @@
 // * Call the `EndpointInterface.clean` method if it is provided.
 
 // Model imports
-import { ContentDocument } from './model/types'
+import { Error } from 'mongoose'
+import { ContentInterface } from './model/types'
 import { models } from './model'
 
 // Local imports
 import { EndpointInterface, endpoint_keys, RequestInterface, request_keys } from './types'
-import create_key_checkers from './keys'
+import { check_keys, check_optional } from './keys'
 
 // Get the model
 const get_model = ( endpoint, request ) => models[ request.body.collection ]
@@ -22,7 +23,7 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 
 	// Locals
 	const { requires_collection, can_be_empty } = args
-	const { check_keys, check_keys_metadata } = create_key_checkers( endpoint )
+	//const { check_keys, check_keys_metadata } = create_key_checkers( endpoint )
 	const clean = endpoint.clean ? endpoint.clean : default_clean
 
 	// decorated function
@@ -30,7 +31,12 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 
 		// Check the keys
 		if ( !can_be_empty ){
-			if ( ( !check_keys( endpoint, request ) ) || !check_keys_metadata( endpoint, request ) ){ 
+			if ( !request.body ){
+				result.status( 400 )
+				result.send( 'RequestMustHaveBody' )
+				return
+			}
+			if ( !check_keys( endpoint, request ) || !check_keys( endpoint, request ) ){ 
 				result.status( 400 )
 				result.send( 'InsufficientKeys' )
 				return
@@ -42,13 +48,14 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 		// If a collection is required and the model was found, do stuff
 		if ( requires_collection && model ){ 
 			// Find data. If fail, report finder error.
-			let data : ContentDocument ;
+			let data : ContentInterface ;
 			try{ 
 				data = await endpoint.find( model, request.body )
 			}
 			catch( err ){
-				result.status( 500 )
-				result.send( `EndpointFindError: ${ err }` )
+				console.log( err )
+				result.status( err instanceof Error.ValidationError ? 400 : 500 )
+				result.send( `EndpointFindThrewError: ${ err }` )
 				return
 			}
 			// Clean and return data.
