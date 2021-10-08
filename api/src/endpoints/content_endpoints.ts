@@ -5,6 +5,7 @@ import { metadata_keys } from './model/types'
 const DEFAULT_MAX_COUNT = 5
 
 const id = '_id'
+const ids = '_ids'
 const collection = 'collection'
 const filter = 'filter'
 const max_count = 'max_count'
@@ -23,7 +24,7 @@ const GET : EndpointInterface = {
 	optional_keys : [ 'max_count' ],
 	find : function ( model : any , raw : RequestInterface ){
 		const max_count = get_max_count( raw )
-		return model.find( raw.filter ).limit( max_count )
+		return model.find( raw.filter ).limit( max_count ).exec()
 	}
 }
 const POST : EndpointInterface = {
@@ -43,10 +44,12 @@ const POST : EndpointInterface = {
 	} 
 }
 const DELETE : EndpointInterface = {
-	keys : [ id ],
-	find : function ( model : any , raw : RequestInterface ){
-		console.log( raw )
-		return model.findByIdAndDelete( raw[ id ] )
+	keys : [ "collection", ids ],
+	find : async function ( model : any , raw : RequestInterface ){
+		const out = raw[ ids ].map( an_id => model.findOneAndDelete({ _id : an_id }).exec() )
+		console.log( out )
+		return out
+		return msg( "Deleted content." )
 	}
 }
 const PUT : EndpointInterface = {

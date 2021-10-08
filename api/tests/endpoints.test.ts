@@ -3,9 +3,9 @@ import app from '../src/app'
 import { content_endpoints as endpoints } from '../src/endpoints'
 
 const id = '_id'
+let ids ;
 
 describe( "Testing the /markdowns/ endpoint.", () => {
-	let ids ;
 	it( "Empty post should return nothing", () => {
 		return request( app ).post( endpoints.route )
 		.expect( 400 )
@@ -85,35 +85,22 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 
 	} )
 	it( "Sending a GET request to clean up tests", () => request( app ).get( endpoints.route )
-		.send( { collection : 'tests' } )
+		.send( { collection : 'tests', max_count : 1000 } )
 		.expect( 200 ) 
-		.then( request => { 
-			ids = request.body.map( item => item._id ) 
-			return !!ids
-		} )
-	)	
-	it( "DELETING the tests.", () => {
+		.then( request => { ids = request.body.map( item => item._id ); return true } )
+	)
+	it( "Sending a DELETE request to clean up tests.", () => {
 		console.log( ids )
-		return ids.find( id => {
-			request( app ).delete( endpoints.route ) 
-			.send( { collection : 'tests', id : id } )
-			.expect( 200 )
-		} )
+		return request( app ).get( endpoints.route )
+	   	.send( { collection : 'tests', _ids : ids } )
+		.expect( 200 )
 	} )
-	/*
 	it( "Sending a GET request to make sure the tests were actually destroyed.", () => {
 		return request( app ).get( endpoints.route )
-		.send( { collection : 'tests' } )
+		.send( { collection : 'tests', max_count : 10 } )
 		.expect( 200 )
-		.then( request => expect( request.body ).toEqual([]) )
+		.then( request => !request.body )
 	} )
-       */
+       
 } )
-/*
-describe( "Testing the /metadata/ endpoint/", () => {
-	it( "Testing GET /metadata/", () => {
-			
 
-	})
-} )
-*/

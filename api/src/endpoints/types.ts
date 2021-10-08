@@ -4,6 +4,7 @@ import { ContentInterface } from "./models/types"
 export const request_keys = [ '_id', 'collection', 'filter', 'max_count', 'random' ]
 export interface RequestInterface {
         _id ?: String,
+	_ids ?: [ String ],
         collection : String,
 	filter ?: ContentInterface,
 	max_count ?: Number,
