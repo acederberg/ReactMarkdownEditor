@@ -1,7 +1,8 @@
 import fetchCollections from "./fetchCollections"
 import Samples from "./sample"
+import SamplesWrapper from "./sample/samplesWrapper.js"
 
-import { Pane } from "evergreen-ui"
+import { Pane, Spinner } from "evergreen-ui"
 import { Component } from "react"
 
 export default class Collection extends Component
@@ -16,14 +17,15 @@ export default class Collection extends Component
 		this.getContent()
 	}
 	render(){
-		console.log( 'rendering' )
-		return <Pane>
+		return <Pane padding = {16} margin = {32}>
 			{
 				this.state.data
 				? 
-				this.state.data.map( collection => <Samples collection = { collection } />) 
+				this.state.data.map( collection => <Samples collection = { collection } key = { collection }/>) 
 				:
-				"No collections found"
+				<SamplesWrapper>
+					<Spinner size = { 64 } padding = {16} margin = {32}/>
+				</SamplesWrapper>
 			}
 		</Pane>
 	}
