@@ -1,0 +1,7 @@
+# This one starts the api docker container using docker compose
+# The launches an interactive bash session inside of `api`.
+cd ~/Examples/markdown-editor/api
+echo 'Launching api-development containers. If experiencing confusion, rebuild the container using `docker compose build` in the current directory.'
+docker compose down && docker compose up --detach && echo 'Successful launch of development containers (detached mode)! Containers:'
+docker ps
+docker exec -it api bash
