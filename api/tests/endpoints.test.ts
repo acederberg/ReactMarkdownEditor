@@ -104,3 +104,23 @@ describe( "Testing the /markdowns/ endpoint.", () => {
        
 } )
 
+describe( "Testing extra endpoints.", () => {
+	it( "Testing '/markdown/:collection/:id/ with bad collection and ids.", () => request( app )
+		.get( '/markdown/tetht_ourticuls/1' )
+		.expect( 400 )
+	)
+	it( "Testing '/markdown/:collection/:id/ with bad id.", () => request( app )
+		.get( '/markdown/test_articals/1' )
+		.expect( 500 )
+	)
+	/*
+	it( "Testing '/markdown/:collection/:id/ with good parameters", () => request( app )
+		.get( '' )
+		.expect( 200 )
+	)
+       */
+	it( "Testing '/collections/:collection/:count/'", () => request( app )
+		.get( '/collections/test_articals/10' )
+		.expect( 200 )
+	)
+} )

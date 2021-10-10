@@ -1,9 +1,11 @@
 // Miscillanious utility endpoints.
+import { models } from "./endpoints/model/"
 import { listCollections } from "./db"
 import { Express } from "express"
+		
+const get_name = ( request ) => request.params.collection.split('_')[0] + 's' 
 
 export default function extras( app : Express ){
-	
 	app.get( "/collections/", async ( request, result ) => {
 		// List the available collections. 
 		// Collection creation/deleltion must be done by modifying the `models` folder for now. 
@@ -11,5 +13,46 @@ export default function extras( app : Express ){
 		const collections = await listCollections()
                 result.send( collections )
 	} )
-
+	app.get( "/markdown/:collection/:_id/", async( request, result ) => {
+		// Get a markdown and its metadata provided a collection and _id
+		// Doing this because there are some stupid things about http. Read [ this ]( https://github.com/whatwg/fetch/issues/551 ).
+		const name = get_name( request )
+		const collection = models[ name ]
+		if ( collection ){
+			try{
+				const data = await collection.findById( request.params._id ).exec()
+				result.send( data )
+			}
+			catch( err ){
+				result.status( 500 )
+				result.send({ msg : err })
+			}
+		}
+		else {
+			result.status( 400 )
+			result.send( { 'msg' : 'Failed to find collection' } )
+		}
+	} )
+	app.get( "/collections/:collection/:count/", async( request, result ) => {
+		// Get metadata for front end rendering.
+		const name = get_name( request ) 
+		const count = parseInt( request.params.count ) 
+		const collection = models[ name ]
+	        if ( collection ){
+			var out = {}
+			try{
+				const data = await collection.find().exec()
+				await data.map( item => out[ item._id ] = item.metadata )
+				result.send( out )
+			}
+			catch( err ){
+				result.status( 500 )
+				result.send({ msg : err })
+			}
+		}
+		else {
+			result.status( 400 )
+			result.send( { 'msg' : 'Failed to find collection' } )
+		}
+	} )
 }
