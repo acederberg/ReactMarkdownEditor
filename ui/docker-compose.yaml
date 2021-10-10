@@ -13,4 +13,4 @@ services :
       - type : 'bind'
         source : '.'
         target : '/app/'
-
+    tty: true

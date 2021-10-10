@@ -8,5 +8,4 @@ COPY yarn.lock .
 COPY package.json .
 RUN npm install .
 
-ENTRYPOINT [ "npm" ]
-CMD [ "start" ]
+ENTRYPOINT [ "bash" ]
