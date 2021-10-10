@@ -4,6 +4,7 @@ services :
     build :
       context : '.'
       dockerfile : './Dockerfile.dev'
+    container_name : 'ui'
     ports : 
       - target : 8000
         published : 8000
