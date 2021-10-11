@@ -1,5 +1,6 @@
 // Miscillanious utility endpoints.
 import { models } from "./endpoints/model/"
+import mongoose from "mongoose"
 import { listCollections } from "./db"
 import { Express } from "express"
 		
@@ -20,7 +21,11 @@ export default function extras( app : Express ){
 		const collection = models[ name ]
 		if ( collection ){
 			try{
-				const data = await collection.findById( request.params._id ).exec()
+				let id = new mongoose.Types.ObjectId( request.params._id )
+				const data = await collection.findOne( { _id : id } ).exec()
+				console.log( collection )
+				console.log( id )
+				console.log( data )
 				result.send( data )
 			}
 			catch( err ){
