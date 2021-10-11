@@ -37,6 +37,7 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 				return
 			}
 			if ( !check_keys( endpoint, request ) || !check_keys( endpoint, request ) ){ 
+				console.log( request.body )
 				result.status( 400 )
 				result.send( 'InsufficientKeys' )
 				return

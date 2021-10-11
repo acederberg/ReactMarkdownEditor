@@ -38,6 +38,7 @@ const POST : EndpointInterface = {
 			body : raw[ 'body' ],
 			metadata : { active : true, created : now, ...raw[ 'metadata' ] }
 		}
+		console.log( raw )
 		// Instantiate a model. Call the `.save` method to make it exist.
 		const posted = new model( processed )
 		return posted.save()

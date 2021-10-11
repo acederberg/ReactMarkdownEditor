@@ -3,7 +3,7 @@ import { models } from "./endpoints/model/"
 import { listCollections } from "./db"
 import { Express } from "express"
 		
-const get_name = ( request ) => request.params.collection.split('_')[0] + 's' 
+const get_name = ( request ) => request.params.collection 
 
 export default function extras( app : Express ){
 	app.get( "/collections/", async ( request, result ) => {
