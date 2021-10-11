@@ -20,16 +20,16 @@ export default class sample extends Component{
 		this.getContent() 
 	}
 	render(){
-		console.log( this.state.data )
-		console.log( this.state.data ? "Good" : "Bad" )
+		// console.log( this.state.data )
+		// console.log( this.state.data ? "Good" : "Bad" )
 		return this.state.data ?
 		<SamplesWrapper>
 			<Heading size = { 1200 } padding = { 32 }>{ `Latest articals in ${ this.props.collection }` }</Heading>
-			<Pane padding = { 32 }>
+			<Pane padding = { 32 } style = {{ 'align-items' : 'inital', display : 'inline-flex', 'flex-flow' : 'wrap' }}>
 			{ 
 				this.state.loaded
 				?
-				Object.keys( this.state.data ).map( _id => <Sample { ...this.state.data[_id] }/> ) 
+				Object.keys( this.state.data ).map( _id => <Sample collection = { this.props.collection } { ...this.state.data[_id] }/> ) 
 				:
 				'Loading'
 			}

@@ -22,7 +22,7 @@ class Editor extends Component{
 	}
 	getContent = () => get_markdown( 
 			this.args,
-			content => this.setState({ content : content }) 
+			data => this.setState({ content : data.body, exists : true }) 
 	) 
 	deleteContent = () => delete_markdown( 
 			this.args, 
@@ -39,6 +39,7 @@ class Editor extends Component{
 	}
 	render(){ 
 		// Recall that the save button will use `post_markdown` which uses the arguement `override` determining if it should `PUT` or `POST`.
+		// console.log( this.state )
 		return ( <>
 		<h1>Markdown Editor</h1>
 		{  
@@ -60,7 +61,16 @@ class Editor extends Component{
 					} }
 					value = { this.state.exists ? this.state.filename : undefined }
 				/>
-				{ this.state.bad_filename ?  <Warning>Filename aleady in use</Warning> : null }
+				<Pane>
+					<Label htmlFor = 'content'>Content</Label>
+					<TextArea
+						id = 'content'
+						onChange = { (event) => this.onChange( event, 'content' ) } 
+						placeholder = "# Example"
+						value = { this.state.exists ? this.state.content : undefined }
+						rows = "32"
+					/>
+				</Pane>
 			</Pane>  
 			
 			<Pane>
@@ -75,15 +85,6 @@ class Editor extends Component{
 		) }
 	}
 /*
-			<Pane>
-				<Label htmlFor = 'content'>Content</Label>
-				<TextArea
-					id = 'content'
-					onChange = { (event) => this.onChange( event, 'content' ) } 
-					placeholder = "# Example"
-					value = { this.state.exists ? this.state.content : undefined }
-					rows = "32"
-				/>
 				<ButtonToolbar>
 					<Button 
 						variant = "primary"
@@ -101,7 +102,6 @@ class Editor extends Component{
 				>Delete</Button>
 				</ButtonToolbar>
 				{ this.state.bad_filename ? <Warning>InternalError</Warning> : undefined }
-			</Pane>
 */
 
 export default function EditMarkdown( into, collection, _id ){

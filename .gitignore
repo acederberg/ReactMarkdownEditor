@@ -1,3 +1,5 @@
 .junk
 .test-markdowns
 .resources
+*.swp
+*.swo

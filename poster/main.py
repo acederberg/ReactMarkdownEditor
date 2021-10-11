@@ -12,7 +12,7 @@ def main( callback = None ):
 
     # Fill each collection with test data
     posts = (
-        requests.post( URI, json = { 'collection' : collection.replace( '_articals', '' ), **item }
+        requests.post( URI, json = { 'collection' : collection, **item }
         )
         for item in data
         for collection in collections
@@ -20,5 +20,5 @@ def main( callback = None ):
     return posts if callback is None else callback( posts )
 
 data = main()
-print( *data, sep = '\n' )
-#print ( *( d.content for d in data ), sep = '\n' )
+#print( *data, sep = '\n' )
+print ( *( d.content for d in data ), sep = '\n' )
