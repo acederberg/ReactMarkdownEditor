@@ -17,6 +17,7 @@ export default class Collection extends Component
 		this.getContent()
 	}
 	render(){
+		console.log( this.state )
 		return <Pane padding = {16} margin = {32}>
 			{
 				this.state.data

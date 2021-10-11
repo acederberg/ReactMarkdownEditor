@@ -4,30 +4,58 @@ import { Component } from 'react'
 import { Button, ButtonToolbar } from 'react-bootstrap'
 import ReactDOM from 'react-dom'
 import RenderMarkdown from './renderMarkdown.js'
-import { delete_markdown, get_markdown, get_markdowns, post_markdown } from './fetchMarkdown.js'
+import { delete_markdown, get_markdown, post_markdown, put_markdown } from './fetchMarkdown.js'
 
 const Warning = ({ msg }) => <p className = 'Warning'>{ msg }</p> 
 
+const Input = ( { id, label, onChange, ...props } ) => <>
+	<Label htmlFor = { id } { ...props }>{ label }</Label>
+	<br/>
+	<TextInput
+		id = { id }
+		onChange = { onChange }
+	/>
+</>
+
+const Inputs = {
+	title : "Title",
+	description : "Description",
+	author : "Author"
+}
+
 class Editor extends Component{
 
-	// I like the closure design pattern
 	constructor( props ){
 		super( props )
 		this.state = { 
-			content : '', 
- 			exists : false, 
+			content : {
+				body : '',
+				metadata : {
+					title : '',
+					description : '',
+					author : ''
+				}
+			},
 			internal_error : false
 		}
 		this.args = { collection : this.props.collection, _id : this.props._id }
 	}
 	getContent = () => get_markdown( 
 			this.args,
-			data => this.setState({ content : data.body, exists : true }) 
+			data => this.setState({ loading : false }) 
 	) 
 	deleteContent = () => delete_markdown( 
 			this.args, 
-			() => this.setState({ exists : false }) 
+			() => this.setState({ loading : true }) 
 	)
+	postContent = () => post_markdown( {	
+			...this.state.content,
+			collection : this.props 
+	} )
+	putContent = () => put_markdown( {
+			content : this.state.content,
+			filter : { _id : this.props.arg }
+	} )
 	componentDidMount(){ 
 		this.getContent()
 	}
@@ -39,11 +67,11 @@ class Editor extends Component{
 	}
 	render(){ 
 		// Recall that the save button will use `post_markdown` which uses the arguement `override` determining if it should `PUT` or `POST`.
-		// console.log( this.state )
+		console.log( this.state )
 		return ( <>
 		<h1>Markdown Editor</h1>
 		{  
-		!this.state.exists 
+		!this.state.loading 
 		? 
 			<Pane>
 				<Warning msg = "Document does not exist" ></Warning>
@@ -51,25 +79,39 @@ class Editor extends Component{
 		: 
 			<>
 			<Pane>
-				<Label htmlFor = 'filename'>Filename</Label>
-				<br/>
-				<TextInput
-					id = 'filename'
-					onChange = { ( event ) => {
-						this.setState({ filename_changed : true } ) ;
-						this.onChange( event, 'filename' ) ;
-					} }
-					value = { this.state.exists ? this.state.filename : undefined }
-				/>
+				<Pane>{
+					Inputs.map( key => <Input 
+						id = { key } 
+						label = { Inputs[ key ] } 
+						onClick = { ( event ) => this.onChange( event, key ) }
+					/> )
+				}</Pane>
+
 				<Pane>
 					<Label htmlFor = 'content'>Content</Label>
 					<TextArea
 						id = 'content'
 						onChange = { (event) => this.onChange( event, 'content' ) } 
 						placeholder = "# Example"
-						value = { this.state.exists ? this.state.content : undefined }
+						value = { this.state.content }
 						rows = "32"
 					/>
+					<ButtonToolbar>
+						<Button 
+							variant = "primary"
+							onClick = { this.postContent }
+						>Save</Button>
+						<Button 
+							variant = "primary"
+							onClick = { this.getContent }
+						>Revert</Button>
+						<Button
+							style = {{float : 'left'}}
+							variant = "danger"
+							onClick = { this.deleteContent }
+						>Delete</Button>
+					</ButtonToolbar>
+					{ this.state.bad_filename ? <Warning>InternalError</Warning> : undefined }
 				</Pane>
 			</Pane>  
 			
@@ -84,26 +126,6 @@ class Editor extends Component{
 		</>
 		) }
 	}
-/*
-				<ButtonToolbar>
-					<Button 
-						variant = "primary"
-						onClick = { this.postContent
-						}
-					>Save</Button>
-					<Button 
-					variant = "primary"
-					onClick = { this.getContent }
-				>Revert</Button>
-				<Button
-					style = {{float : 'left'}}
-					variant = "danger"
-					onClick = { this.deleteContent }
-				>Delete</Button>
-				</ButtonToolbar>
-				{ this.state.bad_filename ? <Warning>InternalError</Warning> : undefined }
-*/
-
 export default function EditMarkdown( into, collection, _id ){
 	ReactDOM.render( <Editor collection = { collection } _id = { _id }/> , into )
 }

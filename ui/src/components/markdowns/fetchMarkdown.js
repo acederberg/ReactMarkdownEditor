@@ -45,5 +45,5 @@ const delete_markdown = create( ( { collection, _id } ) => fetch( `${uri}/${coll
 	} )
 )
 
-export { make_uri, get_markdown, post_markdown, delete_markdown }
+export { make_uri, get_markdown, post_markdown, put_markdown, delete_markdown }
 
