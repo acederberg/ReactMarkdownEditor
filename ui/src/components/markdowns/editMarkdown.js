@@ -45,6 +45,7 @@ class Editor extends Component{
 		}
 		this.args = { collection : this.props.collection, _id : this.props._id }
 	}
+	// It is important to recall that the functions from fetch will use destructuring in the first prop
 	getContent = () => get_markdown( 
 			this.args,
 			data => {
@@ -52,27 +53,31 @@ class Editor extends Component{
 			}
 	) 
 	deleteContent = () => delete_markdown( 
-			this.args, 
-			() => this.setState({ loading : true }) 
+			this.args 
 	)
 	postContent = () => post_markdown( {	
 			collection : this.props.collection,
-			...this.state.content
+			content : this.state.content
 	} )  
-	putContent = () => put_markdown( {
+	putContent = () => {
+		const args = {
 			collection : this.props.collection,
 			content : this.state.content,
 			filter : { _id : this.props._id }
-	} )
+		} 
+		console.log( args )
+		put_markdown( args )
+	}
 	componentDidMount(){ 
 		this.getContent()
 	}
-	onChange = ( event, key ) => {
-		const data = event.target.value
-		this.setState( state => state.content.metadata[ key ] = data )
-	}
+	onChange = ( event, key ) => this.setState( function( last_state ){
+		last_state.content.metadata[ key ] = event.target.value
+		return last_state
+	} )
 	render(){ 
 		// Recall that the save button will use `post_markdown` which uses the arguement `override` determining if it should `PUT` or `POST`.
+		// console.log( this.state )
 		console.log( this.state )
 		return ( <>
 		<h1>Markdown Editor</h1>
@@ -89,7 +94,7 @@ class Editor extends Component{
 					Object.keys( Inputs ).map( key => <Input 
 						id = { key } 
 						label = { Inputs[ key ] } 
-						onClick = { ( event ) => this.onChange( event, key ) }
+						onChange = { ( event ) => this.onChange( event, key ) }
 						defaultValue = { this.state.content.metadata[ key ] }
 					/> )
 				}</Pane>
@@ -97,7 +102,13 @@ class Editor extends Component{
 					<Label htmlFor = 'content'>Content</Label>
 					<TextArea
 						id = 'content'
-						onChange = { ( event ) => this.setState( state => state.content.body = event.target.value ) } 
+						onChange = { ( event ) => this.setState( 
+							function( last_state, props ){
+								last_state.content.body = event.target.value
+								console.log( last_state )
+								return last_state
+							} 
+						) } 
 						placeholder = "# Example"
 						value = { this.state.content.body }
 						rows = "32"
@@ -115,6 +126,7 @@ class Editor extends Component{
 							style = {{float : 'left'}}
 							variant = "danger"
 							onClick = { this.deleteContent }
+							href = '/collections/'
 						>Delete</Button>
 					</ButtonToolbar>
 				</Pane>

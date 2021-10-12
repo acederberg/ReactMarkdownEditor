@@ -3,7 +3,6 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 const render_markdown = ({ raw_markdown }) => {
-	console.log( raw_markdown )
 	return <ReactMarkdown
 		children = { raw_markdown }
 		components = {{
