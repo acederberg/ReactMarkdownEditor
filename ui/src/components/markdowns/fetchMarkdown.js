@@ -47,9 +47,9 @@ export const post_markdown = create( ( { collection,  content } ) => fetch( `${u
 	} )
 )
 
-export const delete_markdown = create( ( { collection, _id } ) => fetch( `${uri}/${collection}/${_id}`, {
+export const delete_markdown = create( ( { collection, _id } ) => fetch( `${uri}/markdown`, {
 		headers : HEADERS,
-		body : JSON.stringify( { collection, _id } ),
+		body : JSON.stringify( { collection : collection, _ids : [ _id ] } ),
 		method : 'DELETE'
 	} )
 )

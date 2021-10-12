@@ -126,7 +126,7 @@ class Editor extends Component{
 							style = {{float : 'left'}}
 							variant = "danger"
 							onClick = { this.deleteContent }
-							href = '/collections/'
+							hrefd = '/collections/'
 						>Delete</Button>
 					</ButtonToolbar>
 				</Pane>
