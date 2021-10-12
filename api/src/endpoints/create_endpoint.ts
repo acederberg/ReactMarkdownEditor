@@ -17,6 +17,7 @@ import { check_keys, check_optional } from './keys'
 // Get the model
 const get_model = ( endpoint, request ) => models[ request.body.collection ]
 const default_clean = ( data ) => data
+
 export const create_endpoint_default_args = { requires_collection : true, can_be_empty : false }
 
 export function create_endpoint( endpoint : EndpointInterface, args) : Function {
@@ -28,7 +29,7 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 
 	// decorated function
 	const wrapper = async ( request, result ) => {
-
+		console.log( request.body )
 		// Check the keys
 		if ( !can_be_empty ){
 			if ( !request.body ){

@@ -47,6 +47,7 @@ const POST : EndpointInterface = {
 const DELETE : EndpointInterface = {
 	keys : [ "collection", ids ],
 	find : async function ( model : any , raw : RequestInterface ){
+		console.log( 'DELETEing' )
 		const out = raw[ ids ].map( an_id => model.findOneAndDelete({ _id : an_id }).exec() )
 		console.log( out )
 		return out
@@ -64,7 +65,7 @@ const PUT : EndpointInterface = {
 		}
 		else if ( raw[ filter ] ){
 			const max_count = get_max_count( raw )
-			return model.updateMany( raw.filter, { $update : content } )
+			return model.updateMany( raw.filter, { $set : content } )
 			.limit( max_count )
 		}
 		else{

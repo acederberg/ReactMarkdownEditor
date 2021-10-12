@@ -23,9 +23,6 @@ export default function extras( app : Express ){
 			try{
 				let id = new mongoose.Types.ObjectId( request.params._id )
 				const data = await collection.findOne( { _id : id } ).exec()
-				console.log( collection )
-				console.log( id )
-				console.log( data )
 				result.send( data )
 			}
 			catch( err ){
@@ -57,7 +54,7 @@ export default function extras( app : Express ){
 		}
 		else {
 			result.status( 400 )
-			result.send( { 'msg' : 'Failed to find collection' } )
+			result.send( { msg : 'Failed to find collection' } )
 		}
 	} )
 }
