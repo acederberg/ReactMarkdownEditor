@@ -1,20 +1,23 @@
 // This the test box with buttons. To view the markdown, we will have to render it somewhere into the dom.
-import { Pane, Label, Textarea as TextArea, TextInput } from 'evergreen-ui'
+import { Pane, Label, Textarea as TextArea, TextInput, Spinner } from 'evergreen-ui'
 import { Component } from 'react'
 import { Button, ButtonToolbar } from 'react-bootstrap'
 import ReactDOM from 'react-dom'
 import RenderMarkdown from './renderMarkdown.js'
-import { delete_markdown, get_markdown, post_markdown, put_markdown } from './fetchMarkdown.js'
+import { clean, delete_markdown, get_markdown, post_markdown, put_markdown } from './fetchMarkdown.js'
 
 const Warning = ({ msg }) => <p className = 'Warning'>{ msg }</p> 
 
 const Input = ( { id, label, onChange, ...props } ) => <>
-	<Label htmlFor = { id } { ...props }>{ label }</Label>
-	<br/>
-	<TextInput
-		id = { id }
-		onChange = { onChange }
-	/>
+	<Label htmlFor = { id } { ...props } width = { 256 } >{ label }</Label>
+	<Pane style = {{ display : 'flex' }}>
+		<TextInput
+			id = { id }
+			onChange = { onChange }
+			width = { 512 }
+			{ ...props }
+		/>
+	</Pane>
 </>
 
 const Inputs = {
@@ -36,34 +39,37 @@ class Editor extends Component{
 					author : ''
 				}
 			},
-			internal_error : false
+			internal_error : false,
+			loaded : false,
+			exists : false
 		}
 		this.args = { collection : this.props.collection, _id : this.props._id }
 	}
 	getContent = () => get_markdown( 
 			this.args,
-			data => this.setState({ loading : false }) 
+			data => {
+				this.setState( { loading : false, content : clean( data ), exists : !!Object.keys( data ) } )
+			}
 	) 
 	deleteContent = () => delete_markdown( 
 			this.args, 
 			() => this.setState({ loading : true }) 
 	)
 	postContent = () => post_markdown( {	
-			...this.state.content,
-			collection : this.props 
-	} )
+			collection : this.props.collection,
+			...this.state.content
+	} )  
 	putContent = () => put_markdown( {
+			collection : this.props.collection,
 			content : this.state.content,
-			filter : { _id : this.props.arg }
+			filter : { _id : this.props._id }
 	} )
 	componentDidMount(){ 
 		this.getContent()
 	}
-	onChange = ( event, key ) => { 
-		var data = {}
-		data[ key ] = event.target.value
-		this.setState( data )
-		console.log("state = ", this.state) 
+	onChange = ( event, key ) => {
+		const data = event.target.value
+		this.setState( state => state.content.metadata[ key ] = data )
 	}
 	render(){ 
 		// Recall that the save button will use `post_markdown` which uses the arguement `override` determining if it should `PUT` or `POST`.
@@ -71,35 +77,35 @@ class Editor extends Component{
 		return ( <>
 		<h1>Markdown Editor</h1>
 		{  
-		!this.state.loading 
+		this.state.loading 
 		? 
 			<Pane>
-				<Warning msg = "Document does not exist" ></Warning>
+				<Spinner/>
 			</Pane>
 		: 
 			<>
 			<Pane>
 				<Pane>{
-					Inputs.map( key => <Input 
+					Object.keys( Inputs ).map( key => <Input 
 						id = { key } 
 						label = { Inputs[ key ] } 
 						onClick = { ( event ) => this.onChange( event, key ) }
+						defaultValue = { this.state.content.metadata[ key ] }
 					/> )
 				}</Pane>
-
 				<Pane>
 					<Label htmlFor = 'content'>Content</Label>
 					<TextArea
 						id = 'content'
-						onChange = { (event) => this.onChange( event, 'content' ) } 
+						onChange = { ( event ) => this.setState( state => state.content.body = event.target.value ) } 
 						placeholder = "# Example"
-						value = { this.state.content }
+						value = { this.state.content.body }
 						rows = "32"
 					/>
 					<ButtonToolbar>
 						<Button 
 							variant = "primary"
-							onClick = { this.postContent }
+							onClick = { !this.state.exists ? this.postContent : this.putContent }
 						>Save</Button>
 						<Button 
 							variant = "primary"
@@ -111,14 +117,12 @@ class Editor extends Component{
 							onClick = { this.deleteContent }
 						>Delete</Button>
 					</ButtonToolbar>
-					{ this.state.bad_filename ? <Warning>InternalError</Warning> : undefined }
 				</Pane>
-			</Pane>  
-			
+			</Pane>
 			<Pane>
-				<Label for = 'rendered' >Preview</Label>
+				<Label htmlFor = 'rendered' >Preview</Label>
 				<div className = 'Scrollable' id = 'rendered'>
-					<RenderMarkdown raw_markdown = { this.state.content }/>	 
+					<RenderMarkdown raw_markdown = { this.state.content.body }/>	 
 				</div>
 			</Pane>
 			</>

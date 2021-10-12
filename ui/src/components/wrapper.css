@@ -62,6 +62,10 @@
 	padding-top : 2%;
 	padding-bottom : 2%;
 }
+.Wrapper label
+{
+	font-size: small ;	
+}
 .Wrapper .Warning
 {
 	padding-left : 2% ;
@@ -129,6 +133,6 @@
 	margin-bottom : 5% ;
 }
 .Wrapper label {
-	font-size: var( --size );
+	font-size: var( --code-size );
 
 }

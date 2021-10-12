@@ -1,12 +1,13 @@
-import Collections from './components/collection'
-import View from './components/markdowns/view.js'
-import Edit from './components/markdowns/edit.js'
+import Collections from './components/collection.js'
+import View from './components/view.js'
+import Edit from './components/edit.js'
 
 import { BrowserRouter, Route } from "react-router-dom"
 
 
 
 function App() {
+	// NB: All elements must be rendered into the dom using a component returning a div.
 	return <BrowserRouter>
 		<Route
 			path = '/collections'
@@ -26,5 +27,4 @@ function App() {
 
 	
 }
-
 export default App;
