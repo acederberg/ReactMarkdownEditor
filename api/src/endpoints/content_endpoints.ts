@@ -61,11 +61,20 @@ const PUT : EndpointInterface = {
 	find : function ( model : any, raw : RequestInterface ){
 		const content : ContentInterface = raw[ "content" ]
 		if ( !content ){ 
-			return msg( "Model not found" )
+			return msg( "NoContent" )
 		}
 		else if ( raw[ filter ] ){
 			const max_count = get_max_count( raw )
-			return model.updateMany( raw.filter, { $set : content } )
+			// Cannot apply these updates simultaniously, since metadata is reassigned as a whole and not field ny field
+			model.updateMany( raw.filter, { 
+				$set : content,
+			} )
+			.limit( max_count )
+			return model.updateMany( raw.filter, {
+				$addToSet : { 
+					'metadata.modified' : Date(),
+				}
+			} )
 			.limit( max_count )
 		}
 		else{
