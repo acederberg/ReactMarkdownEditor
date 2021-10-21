@@ -1,6 +1,8 @@
 import './wrapper.css';
+import MyNavbar from './Navbar.js'
 
 export default function Wrapper(props) { return ( <>
-	<div className = "text-dark Wrapper" { ...props } ></div>
+	<MyNavbar/>
+	<div id = 'wrapper' className = "text-dark Wrapper" { ...props } ></div>
 	</>
 ) }
