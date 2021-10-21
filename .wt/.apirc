@@ -5,4 +5,3 @@ echo 'Launching api-development containers. If experiencing confusion, rebuild t
 docker compose up --detach && echo 'Successful launch of development containers (detached mode)! Containers:'
 docker ps
 docker exec -it api bash
-npm start

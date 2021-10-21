@@ -10,7 +10,7 @@ export function clean( data ){
 			description : data.metadata.description,
 			title : data.metadata.title
 		}
-	}
+	} 
 }
 
 function create( fetcher ){

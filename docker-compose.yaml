@@ -1,0 +1,33 @@
+version : '3.7'
+services :
+  ux:
+    build :
+      context : './ui'
+      dockerfile : 'Dockerfile.dev'
+    container_name : 'ui'
+    networks :
+      mondo : {}
+    ports :
+      - target : 8000
+        published : 8000
+        protocol : 'tcp'
+    volumes :
+      - type : 'bind'
+        source : './ui'
+        target : '/app/'
+    tty: true
+  ssl :
+    build :
+      context : './nginx'
+      dockerfile : 'Dockerfile'
+    container_name : 'ssl'
+    networks :
+      mondo : {}
+    ports :
+      - target : 443
+        published : 443
+        protocol : 'tcp'
+networks :
+  mondo :
+    attachable : True
+    driver : 'bridge'

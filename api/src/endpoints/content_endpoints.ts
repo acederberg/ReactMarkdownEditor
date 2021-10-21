@@ -66,16 +66,15 @@ const PUT : EndpointInterface = {
 		else if ( raw[ filter ] ){
 			const max_count = get_max_count( raw )
 			// Cannot apply these updates simultaniously, since metadata is reassigned as a whole and not field ny field
-			model.updateMany( raw.filter, { 
-				$set : content,
-			} )
-			.limit( max_count )
-			return model.updateMany( raw.filter, {
-				$addToSet : { 
-					'metadata.modified' : Date(),
-				}
-			} )
-			.limit( max_count )
+			return ( async () => {
+				await model.updateMany( raw.filter, { $set : content } ).limit( max_count )
+				model.updateMany( raw.filter, {
+					$push : { 
+						'metadata.modified' : Date(),
+					}
+				} ).limit( max_count )
+			} )()
+			
 		}
 		else{
 			return msg( "Endpoint undefined" )

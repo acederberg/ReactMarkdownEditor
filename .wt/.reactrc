@@ -2,4 +2,4 @@ cd ~/Examples/markdown-editor/ui
 echo 'Starting the react development container...'
 docker compose up --detach && echo 'Success!'
 docker exec -it ui bash
-npm start
+
