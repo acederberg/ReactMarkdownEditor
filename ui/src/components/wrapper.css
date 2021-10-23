@@ -2,7 +2,7 @@
 :root {
 	--size : x-large ;
 	--code-size : large ;
-	--padding : 8% ;
+	--padding : 2% ;
 }
 
 /* Media queries for size along bs breakpoints */
@@ -10,21 +10,21 @@
 	:root {
 		--size : large ;
 		--code-size : medium ;
-		--padding : 5% ;
+		--padding : 1% ;
 	}
 }
 @media ( max-width : 992px ) and ( min-width : 576px ){
 	:root {
 		--size : medium ;
 		--code-size : medium ;
-		--padding : 3% ;
+		--padding : 8px ;
 	}
 }
 @media ( max-width : 576px ){
 	:root {
 		--size : small ;
 		--code-size : small ;
-		--padding : 13px;
+		--padding : 1px;
 	}
 }
 
