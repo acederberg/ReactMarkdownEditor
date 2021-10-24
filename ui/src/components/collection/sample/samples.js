@@ -20,8 +20,6 @@ export default class sample extends Component{
 		this.getContent() 
 	}
 	render(){
-		console.log( this.props.collection )
-		console.log( this.state )
 		// console.log( this.state.data ? "Good" : "Bad" )
 		return this.state.data ?
 		<SamplesWrapper>

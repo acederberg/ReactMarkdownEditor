@@ -2,7 +2,8 @@
 import { Pane, Label, Textarea as TextArea, TextInput, Spinner } from 'evergreen-ui'
 import { Component } from 'react'
 import { Button, ButtonToolbar } from 'react-bootstrap'
-import ReactDOM from 'react-dom'
+import { withAuth0 } from '@auth0/auth0-react'
+
 import RenderMarkdown from './renderMarkdown.js'
 import { clean, delete_markdown, get_markdown, post_markdown, put_markdown } from './fetchMarkdown.js'
 
@@ -77,71 +78,72 @@ class Editor extends Component{
 	} )
 	render(){ 
 		// Recall that the save button will use `post_markdown` which uses the arguement `override` determining if it should `PUT` or `POST`.
-		// console.log( this.state )
-		console.log( this.state )
-		return ( <>
-		<h1>Markdown Editor</h1>
-		{  
-		this.state.loading 
-		? 
-			<Pane>
-				<Spinner/>
-			</Pane>
-		: 
-			<>
-			<Pane>
-				<Pane>{
-					Object.keys( Inputs ).map( key => <Input 
-						id = { key } 
-						label = { Inputs[ key ] } 
-						onChange = { ( event ) => this.onChange( event, key ) }
-						defaultValue = { this.state.content.metadata[ key ] }
-					/> )
-				}</Pane>
+		return this.props.auth0.isAuthenticated ? ( <>
+			<h1>Markdown Editor</h1>
+			{  
+			this.state.loading 
+			? 
 				<Pane>
-					<Label htmlFor = 'content'>Content</Label>
-					<TextArea
-						id = 'content'
-						onChange = { ( event ) => this.setState( 
-							function( last_state, props ){
-								last_state.content.body = event.target.value
-								console.log( last_state )
-								return last_state
-							} 
-						) } 
-						placeholder = "# Example"
-						value = { this.state.content.body }
-						rows = "32"
-					/>
-					<ButtonToolbar>
-						<Button 
-							variant = "primary"
-							onClick = { !this.state.exists ? this.postContent : this.putContent }
-						>Save</Button>
-						<Button 
-							variant = "primary"
-							onClick = { this.getContent }
-						>Revert</Button>
-						<Button
-							style = {{float : 'left'}}
-							variant = "danger"
-							onClick = { this.deleteContent }
-							hrefd = '/collections/'
-						>Delete</Button>
-					</ButtonToolbar>
+					<Spinner/>
 				</Pane>
-			</Pane>
-			<Pane>
-				<Label htmlFor = 'rendered' >Preview</Label>
-				<div className = 'Scrollable' id = 'rendered'>
-					<RenderMarkdown raw_markdown = { this.state.content.body }/>	 
-				</div>
-			</Pane>
+			: 
+				<>
+				<Pane>
+					<Pane>{
+						Object.keys( Inputs ).map( key => <Input 
+							id = { key } 
+							label = { Inputs[ key ] } 
+							onChange = { ( event ) => this.onChange( event, key ) }
+							defaultValue = { this.state.content.metadata[ key ] }
+						/> )
+					}</Pane>
+					<Pane>
+						<Label htmlFor = 'content'>Content</Label>
+						<TextArea
+							id = 'content'
+							onChange = { ( event ) => this.setState( 
+								function( last_state, props ){
+									last_state.content.body = event.target.value
+									console.log( last_state )
+									return last_state
+								} 
+							) } 
+							placeholder = "# Example"
+							value = { this.state.content.body }
+							rows = "32"
+						/>
+						<ButtonToolbar>
+							<Button 
+								variant = "primary"
+								onClick = { !this.state.exists ? this.postContent : this.putContent }
+							>Save</Button>
+							<Button 
+								variant = "primary"
+								onClick = { this.getContent }
+							>Revert</Button>
+							<Button
+								style = {{float : 'left'}}
+								variant = "danger"
+								onClick = { this.deleteContent }
+								hrefd = '/collections/'
+							>Delete</Button>
+						</ButtonToolbar>
+					</Pane>
+				</Pane>
+				<Pane>
+					<Label htmlFor = 'rendered' >Preview</Label>
+					<div className = 'Scrollable' id = 'rendered'>
+						<RenderMarkdown raw_markdown = { this.state.content.body }/>	 
+					</div>
+				</Pane>
+				</>
+			}
 			</>
-		}
-		</>
-		) }
+			) : <> 
+				<div className = "Warning">You must be signed in to edit this.  </div>
+				<Button onClick = { this.props.auth0.loginWithRedirect }>Log in</Button>
+			</>
 	}
-export default function EditMarkdown( into, collection, _id ){
-	ReactDOM.render( <Editor collection = { collection } _id = { _id }/> , into )
 }
+
+export default withAuth0( Editor )

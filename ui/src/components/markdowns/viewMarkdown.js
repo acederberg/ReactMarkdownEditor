@@ -7,7 +7,6 @@ import { get_markdown } from './fetchMarkdown.js'
 export default async function ViewMarkdown( collection, _id, into ){
 	// Make markdown with highlighyinh as `data`
 	const data = await get_markdown( { collection : collection, _id : _id } )
-	console.log( data )
 	let markdown = <RenderMarkdown raw_markdown = { data.body }/>
 	ReactDom.render( markdown, into )
 
