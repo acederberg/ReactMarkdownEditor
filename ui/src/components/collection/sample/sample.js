@@ -4,7 +4,7 @@ import { useState, useContext } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 
 import { ViewerContext } from "../../viewerContext.js"
-import { history } from "../../../AuthProviderWithHistory.js"
+import { history } from "../../auth/AuthProviderWithHistory.js"
 
 const defaults = {
 	description : "Could not GET artical. Internal failure or failure within the backend.",

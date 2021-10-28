@@ -1,12 +1,7 @@
-import Collections from './components/collection.js'
-import View from './components/view.js'
-import Edit from './components/edit.js'
-import Navbar from './components/navbar.js'
+import { ProtectedRoute, AuthProviderWithHistory, ViewerContextProvider, Collections, View, Edit, Navbar, ViewerContext } from './components'
 
 import { Route } from "react-router-dom"
-import AuthProviderWithHistory from "./AuthProviderWithHistory.js"
-import { ViewerContextProvider } from "./components/viewerContext.js"
-import ProtectedRoute from "./protectedRoute.js"
+
 
 function App() {
 	return <AuthProviderWithHistory>
