@@ -12,7 +12,7 @@ export function createDefaultViewerContextValue(){
 		localStorage.setItem( _Id, _id )
 		localStorage.setItem( Collection, collection )
 	}
-	set({ _id : null, collection : null })
+//et({ _id : null, collection : null })
 	return { get : get, set : set }
 }
 

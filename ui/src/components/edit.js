@@ -3,10 +3,12 @@ import Editor from './markdowns/editMarkdown.js'
 import ReactDOM from 'react-dom'
 import { createBrowserHistory } from 'history'
 
+import { ViewerContext } from './viewerContext.js'
+import { useContext } from 'react'
 export const history = createBrowserHistory()
 
 // Uses the pattern as the markdown render, e.g. render in to wrapper or elsewhere using the function in the next directory up.
-export function EditMarkdown( into, collection, _id ){
+export function EditMarkdown( into, { collection, _id }){
 	//`${ window.location.origin }/edit/${ collection }/${ _id }`
         ReactDOM.render( 
 		<Auth0Provider
@@ -21,9 +23,14 @@ export function EditMarkdown( into, collection, _id ){
 	)
 }
 
+
 const Edit = ({match:{params:{ collection, _id }}}) => {
+
+	const value = useContext( ViewerContext )
+	console.log( value.get() )
+
 	let wrapper = document.getElementById( 'wrapper' )
-	EditMarkdown( wrapper, collection, _id )
+	EditMarkdown( wrapper, value.get() )
 	return <div></div>
 }
 

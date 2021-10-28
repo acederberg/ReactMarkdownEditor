@@ -4,6 +4,7 @@ import SamplesWrapper from "./sample/samplesWrapper.js"
 
 import { Pane, Spinner } from "evergreen-ui"
 import { Component } from "react"
+import Navbar from "../navbar.js"
 
 export default class Collection extends Component
 {
@@ -17,8 +18,7 @@ export default class Collection extends Component
 		this.getContent()
 	}
 	render(){
-		console.log( this.state )
-		return <Pane padding = {1} margin = {1}>
+		return <><Pane padding = {1} margin = {1}>
 			{
 				this.state.data
 				? 
@@ -28,6 +28,6 @@ export default class Collection extends Component
 					<Spinner size = { 64 } padding = {16} margin = {32}/>
 				</SamplesWrapper>
 			}
-		</Pane>
+		</Pane></>
 	}
 }

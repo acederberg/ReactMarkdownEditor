@@ -24,8 +24,9 @@ function App() {
 			</Route>
 			<ProtectedRoute
 				// Just uses localStorage.
+				// Must be constant for whitelogging.
 				// The logic of what happens when a sample is clicked will change for users vs admin users.
-				path = '/edit/'
+				path = '/edit'
 				component = { Edit }
 			>
 			</ProtectedRoute>

@@ -78,7 +78,7 @@ class Editor extends Component{
 	} )
 	render(){ 
 		// Recall that the save button will use `post_markdown` which uses the arguement `override` determining if it should `PUT` or `POST`.
-		return this.props.auth0.isAuthenticated ? ( <>
+		return <>
 			<h1>Markdown Editor</h1>
 			{  
 			this.state.loading 
@@ -138,12 +138,8 @@ class Editor extends Component{
 				</Pane>
 				</>
 			}
-			</>
-			) : <> 
-				<div className = "Warning">You must be signed in to edit this.  </div>
-				<Button onClick = { this.props.auth0.loginWithRedirect }>Log in</Button>
-			</>
+		</>
 	}
 }
 
-export default withAuth0( Editor )
+export default Editor
