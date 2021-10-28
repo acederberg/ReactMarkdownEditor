@@ -20,7 +20,7 @@ export const ViewerContext = createContext( createDefaultViewerContextValue() )
 
 export function ViewerContextProvider({ children }){
 	
-	return <ViewerContext.Provider>
+	return <ViewerContext.Provider value = { createDefaultViewerContextValue() }>
 		{ children }
 	</ViewerContext.Provider>
 

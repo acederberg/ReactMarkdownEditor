@@ -1,6 +1,7 @@
 import Collections from './components/collection.js'
 import View from './components/view.js'
 import Edit from './components/edit.js'
+import Navbar from './components/navbar.js'
 
 import { Route } from "react-router-dom"
 import AuthProviderWithHistory from "./AuthProviderWithHistory.js"
@@ -15,11 +16,15 @@ function App() {
 				component = { Collections }
 			/>
 			<Route
-				path = '/view/'
+				// Need uri parameters for easy sharing.
+				// Since collection and id are in localStorage.
+				path = '/view/:collection/:_id'
 				component = { View }
 			>
 			</Route>
 			<ProtectedRoute
+				// Just uses localStorage.
+				// The logic of what happens when a sample is clicked will change for users vs admin users.
 				path = '/edit/'
 				component = { Edit }
 			>

@@ -1,8 +1,10 @@
 import { Paragraph, Pane, Heading } from "evergreen-ui"
-import { useHistory } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import { useState, useContext } from 'react'
+import { useAuth0 } from '@auth0/auth0-react'
 
 import { ViewerContext } from "../../viewerContext.js"
+import { history } from "../../../AuthProviderWithHistory.js"
 
 const defaults = {
 	description : "Could not GET artical. Internal failure or failure within the backend.",
@@ -12,9 +14,15 @@ const defaults = {
 const Sample = ({ _id, author, collection, description, title }) => {
 
 	const value = useContext( ViewerContext )
-	const history = useHistory()
-	console.log( history )
-	return <Pane 
+	const { isAuthenticated } = useAuth0()
+	const [ state, setState ] = useState({ selected : false }) 
+
+	const onClick = () => {
+		value.set( { _id : _id, collection : collection } ) 
+		setState({ selected : true })
+	}
+	return <a href = { isAuthenticated ?  '/edit' : `/view/${collection}/${_id}` }>
+	<Pane 
 		key = { _id } 
 		background = "gray100" 
 		padding = {16} 
@@ -22,12 +30,7 @@ const Sample = ({ _id, author, collection, description, title }) => {
 		width = {240} 
 		height = {240} 
 		style = {{ display : 'inline-block' }} 
-		onClick = {
-			() => value.set( {
-				_id : _id, 
-				collection : collection 
-			} )/* || history.push*/
-		}
+		onClick = { onClick }
 	>
 		<Heading size = { 600 }>
 			{ 
@@ -40,6 +43,7 @@ const Sample = ({ _id, author, collection, description, title }) => {
 			}
 		</Paragraph>
 	</Pane>
+	</a>
 }
 export default Sample
 

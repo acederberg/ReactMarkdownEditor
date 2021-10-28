@@ -6,7 +6,7 @@ import ViewMarkdown from './markdowns/viewMarkdown.js'
 const View = ({match:{params:{collection, _id}}}) => {
 
         const wrapper = document.getElementById( 'wrapper' )
-
+	console.log( collection, _id )
         ViewMarkdown( collection, _id, wrapper )
         return <div></div>
 

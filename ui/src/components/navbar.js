@@ -12,10 +12,14 @@ const Navbar_ = () => {
 					<Nav.Link href = '/collections'>Articals</Nav.Link>
 				</Nav>
 			</Navbar.Collapse>
+			<Nav.Item>
+				<Login/>
+			</Nav.Item>
 			<Nav>
 				<Navbar.Toggle aria-controls = 'etc' style = {{ marginLeft : '5px' }}/>
 			</Nav>
 		</Container>
 	</Navbar>
 }
+
 export default Navbar_;
