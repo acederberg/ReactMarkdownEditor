@@ -5,7 +5,6 @@ import Navbar from './navbar.js'
 import { ViewerContextProvider } from "./viewerContext.js"
 import AuthProviderWithHistory from "./auth/AuthProviderWithHistory.js"
 import ProtectedRoute from "./auth/protectedRoute.js"
-
 export { 
 	Collections, 
 	View, 

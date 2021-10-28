@@ -3,17 +3,20 @@ import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 
 import './index.css';
-//import App from './App';
-import renderMarkdownIntoWrapper, { createMarkdownClosure }from './components/markdowns/renderMarkdown.js'
+import App from './App';
 import Wrapper from './components/wrapper.js'
 
 async function main(){
+        const root = await document.getElementById( 'root' )
         await ReactDOM.render(
-		<Wrapper id = "wrapper"/>,
-                document.getElementById( 'root' )
+		<>
+			<Wrapper id = "wrapper"/>
+			<div id = "appWrapper"/>
+		</>,
+		root
         )
-	renderMarkdownIntoWrapper( createMarkdownClosure( '# Testing' ) )
-        //ReactDOM.render( <App/>,  wrapper )
+	const appWrapper = await document.getElementById( "appWrapper" )
+        ReactDOM.render( <App/>, appWrapper )
 }
 
 // If you want to start measuring performance in your app, pass a function

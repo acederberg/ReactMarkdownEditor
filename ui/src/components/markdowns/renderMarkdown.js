@@ -1,28 +1,32 @@
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 
 
 export const createMarkdownClosure = ( initialMarkdown ) => {
-	var callback = ( markdown ) => markdown
+	var effect = ( markdown ) => markdown
 	var markdown = initialMarkdown
 	return {
-		get : () => markdown && callback( markdown ),
-		set : ( newMarkdown ) => markdown = newMarkdown,
-		setSetCallback : ( newCallback ) => callback = newCallback 
+		get : () => markdown,
+		set : ( newMarkdown, callback ) => {
+			markdown = newMarkdown
+			!!callback && callback( markdown )
+			effect( markdown )
+		},
+		setEffect : ( newEffect ) => effect = newEffect
 	}
 }
 
 const Markdown = ({ markdownClosure }) => {
 	// Use state instead
 	// Markdown may only be rendered into wrapper. Nothing else should be.
-	const [ markdown, setMarkdown ] = useState( markdownClosure.get() )
-	markdownClosure.setSetCallback( setMarkdown )
-
+	const [ state, setState ] = useState({})
+	markdownClosure.setEffect( markdown => setState() )
+	console.log( 'Markdown' )
 	return <ReactMarkdown
-		children = { markdown }
+		children = { markdownClosure.get() }
 		components = {{
 			code({node, inline, className, children, ...props}) {
 				const match = /language-(\w+)/.exec(className || '')
@@ -44,12 +48,18 @@ const Markdown = ({ markdownClosure }) => {
 	></ReactMarkdown>
 }
 
-export default function renderMarkdownIntoWrapper( markdownClosure ){
+export default function RenderMarkdownIntoWrapper({ markdownClosure }){
 
-	const wrapper = document.getElementById( 'wrapper' )
-	ReactDOM.render(
-		<Markdown markdownClosure = { markdownClosure }/>,
-		wrapper
-	)
+	console.log( 'RenderMarkdownIntoWrapper' )
+	console.log( markdownClosure.get() )
+	useEffect( () => {
+		const wrapper = document.getElementById( 'wrapper' )
+		ReactDOM.render(
+			<Markdown markdownClosure = { markdownClosure }/>,
+			wrapper
+		)
+	}, [] )
+	
+	return <div></div>
 
 }
