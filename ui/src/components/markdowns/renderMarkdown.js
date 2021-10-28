@@ -19,13 +19,15 @@ export const createMarkdownClosure = ( initialMarkdown ) => {
 	}
 }
 
-const Markdown = ({ markdownClosure }) => {
+const Markdown = ({ children, markdownClosure }) => {
 	// Use state instead
 	// Markdown may only be rendered into wrapper. Nothing else should be.
 	const [ state, setState ] = useState({})
 	markdownClosure.setEffect( markdown => setState() )
 	console.log( 'Markdown' )
-	return <ReactMarkdown
+	return <>
+	{ children }
+	<ReactMarkdown
 		children = { markdownClosure.get() }
 		components = {{
 			code({node, inline, className, children, ...props}) {
@@ -46,16 +48,17 @@ const Markdown = ({ markdownClosure }) => {
 			}
 		}}
 	></ReactMarkdown>
+	</>
 }
 
-export default function RenderMarkdownIntoWrapper({ markdownClosure }){
+export default function RenderMarkdownIntoWrapper({ children, markdownClosure }){
 
 	console.log( 'RenderMarkdownIntoWrapper' )
 	console.log( markdownClosure.get() )
 	useEffect( () => {
 		const wrapper = document.getElementById( 'wrapper' )
 		ReactDOM.render(
-			<Markdown markdownClosure = { markdownClosure }/>,
+			<Markdown children = { children } markdownClosure = { markdownClosure }/>,
 			wrapper
 		)
 	}, [] )

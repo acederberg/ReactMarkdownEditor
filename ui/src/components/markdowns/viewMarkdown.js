@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 
 const closure = createMarkdownClosure( '' ) 
 
-export default function ViewMarkdown({ collection, _id }){
+export default function ViewMarkdown({ children, collection, _id }){
 	// Need state since componentwillmount is non-trivial
 	const [ markdown, setMarkdown ] = useState( '' )
 	const get_md = async () => {
@@ -16,5 +16,5 @@ export default function ViewMarkdown({ collection, _id }){
 	}
 	useEffect( () => get_md(), [] )
 	console.log( 'ViewMarkdown' )
-	return <RenderMarkdownIntoWrapper markdownClosure = { closure }/>
+	return <RenderMarkdownIntoWrapper markdownClosure = { closure } children = { children }/>
 }
