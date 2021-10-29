@@ -1,27 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
-//import { Auth0Provider } from '@auth0/auth0-react'
 
 import './index.css';
 import App from './App';
 import Wrapper from './components/wrapper.js'
 
-/*<Auth0Provider
-                domain = { process.env.REACT_APP_AUTH0_DOMAIN }
-                clientId = { process.env.REACT_APP_AUTH0_CLIENT_ID }
-                redirectUri = { process.env.REACT_APP_AUTH0_REDIRECT_URI }
-        >
-</Auth0Provider>*/
-
 async function main(){
+        const root = await document.getElementById( 'root' )
         await ReactDOM.render(
-	<Wrapper id = "wrapper"/>
-	,
-                document.getElementById( 'root' )
+		<>
+			<Wrapper id = "wrapper"/>
+			<div id = "appWrapper"/>
+		</>,
+		root
         )
-        const wrapper = document.getElementById( 'wrapper' )
-        ReactDOM.render( <App/>,  wrapper )
+	const appWrapper = await document.getElementById( "appWrapper" )
+        ReactDOM.render( <App/>, appWrapper )
 }
 
 // If you want to start measuring performance in your app, pass a function

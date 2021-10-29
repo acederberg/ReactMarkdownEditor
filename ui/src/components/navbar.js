@@ -1,7 +1,7 @@
 import { Container, Navbar, Nav } from 'react-bootstrap'
 import Login from './auth/login'
 
-const Navbar_ = () => {
+export default function Navbar_( { withLogin } ){
 	return <Navbar bg = 'light' expand = 'md' >
 		<Container>
 			<Navbar.Brand>HolyPortfolio.com</Navbar.Brand>
@@ -12,6 +12,7 @@ const Navbar_ = () => {
 					<Nav.Link href = '/collections'>Articals</Nav.Link>
 				</Nav>
 			</Navbar.Collapse>
+			{ withLogin && <Login/> }
 			<Nav>
 				<Navbar.Toggle aria-controls = 'etc' style = {{ marginLeft : '5px' }}/>
 			</Nav>
@@ -19,4 +20,3 @@ const Navbar_ = () => {
 	</Navbar>
 }
 
-export default Navbar_;
