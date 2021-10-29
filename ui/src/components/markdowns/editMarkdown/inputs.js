@@ -1,6 +1,7 @@
 import { Pane, Label, Textarea as TextArea } from 'evergreen-ui'
 import { useState } from 'react'
 import Tags from './tags.js'
+import IsActive from './isActive.js'
 import { TextInputs, TextInput } from './textInput.js'
 
 // Metadata.
@@ -32,6 +33,7 @@ export default function Inputs({ editorClosure })
 				defaultValue = { state.metadata[ key ] }
 			/> )
 		}
+		<IsActive editorClosure = { editorClosure }/>
 		<Tags editorClosure = { editorClosure }/>
 		<Pane>
 			<Label 

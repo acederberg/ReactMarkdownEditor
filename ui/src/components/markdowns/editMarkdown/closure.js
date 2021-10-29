@@ -1,10 +1,11 @@
 const body = "body"
-const fields = [ body, "description", "modified", "title", "tags", "repo" ]
+const fields = [ "active", body, "description", "modified", "title", "tags", "repo" ]
 
 export default function createEditorClosure( rawData ){
 	var data = rawData ? rawData : {
 		body : '',
 		metadata : {
+			active : null,
 			description : '',
 			title : '',
 			tags : [],
