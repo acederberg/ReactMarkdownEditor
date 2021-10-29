@@ -1,10 +1,11 @@
-import { ProtectedRoute, AuthProviderWithHistory, ViewerContextProvider, Collections, View, Edit, Navbar, ViewerContext } from './components'
+import { /*ProtectedRoute, AuthProviderWithHistory, ViewerContextProvider, Collections, View,*/ Edit/*, Navbar, ViewerContext */} from './components'
 
 import { Route } from "react-router-dom"
 
 
 function App() {
-	return <AuthProviderWithHistory>
+	return <Edit/>
+	/*<AuthProviderWithHistory>
 		<ViewerContextProvider>
 			<Route
 				path = '/collections'
@@ -26,6 +27,6 @@ function App() {
 			>
 			</ProtectedRoute>
 		</ViewerContextProvider>
-	</AuthProviderWithHistory>
+	</AuthProviderWithHistory>*/
 }
 export default App;
