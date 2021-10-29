@@ -1,5 +1,6 @@
 import { Pane, Label, Textarea as TextArea } from 'evergreen-ui'
 import { useState } from 'react'
+import Tags from './tags.js'
 import { TextInputs, TextInput } from './textInput.js'
 
 // Metadata.
@@ -31,6 +32,7 @@ export default function Inputs({ editorClosure })
 				defaultValue = { state.metadata[ key ] }
 			/> )
 		}
+		<Tags editorClosure = { editorClosure }/>
 		<Pane>
 			<Label 
 				htmlFor = 'content'
