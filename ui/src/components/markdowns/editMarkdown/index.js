@@ -1,5 +1,5 @@
 import Inputs from './inputs.js'
-//import Buttons frin './buttons.js'
+import Buttons from './buttons.js'
 import createEditorClosure from './closure.js'
 import { get_markdown } from '../fetchMarkdown.js'
 
@@ -22,10 +22,10 @@ const fetchClosure = ({ id, collection }) => {
 export default function EditMarkdown({ id, collection }){
 
 	const editorClosure = fetchClosure({ id : id, collection : collection })
-//		<Buttons editorClosure = { editorClosure }/>
 //		<View editorClosure = { editorClosure }/>
 	return <>
 		<Inputs editorClosure = { editorClosure }/>
+		<Buttons editorClosure = { editorClosure }/>
 	</>
 
 
