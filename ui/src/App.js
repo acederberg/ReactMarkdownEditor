@@ -1,11 +1,8 @@
-import { /*ProtectedRoute, AuthProviderWithHistory, ViewerContextProvider, Collections, View,*/ Edit/*, Navbar, ViewerContext */} from './components'
-
+import { AuthProviderWithHistory, Collections, Edit, View, Navbar, ProtectedRoute, ViewerContext, ViewerContextProvider } from './components'
 import { Route } from "react-router-dom"
 
-
 function App() {
-	return <Edit/>
-	/*<AuthProviderWithHistory>
+	return <AuthProviderWithHistory>
 		<ViewerContextProvider>
 			<Route
 				path = '/collections'
@@ -18,15 +15,15 @@ function App() {
 				component = { View }
 			>
 			</Route>
-			<ProtectedRoute
+			<Route
 				// Just uses localStorage.
 				// Must be constant for whitelogging.
 				// The logic of what happens when a sample is clicked will change for users vs admin users.
 				path = '/edit'
 				component = { Edit }
 			>
-			</ProtectedRoute>
+			</Route>
 		</ViewerContextProvider>
-	</AuthProviderWithHistory>*/
+	</AuthProviderWithHistory>
 }
 export default App;

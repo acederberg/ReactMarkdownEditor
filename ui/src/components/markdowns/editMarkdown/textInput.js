@@ -8,7 +8,7 @@ export const TextInputs = {
 }
 
 //
-export const TextInput = ( { id, label, onChange } ) => <Pane 
+export const TextInput = ( { id, label, onChange, ...etc } ) => <Pane 
 	key = { id }
 >
 	<Label 
@@ -23,6 +23,7 @@ export const TextInput = ( { id, label, onChange } ) => <Pane
 			id = { id }
 			onChange = { onChange }
 			width = { 512 }
+			{ ...etc }
 		/>
 	</Pane>
 </Pane>

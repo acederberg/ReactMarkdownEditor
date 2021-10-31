@@ -1,5 +1,5 @@
-cd ~/Examples/markdown-editor/ui
-echo 'Starting the react development container...'
+cd ~/Examples/markdown-editor
+echo 'Starting the react development container and nginx reverse proxy...'
 docker compose up --detach && echo 'Success!'
 docker exec -it ui bash
 

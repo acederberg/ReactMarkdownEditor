@@ -24,9 +24,11 @@ export default function Inputs({ editorClosure })
 		console.log( key, event.target.value )
 		editorClosure.set( key, event.target.value )
 	}
+	console.log( editorClosure.get() )
+	console.log( state.metadata )
 	return <>
 		{
-			Object.keys( TextInputs ).map( key => <TextInput
+			Object.keys( TextInputs ).map( key => console.log( state.metadata [ key ] ) || <TextInput
 				id = { key }
 				label = { TextInputs[ key ] }
 				onChange = { ( event ) => onChange( event, key ) }
