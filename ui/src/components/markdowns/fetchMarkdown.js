@@ -16,6 +16,7 @@ export function clean( data ){
 function create( fetcher ){
 	// Make a function that takes in the same parameters as the fetcher used.
 	const wrapper = async ( args, callback ) => {
+		console.log( args )
 		const data = await fetcher( args ).then( request => request.json() ).catch( err => console.log( err ) )
 		return callback ? callback( data ) : data
 	}

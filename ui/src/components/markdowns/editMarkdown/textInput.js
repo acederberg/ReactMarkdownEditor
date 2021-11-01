@@ -4,7 +4,7 @@ import { TextInput as Input, Pane, Label } from 'evergreen-ui'
 export const TextInputs = {
         title : "Title",
         description : "Description",
-        repo : "Repository"
+//        repo : "Repository"
 }
 
 //

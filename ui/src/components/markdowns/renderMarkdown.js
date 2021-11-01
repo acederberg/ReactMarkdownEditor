@@ -26,28 +26,28 @@ const Markdown = ({ children, markdownClosure }) => {
 	markdownClosure.setEffect( markdown => setState() )
 	console.log( 'Markdown' )
 	return <>
-	{ children }
-	<ReactMarkdown
-		children = { markdownClosure.get() }
-		components = {{
-			code({node, inline, className, children, ...props}) {
-				const match = /language-(\w+)/.exec(className || '')
-				return !inline && match ? (
-					<SyntaxHighlighter
-						children={String(children).replace(/\n$/, '')}
-						style={ solarizedlight}
-						language={match[1]}
-						PreTag="div"
-						{...props}
-					/>
-					) : (
-					<code className={className} {...props}>
-						{children}
-					</code>
-				)
-			}
-		}}
-	></ReactMarkdown>
+		{ children }
+		<ReactMarkdown
+			children = { markdownClosure.get() }
+			components = {{
+				code({node, inline, className, children, ...props}) {
+					const match = /language-(\w+)/.exec(className || '')
+					return !inline && match ? (
+						<SyntaxHighlighter
+							children={String(children).replace(/\n$/, '')}
+							style={ solarizedlight}
+							language={match[1]}
+							PreTag="div"
+							{...props}
+						/>
+						) : (
+						<code className={className} {...props}>
+							{children}
+						</code>
+					)
+				}
+			}}
+		></ReactMarkdown>
 	</>
 }
 
