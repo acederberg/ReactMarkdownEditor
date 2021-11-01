@@ -2,9 +2,10 @@ import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { useState, useEffect } from 'react'
+import createEditorClosure from './editMarkdown/closure.js'
 import ReactDOM from 'react-dom'
 
-
+/*
 export const createMarkdownClosure = ( initialMarkdown ) => {
 	var effect = ( markdown ) => markdown
 	var markdown = initialMarkdown
@@ -18,17 +19,22 @@ export const createMarkdownClosure = ( initialMarkdown ) => {
 		setEffect : ( newEffect ) => effect = newEffect
 	}
 }
+*/
 
-const Markdown = ({ children, markdownClosure }) => {
+const Markdown = ({ children, editorClosure }) => {
 	// Use state instead
 	// Markdown may only be rendered into wrapper. Nothing else should be.
 	const [ state, setState ] = useState({})
-	markdownClosure.setEffect( markdown => setState() )
+	editorClosure.setEffect( markdown => setState(
+			editorClosure.getKey( 'body' ) 
+	) || console.log( 'setting state' ) )
 	console.log( 'Markdown' )
-	return <>
+	console.log( editorClosure )
+	return editorClosure ? <>
 		{ children }
 		<ReactMarkdown
-			children = { markdownClosure.get() }
+			children = { state
+			}
 			components = {{
 				code({node, inline, className, children, ...props}) {
 					const match = /language-(\w+)/.exec(className || '')
@@ -48,17 +54,17 @@ const Markdown = ({ children, markdownClosure }) => {
 				}
 			}}
 		></ReactMarkdown>
-	</>
+	</> : <div/>
 }
 
-export default function RenderMarkdownIntoWrapper({ children, markdownClosure }){
+export default function RenderMarkdownIntoWrapper({ children, editorClosure }){
 
 	console.log( 'RenderMarkdownIntoWrapper' )
-	console.log( markdownClosure.get() )
+	console.log( editorClosure )
 	useEffect( () => {
 		const wrapper = document.getElementById( 'wrapper' )
 		ReactDOM.render(
-			<Markdown children = { children } markdownClosure = { markdownClosure }/>,
+			<Markdown children = { children } editorClosure = { editorClosure }/>,
 			wrapper
 		)
 	}, [] )

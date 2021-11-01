@@ -1,7 +1,7 @@
 import Inputs from './inputs.js'
 import Buttons from './buttons.js'
-import RenderMarkdownIntoWrapper, { createMarkdownClosure } from '../renderMarkdown.js'
 import { fetchClosure } from './closure.js'
+import  RenderMarkdownIntoWrapper from '../renderMarkdown.js'
 
 import { Spinner } from 'evergreen-ui'
 import { useEffect, useState } from 'react'
@@ -25,8 +25,8 @@ export default function EditMarkdown({ _id, collection }){
 			_id = { _id }
 			collection = { collection }
 		/>
+		<RenderMarkdownIntoWrapper editorClosure = { editorClosure }/>
 	</> : <Spinner/>
-		//enderMarkdownIntoWrapper markdownClosure = { createMarkdownClosure( getEditorClosure().body ) }/>
 
 
 

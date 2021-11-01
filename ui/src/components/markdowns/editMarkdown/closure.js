@@ -14,17 +14,25 @@ export default function createEditorClosure( rawData ){
 			//repo : ''
 		}
 	}
+	var effect = ( markdown ) => markdown
 
 	const set = ( key, value ) => {
 		if ( !fields.includes( key ) ) return
-		else if ( key === body ) data[ body ] = value
+		else if ( key === body ){
+			data[ body ] = value
+			effect( data[ body ] )
+		}
 		else data[ 'metadata' ][ key ] = value
 	}
-
+	const setAll = newData => data = newData
 	const get = () => data
 	const getKey = ( key ) => ( key === 'body' ) ? data[ key ] : data.metadata[ key ] 
+	const setEffect = ( newEffect ) => {
+		effect = newEffect
+		console.log( newEffect )
+	}
 
-	return { set : set, get : get, getKey : getKey  }
+	return { set : set, get : get, getKey : getKey, setEffect : setEffect, effect : effect }
 }
 
 export const fetchClosure = ({ _id, collection }, callback ) => {
