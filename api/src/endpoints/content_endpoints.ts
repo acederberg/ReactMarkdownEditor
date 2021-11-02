@@ -1,6 +1,7 @@
 import { EndpointsInterface, EndpointInterface, RequestInterface } from './types'
 import { ContentInterface } from './model/types'
 import { metadata_keys } from './model/types'
+import { jwtCheck } from "../server"
 
 const DEFAULT_MAX_COUNT = 5
 
@@ -31,6 +32,7 @@ const POST : EndpointInterface = {
 	//keys : metadata_keys,
 	keys : [ "body", "collection", "metadata" ],
 	metadata_keys : [ "title", "description", "author" ],
+	middleware : jwtCheck,
 	find : function ( model : any , raw : RequestInterface ){
 		// Ensure that the data has the correct shape.
 		const now = new Date() 
@@ -46,6 +48,7 @@ const POST : EndpointInterface = {
 }
 const DELETE : EndpointInterface = {
 	keys : [ "collection", ids ],
+	middleware : jwtCheck,
 	find : async function ( model : any , raw : RequestInterface ){
 		console.log( 'DELETEing' )
 		const out = raw[ ids ].map( an_id => model.findOneAndDelete({ _id : an_id }).exec() )
@@ -57,6 +60,7 @@ const DELETE : EndpointInterface = {
 const PUT : EndpointInterface = {
 	// only supports overriding content.
 	keys : [ "filter", "content" ],
+	middleware : jwtCheck,
 	optional_keys : [ "max_count" ],
 	find : function ( model : any, raw : RequestInterface ){
 		const content : ContentInterface = raw[ "content" ]

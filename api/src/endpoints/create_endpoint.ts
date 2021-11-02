@@ -20,7 +20,7 @@ const default_clean = ( data ) => data
 
 export const create_endpoint_default_args = { requires_collection : true, can_be_empty : false }
 
-export function create_endpoint( endpoint : EndpointInterface, args) : Function {
+export function create_endpoint( endpoint : EndpointInterface, args) : Object {
 
 	// Locals
 	const { requires_collection, can_be_empty } = args
@@ -74,6 +74,8 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Function 
 		}
 	}
 
-	return wrapper
-       
+	return {
+		method : wrapper,
+		middleware : endpoint.middleware
+	}
 }
