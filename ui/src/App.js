@@ -1,7 +1,7 @@
 import { AuthProviderWithHistory, Collections, Edit, View, ProtectedRoute, ViewerContextProvider } from './components'
 import { Route } from "react-router-dom"
 
-function App() {
+export default function App() {
 	return <AuthProviderWithHistory>
 		<ViewerContextProvider>
 			<Route
@@ -24,4 +24,13 @@ function App() {
 		</ViewerContextProvider>
 	</AuthProviderWithHistory>
 }
-export default App;
+/*		<Route 
+			path = '/projects'
+			component = { () => <><h1>Projects</h1><p>Currently adding projects. Website is under development.</p></> }
+		/>
+		<Route 
+			path = '/home'
+			component = { () => <><h1>Home</h1><p>This is a placeholder</p></> }
+		/>
+*/
+

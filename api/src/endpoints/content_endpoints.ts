@@ -9,7 +9,7 @@ const ids = '_ids'
 const collection = 'collection'
 const filter = 'filter'
 const max_count = 'max_count'
-const msg = a_msg => { return { msg : a_msg } }
+const msg = ( a_msg ) => { return { msg : a_msg } }
 
 const get_max_count = ( raw ) => {
 	        const max_count = raw[ 'max_count' ]
