@@ -1,6 +1,6 @@
 // Only a GET route for now.
 import { EndpointInterface, EndpointsInterface } from './types'
-import models from './model'
+import { models } from './model'
 
 export const GET : EndpointInterface = {
 	keys : [ 'catagory', 'filter' ],
@@ -10,9 +10,12 @@ export const GET : EndpointInterface = {
 	}
 }
 
-export default latest : EndpointsInterface = {
+const latest : EndpointsInterface = {
 	route : '/latest/',
 	methods : {
 		get : GET
 	}
 }
+
+export default latest
+

@@ -1,4 +1,4 @@
-import { ContentInterface } from "./models/types"
+import { ContentInterface } from "./model/types"
 
 // Needs to be like content interface so that users don't have to put a contentinterface in the 'content' field but instead on the root level of the json
 export const request_keys = [ '_id', 'collection', 'filter', 'max_count', 'random' ]
@@ -19,7 +19,7 @@ export interface EndpointInterface {
 	keys : Array<String>,
 	optional_keys ?: Array<String>,
 	metadata_keys ?: Array<String>,
-	middleware ?: Any,
+	middleware ?: Function,
 	find : Function,
 	clean ?: Function
 }

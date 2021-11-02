@@ -7,10 +7,10 @@ export const jwtCheck = jwt({
 		cache: true,
 		rateLimit: true,
 		jwksRequestsPerMinute: 5,
-		jwksUri: 'https://dev-xr7t2jq8.us.auth0.com/.well-known/jwks.json'
+		jwksUri: process.env.REACT_APP_TOKEN_JWKS_URI
 	}),
-	audience: 'http://localhost:9001',
-	issuer: 'https://dev-xr7t2jq8.us.auth0.com/',
+	audience: process.env.REACT_APP_TOKEN_AUDIENCE,
+	issuer: process.env.REACT_APP_TOKEN_JWKS_URI,
 	algorithms: ['RS256']
 });
 
@@ -19,7 +19,6 @@ export default function create_app(){
 	const app = express()
 	
 	app.use( express.json() )
-	app.use
 
 	return app	
 }
