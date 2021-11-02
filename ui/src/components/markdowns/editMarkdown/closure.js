@@ -29,16 +29,15 @@ export default function createEditorClosure( rawData ){
 	const getKey = ( key ) => ( key === 'body' ) ? data[ key ] : data.metadata[ key ] 
 	const setEffect = ( newEffect ) => {
 		effect = newEffect
-		console.log( newEffect )
+		// console.log( newEffect )
 	}
 
-	return { set : set, get : get, getKey : getKey, setEffect : setEffect, effect : effect }
+	return { setAll : setAll, set : set, get : get, getKey : getKey, setEffect : setEffect, effect : effect }
 }
 
 export const fetchClosure = ({ _id, collection }, callback ) => {
                 return get_markdown({ _id, collection }
                 ).then( data => {
-                        console.log( data )
                         return createEditorClosure( {
                                 body : data.body,
                                 metadata : {

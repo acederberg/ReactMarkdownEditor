@@ -24,12 +24,11 @@ export const createMarkdownClosure = ( initialMarkdown ) => {
 const Markdown = ({ children, editorClosure }) => {
 	// Use state instead
 	// Markdown may only be rendered into wrapper. Nothing else should be.
-	const [ state, setState ] = useState({})
+	console.log( 'Markdown' )
+	const [ state, setState ] = useState( editorClosure.getKey( 'body' ) )
 	editorClosure.setEffect( markdown => setState(
 			editorClosure.getKey( 'body' ) 
-	) || console.log( 'setting state' ) )
-	console.log( 'Markdown' )
-	console.log( editorClosure )
+	) )
 	return editorClosure ? <>
 		{ children }
 		<ReactMarkdown
