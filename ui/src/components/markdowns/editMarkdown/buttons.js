@@ -1,8 +1,8 @@
-import { Button, Dialog, Pane, Popover} from 'evergreen-ui'
+import { Button, Dialog, Pane } from 'evergreen-ui'
 import { DownloadIcon, FloppyDiskIcon, UndoIcon, TrashIcon  } from 'evergreen-ui'
-import { ButtonToolbar, ButtonGroup } from 'react-bootstrap'
+import { ButtonToolbar } from 'react-bootstrap'
 import { useState } from 'react'
-import { put_markdown, delete_markdown, get_markdown } from '../fetchMarkdown.js'
+import { put_markdown, delete_markdown } from '../fetchMarkdown.js'
 
 function JsonButton({ editorClosure }){
 	const [ overlay, setOverlay ] = useState( false )
@@ -38,8 +38,7 @@ export default function Buttons({ _id, collection, editorClosure }){
                                         () => put_markdown({
 						collection : collection,
                                                 content : editorClosure.get() ,
-                                                filter : { _id : _id },
-                                                collection : collection
+                                                filter : { _id : _id }
                                         }) //&& </Toaster>
                                 }
                         >Save</Button>

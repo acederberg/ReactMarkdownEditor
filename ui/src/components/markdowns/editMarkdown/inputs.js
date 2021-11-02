@@ -10,7 +10,7 @@ function BigTextInput({ editorClosure }){
 
 	// Update closur
 	const [ value, setValue ] = useState( editorClosure.getKey( 'body' ) )
-
+	const setValueFromBody = () => setValue( editorClosure.getKey( 'body' ) )
 
 	return <Pane>
 		<Label 
@@ -21,7 +21,7 @@ function BigTextInput({ editorClosure }){
 		<Pane margin = { 24 }>
 		<TextArea
 			id = 'content'
-			onChange = { ( event ) => editorClosure.set( 'body', event.target.value )}
+			onChange = { ( event ) => editorClosure.set( 'body', event.target.value ) || setValueFromBody() }
 			onClick = { () => console.log( editorClosure.getKey( 'body' ) ) }
 			placeholder = "# Example"
 			defaultValue = { value }

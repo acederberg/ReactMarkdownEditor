@@ -3,7 +3,7 @@ import Buttons from './buttons.js'
 import { fetchClosure } from './closure.js'
 import  RenderMarkdownIntoWrapper from '../renderMarkdown.js'
 
-import { Spinner, Pane } from 'evergreen-ui'
+import { Spinner } from 'evergreen-ui'
 import { useEffect, useState } from 'react'
 
 // Creates an editor closure and uses it as state.

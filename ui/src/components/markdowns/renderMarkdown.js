@@ -2,24 +2,7 @@ import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { useState, useEffect } from 'react'
-import createEditorClosure from './editMarkdown/closure.js'
 import ReactDOM from 'react-dom'
-
-/*
-export const createMarkdownClosure = ( initialMarkdown ) => {
-	var effect = ( markdown ) => markdown
-	var markdown = initialMarkdown
-	return {
-		get : () => markdown,
-		set : ( newMarkdown, callback ) => {
-			markdown = newMarkdown
-			!!callback && callback( markdown )
-			effect( markdown )
-		},
-		setEffect : ( newEffect ) => effect = newEffect
-	}
-}
-*/
 
 const Markdown = ({ children, editorClosure }) => {
 	// Use state instead
