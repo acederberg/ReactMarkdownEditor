@@ -2,6 +2,8 @@ import { Button, Dialog, Pane } from 'evergreen-ui'
 import { DownloadIcon, FloppyDiskIcon, UndoIcon, TrashIcon  } from 'evergreen-ui'
 import { ButtonToolbar } from 'react-bootstrap'
 import { useState } from 'react'
+import { useAuth0 } from '@auth0/auth0-react'
+
 import { put_markdown, delete_markdown } from '../fetchMarkdown.js'
 
 function JsonButton({ editorClosure }){
@@ -27,6 +29,7 @@ function JsonButton({ editorClosure }){
 // https://evergreen.segment.com/foundations/icons
 export default function Buttons({ _id, collection, editorClosure }){
 
+	const { getAccessTokenSilently } = useAuth0()
         return <Pane margin = { 24 }>
                 <ButtonToolbar>
                         <Button
@@ -38,7 +41,8 @@ export default function Buttons({ _id, collection, editorClosure }){
                                         () => put_markdown({
 						collection : collection,
                                                 content : editorClosure.get() ,
-                                                filter : { _id : _id }
+                                                filter : { _id : _id },
+						token : getAccessTokenSilently()
                                         }) //&& </Toaster>
                                 }
                         >Save</Button>
@@ -58,7 +62,11 @@ export default function Buttons({ _id, collection, editorClosure }){
 				intent = "danger"
 				iconBefore = { TrashIcon }
 				onClick = {
-					() => delete_markdown({ collection : collection, _id : _id })
+					() => delete_markdown({ 
+						collection : collection, 
+						_id : _id,
+						token : getAccessTokenSilently()
+					})
 				}
 			>Delete</Button>
 		</ButtonToolbar>

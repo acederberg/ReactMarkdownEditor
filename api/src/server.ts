@@ -10,7 +10,7 @@ export const jwtCheck = jwt({
 		jwksUri: process.env.REACT_APP_TOKEN_JWKS_URI
 	}),
 	audience: process.env.REACT_APP_TOKEN_AUDIENCE,
-	issuer: process.env.REACT_APP_TOKEN_JWKS_URI,
+	issuer: process.env.REACT_APP_TOKEN_ISSUER,
 	algorithms: ['RS256']
 });
 
@@ -19,6 +19,12 @@ export default function create_app(){
 	const app = express()
 	
 	app.use( express.json() )
+	/*
+	app.use( ( request, result, next ) => { 
+		console.log( request.headers ) 
+		next()
+	} )
+       */
 
 	return app	
 }

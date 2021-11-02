@@ -1,6 +1,13 @@
 const uri = process.env.REACT_APP_API_URI
 
-const HEADERS = { 'Content-type' : 'application/json' }
+const HEADERS = { 
+	'Content-type' : 'application/json'
+}
+const createAuthHeader = async ( token_promise ) => { 
+	const token = await token_promise; 
+	const header = { ...HEADERS, Authorization : `Bearer ${token}` }
+	return header
+}
 
 export function clean( data ){
 	return {
@@ -29,26 +36,27 @@ export const get_markdown = create(
 )
 
 export const put_markdown = create(
-	( { collection, filter, content } ) => fetch( `${uri}/markdown/`, {
-		headers : HEADERS,
+	( { collection, filter, content, token } ) => fetch( `${uri}/markdown/`, {
+		headers : createAuthHeader( token ),
 		body : JSON.stringify({
 			collection : collection,
 			filter : filter,
 			content : content
 		}),
-		method : 'PUT'
+		method : 'PUT',
+		mode : 'cors'
 		}
-	)
+	) 
 )
 
-export const post_markdown = create( ( { collection,  content } ) => fetch( `${uri}/markdown/`, {
+export const post_markdown = create( ( { collection, content, token } ) => fetch( `${uri}/markdown/`, {
 		headers : HEADERS,
 		body : JSON.stringify( { collection : collection, ...content } ),
 		method : 'POST'
 	} )
 )
 
-export const delete_markdown = create( ( { collection, _id } ) => fetch( `${uri}/markdown`, {
+export const delete_markdown = create( ( { collection, _id, token } ) => fetch( `${uri}/markdown`, {
 		headers : HEADERS,
 		body : JSON.stringify( { collection : collection, _ids : [ _id ] } ),
 		method : 'DELETE'
