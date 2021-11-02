@@ -1,5 +1,6 @@
 // Miscillanious utility endpoints.
 import { models } from "./endpoints/model/"
+import { jwtCheck } from "./server"
 import mongoose from "mongoose"
 import { listCollections } from "./db"
 import { Express } from "express"
@@ -14,7 +15,7 @@ export default function extras( app : Express ){
 		const collections = await listCollections()
                 result.send( collections )
 	} )
-	app.get( "/markdown/:collection/:_id/", async( request, result ) => {
+	app.get( "/markdown/:collection/:_id/", jwtCheck, async( request, result ) => {
 		// Get a markdown and its metadata provided a collection and _id
 		// Doing this because there are some stupid things about http. Read [ this ]( https://github.com/whatwg/fetch/issues/551 ).
 		const name = get_name( request )
