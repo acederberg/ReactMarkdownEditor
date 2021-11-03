@@ -9,7 +9,7 @@ services :
       PORT : 9001
       DB_URI : 'mongodb://dev:goofy@mongodb?directConnection=true&serverSelectionTimeoutMS=2000'
     networks :
-      mondo : {}
+      back : {}
     ports : 
       - published : 9001
         target : 9001
@@ -26,11 +26,11 @@ services :
       MONGO_INITDB_ROOT_PASSWORD : 'goofy'
     image : 'mongo'
     networks :
-      mondo : {}
+      back : {}
     ports :
       - 27017
 networks : 
-  mondo :
+  back :
     driver : 'bridge'
     attachable : true
 

@@ -1,33 +1,39 @@
 version : '3.7'
 services :
-  ux:
-    build :
-      context : './ui'
-      dockerfile : 'Dockerfile.dev'
-    container_name : 'ui'
-    networks :
-      mondo : {}
-    ports :
-      - target : 8000
-        published : 8000
-        protocol : 'tcp'
-    volumes :
-      - type : 'bind'
-        source : './ui'
-        target : '/app/'
-    tty: true
   ssl :
     build :
       context : './nginx'
       dockerfile : 'Dockerfile'
     container_name : 'ssl'
     networks :
-      mondo : {}
+      front : {}
+      back : {}
     ports :
       - target : 443
         published : 443
         protocol : 'tcp'
+  # Extender containers
+  # I didn't know that this was possible. Sick af.
+  api :
+    extends :
+      file : './api/docker-compose.dev.yaml'
+      service : api
+  
+  mongodb : 
+    extends :
+      file : './api/docker-compose.dev.yaml'
+      service : mongodb
+  ux:
+    extends :
+      file : './ui/docker-compose.dev.yaml'
+      service : ux
+    networks :
+      front : {}
+      
 networks :
-  mondo :
-    attachable : True
+  front :
+    attachable : true
+    driver : 'bridge'
+  back :
+    attachable : true
     driver : 'bridge'
