@@ -1,7 +1,8 @@
 const uri = process.env.REACT_APP_API_URI
 
 const HEADERS = { 
-	'Content-type' : 'application/json'
+	'Content-type' : 'application/json',
+	'Sec-Fetch-Mode' : 'no-cors'
 }
 const createAuthHeader = async ( token_promise ) => { 
 	const token = await token_promise; 
@@ -35,19 +36,22 @@ export const get_markdown = create(
 	( { collection, _id } ) => fetch( `${uri}/markdown/${collection}/${_id}` )
 )
 
-export const put_markdown = create(
-	( { collection, filter, content, token } ) => fetch( `${uri}/markdown/`, {
-		headers : createAuthHeader( token ),
+export const put_markdown = create( async( { collection, filter, content, token } ) => {
+		const headers = await createAuthHeader( token )
+		const etc = {
+		headers : headers,
 		body : JSON.stringify({
 			collection : collection,
 			filter : filter,
 			content : content
 		}),
-		method : 'PUT',
-		mode : 'cors'
+		method : 'PUT'
 		}
-	) 
-)
+		console.log( etc )
+		fetch( `${uri}/markdown/`, etc )
+	}
+) 
+
 
 export const post_markdown = create( ( { collection, content, token } ) => fetch( `${uri}/markdown/`, {
 		headers : HEADERS,
