@@ -38,7 +38,7 @@ export default function createEditorClosure( rawData ){
 export const fetchClosure = ({ _id, collection }, callback ) => {
                 return get_markdown({ _id, collection }
                 ).then( data => {
-                        return createEditorClosure( {
+                        return createEditorClosure( data ? {
                                 body : data.body,
                                 metadata : {
                                         active : data.metadata.active,
@@ -47,7 +47,7 @@ export const fetchClosure = ({ _id, collection }, callback ) => {
                                         tags : data.metadata.tags
                                         //repo : data.metadata.repo
                                 }
-                        } )
+			} : null )
                 } )
                 .then( data => ( callback ) ? callback( data ) : data )
 }

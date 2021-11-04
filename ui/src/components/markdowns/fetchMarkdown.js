@@ -25,8 +25,10 @@ function create( fetcher ){
 	// Make a function that takes in the same parameters as the fetcher used.
 	const wrapper = async ( args, callback ) => {
 		console.log( args )
-		const data = await fetcher( args ).then( request => request.json() ).catch( err => console.log( err ) )
-		return callback ? callback( data ) : data
+		const data = await fetcher( args )
+			.then( request => request.body ? request.json() : {} )
+			.catch( err => console.log( err ) )
+		return callback ? callback( data ) : data 
 	}
 	return wrapper
 }
@@ -36,35 +38,39 @@ export const get_markdown = create(
 	( { collection, _id } ) => fetch( `${uri}/markdown/${collection}/${_id}` )
 )
 
-export const put_markdown = create( async( { collection, filter, content, token } ) => {
+export const put_markdown = create( async function( { collection, filter, content, token } ){
 		const headers = await createAuthHeader( token )
-		const etc = {
+		fetch( `${uri}/markdown/`, {
+			headers : headers,
+			body : JSON.stringify({
+				collection : collection,
+				filter : filter,
+				content : content
+			}),
+			method : 'PUT'
+		} )
+	} ) 
+
+
+export const post_markdown = create( async function( { collection, content, token } ){
+
+	const headers = await createAuthHeader( token )
+	fetch( `${uri}/markdown/`, {
 		headers : headers,
-		body : JSON.stringify({
-			collection : collection,
-			filter : filter,
-			content : content
-		}),
-		method : 'PUT'
-		}
-		console.log( etc )
-		fetch( `${uri}/markdown/`, etc )
-	}
-) 
-
-
-export const post_markdown = create( ( { collection, content, token } ) => fetch( `${uri}/markdown/`, {
-		headers : HEADERS,
 		body : JSON.stringify( { collection : collection, ...content } ),
 		method : 'POST'
 	} )
-)
 
-export const delete_markdown = create( ( { collection, _id, token } ) => fetch( `${uri}/markdown`, {
-		headers : HEADERS,
+} )
+
+export const delete_markdown = create( async function( { collection, _id, token } ){
+
+	const headers = await createAuthHeader( token )
+	fetch( `${uri}/markdown`, {
+		headers : headers,
 		body : JSON.stringify( { collection : collection, _ids : [ _id ] } ),
 		method : 'DELETE'
 	} )
-)
+} )
 
 
