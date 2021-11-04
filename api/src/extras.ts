@@ -21,17 +21,16 @@ export default function extras( app : Express ){
 		const name = get_name( request )
 		const collection = models[ name ]
 		if ( collection ){
-			console.log( collection )
 			try{
-				console.log( request.params._id )
 				let id = new mongoose.Types.ObjectId( request.params._id )
 				const data = await collection.findOne( { _id : id } )
-				console.log( data )
+				console.log( 'data=', data )
 				data ? result.send( data ) : ( 
 					result.status( 400 ) && result.send()
 				)
 			}
 			catch( err ){
+				console.log( err )
 				result.status( 500 )
 				result.send({ msg : String( err ) })
 			}
