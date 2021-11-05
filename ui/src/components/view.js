@@ -2,11 +2,13 @@ import ViewMarkdown from './markdowns/viewMarkdown.js'
 import Navbar from './navbar.js'
 
 // Take in parameters for ViewMarkdown from a route.
-const View = ( { match: { params : { collection, _id } } } ) => <ViewMarkdown
-		collection = { collection }
-		_id = { _id }
-	>
+const View = ( { match: { params : { collection, _id } } } ) => <>
 		<Navbar withLogin = { false }/>
-	</ViewMarkdown>
+		<ViewMarkdown
+			collection = { collection }
+			_id = { _id }
+		>
+		</ViewMarkdown>
+</>
 
 export default View

@@ -10,8 +10,8 @@ async function main(){
         const root = await document.getElementById( 'root' )
         await ReactDOM.render(
 		<>
+			<Wrapper id = "appWrapper"/>
 			<Wrapper id = "wrapper"/>
-			<div id = "appWrapper"/>
 		</>,
 		root
         )
