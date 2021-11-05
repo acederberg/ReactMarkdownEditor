@@ -1,7 +1,12 @@
 FROM node:14
-RUN mkdir /app/
-WORKDIR /app/
 
 # Just use local packages.
+# Install from inside container.
+RUN echo 'node:node!' | chpasswd
+RUN echo 'root:root!' | chpasswd
+
+USER node
+WORKDIR /app/
+
 
 ENTRYPOINT [ "bash" ]
