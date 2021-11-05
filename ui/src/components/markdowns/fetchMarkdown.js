@@ -26,7 +26,7 @@ function create( fetcher ){
 	const wrapper = async ( args, callback ) => {
 		console.log( args )
 		const data = await fetcher( args )
-			.then( request => request.json() )
+			.then( request => request.body ? request.json() : {} )
 			.catch( err => console.log( err ) )
 		return callback ? callback( data ) : data 
 	}
