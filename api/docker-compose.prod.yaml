@@ -1,0 +1,26 @@
+version : '3.7'
+services : 
+  api :
+    build :
+      context : '.'
+      dockerfile : 'Dockerfile.prod'
+    container_name : 'api_prod'
+    networks :
+      back : {}
+    ports :
+      - published : 14747
+        target : 14747
+        protocol : 'tcp'
+    tty: true
+  mongodb :
+    extends :
+      file : './docker-compose.dev.yaml'
+      service : mongodb
+    container_name: 'mongodb_prod'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME : 'dev'
+      MONGO_INITDB_ROOT_PASSWORD : 'goofy'
+networks :
+  back :
+    driver : 'bridge'
+    attachable : true

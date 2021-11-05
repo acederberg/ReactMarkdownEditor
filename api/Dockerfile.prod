@@ -1,0 +1,18 @@
+FROM node
+WORKDIR /app/
+
+RUN chown node /app/
+
+# Passwords incase su is needed.
+RUN echo 'root:Docker!' | chpasswd
+RUN echo 'node:Node!' | chpasswd
+
+# Install as node so that permissions don't ge messed up.
+USER node
+COPY package.json .
+COPY dist ./dist
+COPY .env.prod .
+RUN npm install --production
+
+ENTRYPOINT bash 
+#npm run start-prod
