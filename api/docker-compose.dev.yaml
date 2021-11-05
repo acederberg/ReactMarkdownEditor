@@ -8,6 +8,7 @@ services :
     environment :
       PORT : 9001
       DB_URI : 'mongodb://dev:goofy@mongodb?directConnection=true&serverSelectionTimeoutMS=2000'
+      TESTING : true
     networks :
       back : {}
     ports : 
