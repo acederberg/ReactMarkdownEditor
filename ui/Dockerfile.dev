@@ -2,9 +2,6 @@ FROM node:14
 RUN mkdir /app/
 WORKDIR /app/
 
-# Install the environment. 
-# The docker compose will mount this.
-# COPY package.json .
-# RUN npm install .
+# Just use local packages.
 
 ENTRYPOINT [ "bash" ]

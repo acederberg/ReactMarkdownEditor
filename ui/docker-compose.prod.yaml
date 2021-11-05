@@ -1,0 +1,11 @@
+version : '3.7'
+services :
+  ux :
+    build :
+      context : '.'
+      dockerfile : './Dockerfile.prod'
+    container_name : 'ui_prod'
+    ports :
+      - target : 8080
+        published : 8080
+        protocol : 'tcp'
