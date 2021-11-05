@@ -24,20 +24,4 @@ export function arr_intersects( A, B )  {
 export const check_keys = ( endpoint, request ) => arr_intersects( Object.keys( request.body ) , endpoint.keys )
 export const check_optional = ( endpoint, request ) => arr_intersects( Object.keys( request.body ), endpoint.keys )
 
-/*
-const arr_decide = ( bool ) => bool ? arr_contains : arr_intersects
-
-export default function create_key_checkers( endpoint : EndpointInterface ) {
-
-	let keys_mapping = arr_decide( endpoint.requires_all_keys )
-        let keys_mapping_metadata = arr_decide( endpoint.requires_all_keys )
-        const check_keys = ( endpoint, request ) => keys_mapping( Object.keys( request.body ) , endpoint.keys )
-        const check_keys_metadata = ( endpoint, request ) => keys_mapping_metadata( Object.keys( request.body ), endpoint.keys )
-        return {
-                check_keys : check_keys,
-                check_keys_metadata : check_keys_metadata
-        }
-
-}
-*/
 

@@ -3,9 +3,10 @@ import cors from "cors"
 
 // should use es6
 var jwt = require('express-jwt');
+var jwtAuthz = require('express-jwt-authz')
 var jwks = require('jwks-rsa');
 
-export const jwtCheck = jwt({
+export const checkUser = jwt({
 	secret: jwks.expressJwtSecret({
 		cache: true,
 		rateLimit: true,
@@ -16,6 +17,11 @@ export const jwtCheck = jwt({
 	issuer: process.env.REACT_APP_TOKEN_ISSUER,
 	algorithms: ['RS256']
 });
+
+export const checkAdmin = jwtAuthz(
+	[ "modify:articals" ], 
+	{ customScopeKey : "permissions" }
+)
 
 export default function create_app(){
 	const port = process.env.PORT ? process.env.PORT : 8000

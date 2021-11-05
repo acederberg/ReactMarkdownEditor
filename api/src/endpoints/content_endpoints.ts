@@ -1,7 +1,7 @@
 import { EndpointsInterface, EndpointInterface, RequestInterface } from './types'
 import { ContentInterface } from './model/types'
 import { metadata_keys } from './model/types'
-import { jwtCheck } from "../server"
+import { checkUser, checkAdmin } from "../server"
 
 const DEFAULT_MAX_COUNT = 5
 
@@ -22,6 +22,7 @@ const GET : EndpointInterface = {
 	// max_count should be optional. Added them and it works great
 	// _id option is not needed, just use the filter.
 	keys : [ 'filter', 'collection' ],
+	middleware : checkAdmin, // Using this because this endpoint is private.
 	optional_keys : [ 'max_count' ],
 	find : function ( model : any , raw : RequestInterface ){
 		const max_count = get_max_count( raw )
@@ -32,7 +33,7 @@ const POST : EndpointInterface = {
 	//keys : metadata_keys,
 	keys : [ "body", "collection", "metadata" ],
 	metadata_keys : [ "title", "description", "author" ],
-	middleware : jwtCheck,
+	middleware : checkAdmin,
 	find : function ( model : any , raw : RequestInterface ){
 		// Ensure that the data has the correct shape.
 		const now = new Date() 
@@ -48,7 +49,7 @@ const POST : EndpointInterface = {
 }
 const DELETE : EndpointInterface = {
 	keys : [ "collection", ids ],
-	middleware : jwtCheck,
+	middleware : checkAdmin,
 	find : async function ( model : any , raw : RequestInterface ){
 		console.log( 'DELETEing' )
 		const out = raw[ ids ].map( an_id => model.findOneAndDelete({ _id : an_id }).exec() )
@@ -60,7 +61,7 @@ const DELETE : EndpointInterface = {
 const PUT : EndpointInterface = {
 	// only supports overriding content.
 	keys : [ "filter", "content" ],
-	middleware : jwtCheck,
+	middleware : checkAdmin,
 	optional_keys : [ "max_count" ],
 	find : function ( model : any, raw : RequestInterface ){
 		const content : ContentInterface = raw[ "content" ]
