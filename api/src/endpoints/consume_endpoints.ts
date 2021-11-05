@@ -9,7 +9,7 @@ export default function consume_endpoints( app : Express, endpoints : EndpointsI
 		// There must be a better way.
 		processed[ 'middleware' ] ? app[ key ]( 
 			endpoints.route, 
-			processed[ 'middleware' ],
+			...processed[ 'middleware' ],
 			( request, result ) => {
 				processed[ 'method' ]( request, result ) 
 			}

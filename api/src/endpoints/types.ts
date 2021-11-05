@@ -19,7 +19,7 @@ export interface EndpointInterface {
 	keys : Array<String>,
 	optional_keys ?: Array<String>,
 	metadata_keys ?: Array<String>,
-	middleware ?: Function,
+	middleware ?: any[], //should really be functions.
 	find : Function,
 	clean ?: Function
 }
