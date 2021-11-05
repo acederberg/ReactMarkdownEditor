@@ -3,8 +3,8 @@ services :
   ssl :
     build :
       context : './nginx'
-      dockerfile : 'Dockerfile'
-    container_name : 'ssl'
+      dockerfile : 'Dockerfile.prod'
+    container_name : 'ssl_prod'
     networks :
       front : {}
       back : {}
@@ -16,16 +16,16 @@ services :
   # I didn't know that this was possible. Sick af.
   api :
     extends :
-      file : './api/docker-compose.dev.yaml'
+      file : './api/docker-compose.prod.yaml'
       service : api
   
   mongodb : 
     extends :
-      file : './api/docker-compose.dev.yaml'
+      file : './api/docker-compose.prod.yaml'
       service : mongodb
   ux:
     extends :
-      file : './ui/docker-compose.dev.yaml'
+      file : './ui/docker-compose.prod.yaml'
       service : ux
     networks :
       front : {}
