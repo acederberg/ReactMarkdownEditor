@@ -5,7 +5,7 @@ stages:
   - build-api-code
   - build-ui-code
   - test
-  - build-containers-images
+  - build-production-images
   #- deploy
 
 # Build the api using the typescript compiler.
