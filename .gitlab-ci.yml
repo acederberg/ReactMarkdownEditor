@@ -10,6 +10,7 @@ stages:
 # Build the api using the typescript compiler.
 # Hold on to build.
 build-api:
+  tags: [ 'build-code' ]
   stage: build-code
   script:
     - cd api
@@ -24,6 +25,7 @@ build-api:
 # Build the front-end using the react build script.
 # Hold on to build.
 build-ui:
+  tags : [ 'build-code' ]
   stage : build-code
   script :
     - cd ui
@@ -35,6 +37,7 @@ build-ui:
 
 # Test
 test-api:
+  tags : [ 'test' ]
   stage : 'test'
   script : 
     - cd api && echo "Running tests for the markdowns api."
