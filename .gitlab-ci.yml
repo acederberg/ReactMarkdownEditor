@@ -2,7 +2,8 @@
 
 # These define the various stages, which may be made of many jobs.
 stages:         
-  - build-code
+  - build-api-code
+  - build-ui-code
   #- build-containers
   - test
   #- deploy
@@ -11,7 +12,7 @@ stages:
 # Hold on to build.
 build-api:
   tags: [ 'build-code' ]
-  stage: build-code
+  stage: build-api-code
   script:
     - cd api
     - echo "Tanspiling markdowns api..."
@@ -26,7 +27,7 @@ build-api:
 # Hold on to build.
 build-ui:
   tags : [ 'build-code' ]
-  stage : build-code
+  stage : build-ui-code
   script :
     - cd ui
     - echo "Building the react markdown editor/viewer."
