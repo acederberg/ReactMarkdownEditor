@@ -1,0 +1,6 @@
+demo_job_1:
+  # Tags should correlate with a specific runner.
+  tags :
+    - shell
+  script :
+    - echo 'Holy shit. It works!'
