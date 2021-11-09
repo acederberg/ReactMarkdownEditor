@@ -4,8 +4,8 @@
 stages:         
   - build-api-code
   - build-ui-code
-  #- build-containers
   - test
+  - build-containers-images
   #- deploy
 
 # Build the api using the typescript compiler.
@@ -44,4 +44,10 @@ test-api:
     - cd api && echo "Running tests for the markdowns api."
     - npx env-cmd .env.dev jest && echo "Tests ran successfully/"
     - cd ../
-  
+
+# Build the ( production ) containers
+build-production-images: 
+  tags : [ 'build-containers' ]
+  stage : 'test'
+  script :
+    - docker compose build
