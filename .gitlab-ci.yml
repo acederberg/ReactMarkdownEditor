@@ -1,0 +1,43 @@
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+
+# These define the various stages, which may be made of many jobs.
+stages:         
+  - build-code
+  #- build-containers
+  - test
+  #- deploy
+
+# Build the api using the typescript compiler.
+# Hold on to build.
+build-api:
+  stage: build-code
+  script:
+    - cd api
+    - echo "Tanspiling markdowns api..."
+    - tsc && echo "Success!"
+    - cd ../
+  artifacts:
+    # Keep the build for the testing and deployment stages. 
+    # When the deployment docker container for the 
+    paths : [ './api/dist' ]
+
+# Build the front-end using the react build script.
+# Hold on to build.
+build-ui:
+  stage : build-code
+  script :
+    - cd ui
+    - echo "Building the react markdown editor/viewer."
+    - npm run build && echo "Success!"
+    - cd ../
+  artifacts :
+    paths : [ './ui/build' ]
+
+# Test
+test-api:
+  stage : 'test'
+  script : 
+    - cd api && echo "Running tests for the markdowns api."
+    - npx env-cmd .env.dev jest && echo "Tests ran successfully/"
+    - cd ../
+  
