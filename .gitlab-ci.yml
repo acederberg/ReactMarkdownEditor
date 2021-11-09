@@ -48,6 +48,6 @@ test-api:
 # Build the ( production ) containers
 build-production-images: 
   tags : [ 'build-containers' ]
-  stage : 'test'
+  stage : 'build-production-images'
   script :
     - echo $PWD
