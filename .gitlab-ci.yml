@@ -50,5 +50,5 @@ build-production-images:
   tags : [ 'build-containers' ]
   stage : 'build-production-images'
   script :
-    - ls -lah $PWD && echo "Building docker images...:
+    - ls -lah $PWD && echo "Building docker images..."
     - docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."
