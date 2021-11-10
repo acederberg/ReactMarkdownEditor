@@ -1,59 +1,50 @@
-# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
-image: docker:stable
-services:
-  - docker:dind
+# For more information, see:
+# * [The main help page])( https://docs.gitlab.com/ee/ci/yaml/index.html#stages )
+# * [The page about using pipelines to build, push, and deploy images using docker-in-docker. ]( https://docs.gitlab.com/ee/ci/docker/using_docker_build.html )
+image: tmaier/docker-compose
 
-# These define the various stages, which may be made of many jobs.
+# Objective:
+# 0. Create development image for tests to run in. ( Docker in docker. )
+# 1. Test applications ( if applicable ) in their development containers. ( Docker in docker )
+# 2. Build production images using docker-compose. ( Docker in docker )
+# 3. Push the production images to DockerHub. ( Docker in docker )
+# 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 stages:         
-  - build-api-code
-  # - build-ui-code
-  # - test
-  # - build-production-images
-  #- deploy
-
+  - build-dev-images  # Step 0.
+  - build-api         # Step 1, since the code must compile succesfully to then run tests.
+  - test-api          # Step 1.
+  #- build-prod-images # Steps 2 and 3.
+  
 # Build the api using the typescript compiler.
 # Hold on to build.
-build-api:
+build-dev-images:
   tags: [ 'build-code' ]
-  stage: build-api-code
+  stage: build-dev-images
   script:
-    - docker --version
-    # - echo "Tanspiling markdowns api..."
-    # - npm install .
-    # - npm exec tsc
-  # artifacts:
-  #   # Keep the build for the testing and deployment stages. 
-  #   # When the deployment docker container for the 
-  #   paths : 
-  #     - './api/dist'
-  #     - node_modules
-  #   expire_in: 30 days
+    # Exit code is still determined by docker-compose success.
+    - echo "Building images using docker-compose."
+    - docker-compose --file docker-compose.dev.yaml up --build
+    - echo "Collecting dependancies..."
+    - docker exec api npm install
+    - docker exec ui npm install
+  artifacts:
+    paths :
+      - ./ui/node_modules/
+      - ./api/node_modules/
+    expire_in: 30 days
 
+build-api:
+  tags : ['build-code' ]
+  stage: build-api
+  script:
+    - echo "Compiling typescript...."
+    - docker exec ui npm exec tsc
+  artifacts:
+    paths : [ ./api/dist ]
 
-# # Build the front-end using the react build script.
-# # Hold on to build.
-# build-ui:
-#   tags : [ 'build-code' ]
-#   stage : build-ui-code
-#   script :
-#     - cd ui && echo "Building the react markdown editor/viewer..."
-#     - npm run build
-#   artifacts :
-#     paths : [ './ui/build' ]
-
-# # Test
-# test-api:
-#   tags : [ 'test' ]
-#   stage : 'test'
-#   script : 
-#     - cd api && echo "Running tests for the markdowns api..."
-#     - npx env-cmd .env.dev jest && echo "Tests ran successfully." && cd ..
-  
-# # Build the ( production ) containers
-# build-production-images: 
-#   tags : [ 'build-containers' ]
-#   stage : 'build-production-images'
-#   script :
-#     - ls -lah api
-#     - ls -lah ui  #&& echo "Building docker images..."
-#     #- docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."
+test-api:
+  tags: [ 'test' ]
+  stage: test-api
+  script:
+    - echo "Testing api..."
+    - docker exec npm exec jest
