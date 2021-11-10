@@ -3,9 +3,9 @@
 # These define the various stages, which may be made of many jobs.
 stages:         
   - build-api-code
-  - build-ui-code
-  - test
-  - build-production-images
+  # - build-ui-code
+  # - test
+  # - build-production-images
   #- deploy
 
 # Build the api using the typescript compiler.
@@ -15,36 +15,41 @@ build-api:
   stage: build-api-code
   script:
     - cd api && echo "Tanspiling markdowns api..."
+    - npm install .
     - npm exec tsc
   artifacts:
     # Keep the build for the testing and deployment stages. 
     # When the deployment docker container for the 
-    paths : [ './api/dist' ]
+    paths : 
+      - './api/dist'
+      - node_modules
+    expire_in: 30 days
 
-# Build the front-end using the react build script.
-# Hold on to build.
-build-ui:
-  tags : [ 'build-code' ]
-  stage : build-ui-code
-  script :
-    - cd ui && echo "Building the react markdown editor/viewer..."
-    - npm run build
-  artifacts :
-    paths : [ './ui/build' ]
 
-# Test
-test-api:
-  tags : [ 'test' ]
-  stage : 'test'
-  script : 
-    - cd api && echo "Running tests for the markdowns api..."
-    - npx env-cmd .env.dev jest && echo "Tests ran successfully." && cd ..
+# # Build the front-end using the react build script.
+# # Hold on to build.
+# build-ui:
+#   tags : [ 'build-code' ]
+#   stage : build-ui-code
+#   script :
+#     - cd ui && echo "Building the react markdown editor/viewer..."
+#     - npm run build
+#   artifacts :
+#     paths : [ './ui/build' ]
+
+# # Test
+# test-api:
+#   tags : [ 'test' ]
+#   stage : 'test'
+#   script : 
+#     - cd api && echo "Running tests for the markdowns api..."
+#     - npx env-cmd .env.dev jest && echo "Tests ran successfully." && cd ..
   
-# Build the ( production ) containers
-build-production-images: 
-  tags : [ 'build-containers' ]
-  stage : 'build-production-images'
-  script :
-    - ls -lah api
-    - ls -lah ui  #&& echo "Building docker images..."
-    #- docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."
+# # Build the ( production ) containers
+# build-production-images: 
+#   tags : [ 'build-containers' ]
+#   stage : 'build-production-images'
+#   script :
+#     - ls -lah api
+#     - ls -lah ui  #&& echo "Building docker images..."
+#     #- docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."
