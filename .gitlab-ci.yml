@@ -1,7 +1,7 @@
 # For more information, see:
 # * [The main help page])( https://docs.gitlab.com/ee/ci/yaml/index.html#stages )
 # * [The page about using pipelines to build, push, and deploy images using docker-in-docker. ]( https://docs.gitlab.com/ee/ci/docker/using_docker_build.html )
-image: tmaier/docker-compose
+image: docker
 
 # Objective:
 # 0. Create development image for tests to run in. ( Docker in docker. )
@@ -15,6 +15,12 @@ stages:
   - test-api          # Step 1.
   #- build-prod-images # Steps 2 and 3.
   
+.pre :
+  script :
+    - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    - chmod +x /usr/local/bin/docker-compose
+    - ln -s /usr/local/bin/docker-compose /usr/bind/docker-compose
+    
 # Build the api using the typescript compiler.
 # Hold on to build.
 build-dev-images:
