@@ -30,8 +30,8 @@ build-ui:
   stage : build-ui-code
   script :
     - cd ui
-    - echo "Building the react markdown editor/viewer."
-    - npm run build && echo "Success!"
+    - echo "Building the react markdown editor/viewer..."
+    - npm run build && echo "Build success!"
     - cd ../
   artifacts :
     paths : [ './ui/build' ]
@@ -41,8 +41,8 @@ test-api:
   tags : [ 'test' ]
   stage : 'test'
   script : 
-    - cd api && echo "Running tests for the markdowns api."
-    - npx env-cmd .env.dev jest && echo "Tests ran successfully/"
+    - cd api && echo "Running tests for the markdowns api..."
+    - npx env-cmd .env.dev jest && echo "Tests ran successfully."
     - cd ../
 
 # Build the ( production ) containers
@@ -50,4 +50,5 @@ build-production-images:
   tags : [ 'build-containers' ]
   stage : 'build-production-images'
   script :
-    - echo $PWD
+    - ls -lah $PWD && echo "Building docker images...:
+    - docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."
