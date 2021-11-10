@@ -1,4 +1,7 @@
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+image: docker:stable
+services:
+  - docker:dind
 
 # These define the various stages, which may be made of many jobs.
 stages:         
@@ -14,16 +17,17 @@ build-api:
   tags: [ 'build-code' ]
   stage: build-api-code
   script:
-    - cd api && echo "Tanspiling markdowns api..."
-    - npm install .
-    - npm exec tsc
-  artifacts:
-    # Keep the build for the testing and deployment stages. 
-    # When the deployment docker container for the 
-    paths : 
-      - './api/dist'
-      - node_modules
-    expire_in: 30 days
+    - docker --version
+    # - echo "Tanspiling markdowns api..."
+    # - npm install .
+    # - npm exec tsc
+  # artifacts:
+  #   # Keep the build for the testing and deployment stages. 
+  #   # When the deployment docker container for the 
+  #   paths : 
+  #     - './api/dist'
+  #     - node_modules
+  #   expire_in: 30 days
 
 
 # # Build the front-end using the react build script.
