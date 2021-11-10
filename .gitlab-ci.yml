@@ -14,10 +14,8 @@ build-api:
   tags: [ 'build-code' ]
   stage: build-api-code
   script:
-    - cd api
-    - echo "Tanspiling markdowns api..."
-    - tsc && echo "Success!"
-    - cd ../
+    - cd api && echo "Tanspiling markdowns api..."
+    - npm exec tsc
   artifacts:
     # Keep the build for the testing and deployment stages. 
     # When the deployment docker container for the 
@@ -29,10 +27,8 @@ build-ui:
   tags : [ 'build-code' ]
   stage : build-ui-code
   script :
-    - cd ui
-    - echo "Building the react markdown editor/viewer..."
-    - npm run build && echo "Build success!"
-    - cd ../
+    - cd ui && echo "Building the react markdown editor/viewer..."
+    - npm run build
   artifacts :
     paths : [ './ui/build' ]
 
@@ -42,9 +38,8 @@ test-api:
   stage : 'test'
   script : 
     - cd api && echo "Running tests for the markdowns api..."
-    - npx env-cmd .env.dev jest && echo "Tests ran successfully."
-    - cd ../
-
+    - npx env-cmd .env.dev jest && echo "Tests ran successfully." && cd ..
+  
 # Build the ( production ) containers
 build-production-images: 
   tags : [ 'build-containers' ]
