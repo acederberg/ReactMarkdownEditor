@@ -8,64 +8,43 @@
 # 3. Push the production images to DockerHub. ( Docker in docker )
 # 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 
+stages:         
+  - build-dev-images  # Step 0.
+  - build-api         # Step 1, since the code must compile succesfully to then run tests.
+  - test-api          # Step 1.
+  - build-prod-images # Steps 2 and 3.
 
-before_script :
-  - docker info
+# Build the api using the typescript compiler.
+# Hold on to build.
+build-dev-images:
+  tags: [ 'build-code' ]
+  stage: build-dev-images
+  script:
+    # Exit code is still determined by docker-compose success.
+    - echo "Building images using docker-compose."
+    - docker compose --file docker-compose.dev.yaml up --build
+    - echo "Collecting dependancies..."
+    - docker exec api npm install
+    - docker exec ui npm install
+  artifacts:
+    # Because it is stupid to redownload these every time.
+    paths :
+      - ./ui/node_modules/
+      - ./api/node_modules/
+    expire_in: 30 days
 
-build_image:
-  script :
-    - docker pull alpine
+build-api:
+  tags : [ 'build-code' ]
+  stage: build-api
+  script:
+    - echo "Compiling typescript...."
+    - docker exec ui npm exec tsc
+  artifacts:
+    paths : [ ./api/dist ]
+
+test-api:
   tags: [ 'test' ]
-
-# stages:         
-#   - build-dev-images  # Step 0.
-#   - build-api         # Step 1, since the code must compile succesfully to then run tests.
-#   - test-api          # Step 1.
-# #   - build-prod-images # Steps 2 and 3.
-  
-# .pre :
-#   script :
-#     - echo 'installing compose...'
-#     - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-#     - chmod +x /usr/local/bin/docker-compose
-#     - ln -s /usr/local/bin/docker-compose /usr/bind/docker-compose
-
-# build-dev-images:
-#   tags : [ 'test' ]
-#   stage : build-dev-images
-#   script :
-#     - docker pull alpine
-
-# # Build the api using the typescript compiler.
-# # Hold on to build.
-# build-dev-images:
-#   tags: [ 'build-code' ]
-#   stage: build-dev-images
-#   script:
-#     # Exit code is still determined by docker-compose success.
-#     - echo "Building images using docker-compose."
-#     - docker-compose --file docker-compose.dev.yaml up --build
-#     - echo "Collecting dependancies..."
-#     - docker exec api npm install
-#     - docker exec ui npm install
-#   artifacts:
-#     paths :
-#       - ./ui/node_modules/
-#       - ./api/node_modules/
-#     expire_in: 30 days
-
-# build-api:
-#   tags : ['build-code' ]
-#   stage: build-api
-#   script:
-#     - echo "Compiling typescript...."
-#     - docker exec ui npm exec tsc
-#   artifacts:
-#     paths : [ ./api/dist ]
-
-# test-api:
-#   tags: [ 'test' ]
-#   stage: test-api
-#   script:
-#     - echo "Testing api..."
-#     - docker exec npm exec jest
+  stage: test-api
+  script:
+    - echo "Testing api..."
+    - docker exec npm exec jest
