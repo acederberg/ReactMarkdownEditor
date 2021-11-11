@@ -2,19 +2,23 @@
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
 
 # Objective:
-# 0. Create development image for tests to run in. ( Docker in docker. )
-# 1. Test applications ( if applicable ) in their development containers. ( Docker in docker )
-# 2. Build production images using docker-compose. ( Docker in docker )
-# 3. Push the production images to DockerHub. ( Docker in docker )
-# 4. Run an ansible playbook to deploy everything. ( Somewhere else )
+# 0. Create development image for tests to run in. 
+# 1. Test applications ( if applicable ) in their development containers. 
+# 2. Build production images using docker-compose.
+# 3. Push the production images to DockerHub.
+# 4. Run an ansible playbook to deploy everything. 
 
-stages:         
-  #- build-ui-code
+stages:     
   - build-dev-images
   - build-api
+  - build-ui
   - test-api
   - teardown-dev
   - build-production-images
+
+.pre :
+  - docker compose --file docker-compose.dev.yaml down
+  - docker compose --file docker-compose.prod.yaml down
 
 # Build the api using the typescript compiler.
 # Hold on to build.
@@ -26,12 +30,6 @@ build-dev-images:
     - echo "Building images using docker-compose."
     - docker compose --file docker-compose.dev.yaml up --detach --build
     - echo "Collecting dependancies..."
-  artifacts:
-    # Because it is stupid to redownload these every time.
-    paths :
-      - ./ui/node_modules/
-      - ./api/node_modules/
-    expire_in: 30 days
 
 build-api:
   tags : [ 'build-code' ]
@@ -47,7 +45,16 @@ test-api:
   stage: test-api
   script:
     - echo "Testing api..."
-    - docker exec npx jest
+    - docker exec api npx jest
+
+build-ui:
+  tags : [ 'build-code' ]
+  stage : build-ui
+  script:
+    - docker exec ui npm build
+  artifacts :
+    paths : [ ./ui/build ]
+
 
 # Clean up to avoid potential naming conflicts.
 teardown-dev:
