@@ -9,10 +9,11 @@
 # 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 
 stages:         
-  - build-dev-images  # Step 0.
-  - build-api         # Step 1, since the code must compile succesfully to then run tests.
-  - test-api          # Step 1.
-  - build-prod-images # Steps 2 and 3.
+  - build-api-code
+  - build-ui-code
+  - test
+  - teardown-dev
+  - build-production-images
 
 # Build the api using the typescript compiler.
 # Hold on to build.
@@ -48,3 +49,19 @@ test-api:
   script:
     - echo "Testing api..."
     - docker exec npm exec jest
+
+# Clean up to avoid potential naming conflicts.
+teardown-dev:
+  tags : [ 'test', 'build-containers' ]
+  stage : 'teardown-dev'
+  script :
+    - docker compose --file docker-compose.dev.yaml down
+
+# Build the ( production ) containers
+build-production-images: 
+  tags : [ 'build-containers' ]
+  stage : 'build-production-images'
+  script :
+    - ls -lah api
+    - ls -lah ui  #&& echo "Building docker images..."
+    #- docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."

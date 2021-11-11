@@ -20,6 +20,7 @@ services :
       service : api
   
   mongodb : 
+    container_name : mongodb_prod
     extends :
       file : './api/docker-compose.prod.yaml'
       service : mongodb
