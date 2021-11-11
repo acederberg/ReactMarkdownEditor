@@ -9,9 +9,9 @@
 # 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 
 stages:         
+  - build-api
   #- build-ui-code
   - build-dev-images
-  - build-api
   - test-api
   - teardown-dev
   - build-production-images
@@ -24,10 +24,10 @@ build-dev-images:
   script:
     # Exit code is still determined by docker-compose success.
     - echo "Building images using docker-compose."
-    - docker compose --file docker-compose.dev.yaml up --build --detach
+    - docker compose --file docker-compose.dev.yaml up --build
     - echo "Collecting dependancies..."
-    - docker exec api npm install
-    - docker exec ui npm install
+    - npm install ./api/
+    - npm install ./ui/
   artifacts:
     # Because it is stupid to redownload these every time.
     paths :
@@ -49,7 +49,7 @@ test-api:
   stage: test-api
   script:
     - echo "Testing api..."
-    - docker exec npx jest
+    - docker exec npm exec jest
 
 # Clean up to avoid potential naming conflicts.
 teardown-dev:
