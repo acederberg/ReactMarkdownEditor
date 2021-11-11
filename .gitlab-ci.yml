@@ -9,9 +9,9 @@
 # 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 
 stages:         
-  - build-api
   #- build-ui-code
   - build-dev-images
+  - build-api
   - test-api
   - teardown-dev
   - build-production-images
