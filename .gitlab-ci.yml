@@ -9,9 +9,9 @@
 # 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 
 stages:         
-  - build-api
   #- build-ui-code
   - build-dev-images
+  - build-ui
   - test-api
   - teardown-dev
   - build-production-images
@@ -49,7 +49,7 @@ test-api:
   stage: test-api
   script:
     - echo "Testing api..."
-    - docker exec npm exec jest
+    - docker exec npx jest
 
 # Clean up to avoid potential naming conflicts.
 teardown-dev:
