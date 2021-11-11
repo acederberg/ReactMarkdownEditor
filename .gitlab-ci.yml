@@ -3,9 +3,11 @@
 # 2. [The page about using pipelines to build, push, and deploy images using docker-in-docker. ]( https://docs.gitlab.com/ee/ci/docker/using_docker_build.html )
 
 # We need these. The docs (2) say it,
-image : docker:20.10.7
-services : 
-  - docker:19.03.12-dind
+image : docker:20.10.7-dind
+services :
+  - name : docker:20.10.7-dind
+    command : [ "--tls=false" ]
+
 # Objective:
 # 0. Create development image for tests to run in. ( Docker in docker. )
 # 1. Test applications ( if applicable ) in their development containers. ( Docker in docker )
