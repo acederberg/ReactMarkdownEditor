@@ -9,9 +9,10 @@
 # 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 
 stages:         
-  - build-api-code
-  - build-ui-code
-  - test
+  - build-api
+  #- build-ui-code
+  - build-dev-images
+  - test-api
   - teardown-dev
   - build-production-images
 
@@ -56,6 +57,7 @@ teardown-dev:
   stage : 'teardown-dev'
   script :
     - docker compose --file docker-compose.dev.yaml down
+    - docker compose --file docker-compose.prod.yaml down
 
 # Build the ( production ) containers
 build-production-images: 
@@ -65,3 +67,4 @@ build-production-images:
     - ls -lah api
     - ls -lah ui  #&& echo "Building docker images..."
     #- docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."
+
