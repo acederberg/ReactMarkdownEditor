@@ -24,7 +24,7 @@ build-dev-images:
   script:
     # Exit code is still determined by docker-compose success.
     - echo "Building images using docker-compose."
-    - docker compose --file docker-compose.dev.yaml up --build
+    - docker compose --file docker-compose.dev.yaml up --build --detach
     - echo "Collecting dependancies..."
     - docker exec api npm install
     - docker exec ui npm install
