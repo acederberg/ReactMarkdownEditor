@@ -5,8 +5,10 @@ FROM node:14
 RUN echo 'node:node!' | chpasswd
 RUN echo 'root:root!' | chpasswd
 
-USER node
 WORKDIR /app/
+RUN chown node /app
+RUN chmod +w /app
+USER node
 
 
 ENTRYPOINT [ "bash" ]
