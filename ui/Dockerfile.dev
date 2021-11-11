@@ -5,10 +5,15 @@ FROM node:14
 RUN echo 'node:node!' | chpasswd
 RUN echo 'root:root!' | chpasswd
 
-WORKDIR /app/
-RUN chown node /app
-RUN chmod +w /app
-USER node
+# The following procedure was recomended by `ohadgk` in [ this thread ]( https://stackoverflow.com/questions/35774714/how-to-cache-the-run-npm-install-instruction-when-docker-build-a-dockerfile )
+# The idea is to use changes to package.json to determine when node modules ought to be reinstalled,
+# this is the result of using a file in the container and not a reinstall a mounted file or dependencies.
+RUN mkdir /temp/
+COPY package.json /temp/
+RUN npm install
 
+USER node
+WORKDIR /app/
+COPY /temp/node_modules /app/
 
 ENTRYPOINT [ "bash" ]

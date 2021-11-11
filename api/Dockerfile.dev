@@ -1,17 +1,15 @@
 FROM node
 
-# Create the app directory and change ownership to built in user.
-WORKDIR /app/
-RUN chown node /app/
-RUN chmod +w /app/
-
 # Passwords incase su is needed.
 RUN echo 'root:Docker!' | chpasswd
 RUN echo 'node:Node!' | chpasswd
 
-# Install as node so that permissions don't ge messed up.
-USER node
+WORKDIR /temp/
 COPY package.json .
 RUN npm install .
+
+USER node
+WORKDIR /app/
+RUN mv temp/node_modules .
 
 ENTRYPOINT bash
