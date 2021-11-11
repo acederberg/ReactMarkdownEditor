@@ -11,7 +11,7 @@
 stages:         
   #- build-ui-code
   - build-dev-images
-  - build-ui
+  - build-api
   - test-api
   - teardown-dev
   - build-production-images
