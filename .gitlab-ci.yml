@@ -15,7 +15,7 @@ before_script :
 build_image:
   script :
     - docker pull alpine
-
+  tags: [ 'test' ]
 
 # stages:         
 #   - build-dev-images  # Step 0.
