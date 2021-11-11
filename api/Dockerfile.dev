@@ -4,12 +4,9 @@ FROM node
 RUN echo 'root:Docker!' | chpasswd
 RUN echo 'node:Node!' | chpasswd
 
-WORKDIR /temp/
-COPY package.json .
-RUN npm install .
-
 USER node
 WORKDIR /app/
-RUN mv temp/node_modules .
+COPY package.json .
+RUN npm install .
 
 ENTRYPOINT bash

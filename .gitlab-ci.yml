@@ -26,8 +26,6 @@ build-dev-images:
     - echo "Building images using docker-compose."
     - docker compose --file docker-compose.dev.yaml up --detach --build
     - echo "Collecting dependancies..."
-    - npm install ./api/
-    - npm install ./ui/
   artifacts:
     # Because it is stupid to redownload these every time.
     paths :
