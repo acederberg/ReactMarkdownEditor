@@ -24,7 +24,7 @@ build-dev-images:
   script:
     # Exit code is still determined by docker-compose success.
     - echo "Building images using docker-compose."
-    - docker compose --file docker-compose.dev.yaml up --build
+    - docker compose --file docker-compose.dev.yaml up --build --detach
     - echo "Collecting dependancies..."
     - npm install ./api/
     - npm install ./ui/
@@ -40,7 +40,7 @@ build-api:
   stage: build-api
   script:
     - echo "Compiling typescript...."
-    - docker exec ui npm exec tsc
+    - docker exec ui npx tsc
   artifacts:
     paths : [ ./api/dist ]
 
@@ -49,7 +49,7 @@ test-api:
   stage: test-api
   script:
     - echo "Testing api..."
-    - docker exec npm exec jest
+    - docker exec npx jest
 
 # Clean up to avoid potential naming conflicts.
 teardown-dev:
