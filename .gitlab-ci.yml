@@ -1,18 +1,5 @@
-# For more information, see:
-# 1. [The main help page])( https://docs.gitlab.com/ee/ci/yaml/index.html#stages )
-# 2. [The page about using pipelines to build, push, and deploy images using docker-in-docker. ]( https://docs.gitlab.com/ee/ci/docker/using_docker_build.html )
-
-# We need these. The docs (2) say it,
-image : docker:20.10.7-dind
-services :
-  - name : docker:20.10.7-dind
-    command : [ "--tls=false" ]
-variables:
-  DOCKER_DRIVER: overlay
-  DOCKER_HOST: tcp://127.0.0.1:2375/
-  DOCKER_TLS_CERTDIR: ""
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  FF_GITLAB_REGISTRY_HELPER_IMAGE: 1
+# Built using the guide: 
+# https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
 
 # Objective:
 # 0. Create development image for tests to run in. ( Docker in docker. )
@@ -21,24 +8,33 @@ variables:
 # 3. Push the production images to DockerHub. ( Docker in docker )
 # 4. Run an ansible playbook to deploy everything. ( Somewhere else )
 
-stages:         
-  - build-dev-images  # Step 0.
-#   - build-api         # Step 1, since the code must compile succesfully to then run tests.
-#   - test-api          # Step 1.
-#   #- build-prod-images # Steps 2 and 3.
-  
-.pre :
-  script :
-    - echo 'installing compose...'
-    - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    - chmod +x /usr/local/bin/docker-compose
-    - ln -s /usr/local/bin/docker-compose /usr/bind/docker-compose
 
-build-dev-images:
-  tags : [ 'test' ]
-  stage : build-dev-images
+before_script :
+  - docker info
+
+build_image:
   script :
     - docker pull alpine
+
+
+# stages:         
+#   - build-dev-images  # Step 0.
+#   - build-api         # Step 1, since the code must compile succesfully to then run tests.
+#   - test-api          # Step 1.
+# #   - build-prod-images # Steps 2 and 3.
+  
+# .pre :
+#   script :
+#     - echo 'installing compose...'
+#     - curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#     - chmod +x /usr/local/bin/docker-compose
+#     - ln -s /usr/local/bin/docker-compose /usr/bind/docker-compose
+
+# build-dev-images:
+#   tags : [ 'test' ]
+#   stage : build-dev-images
+#   script :
+#     - docker pull alpine
 
 # # Build the api using the typescript compiler.
 # # Hold on to build.
