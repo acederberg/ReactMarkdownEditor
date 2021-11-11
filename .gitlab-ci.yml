@@ -5,6 +5,7 @@ stages:
   - build-api-code
   - build-ui-code
   - test
+  - teardown-dev
   - build-production-images
   #- deploy
 
@@ -39,7 +40,14 @@ test-api:
   script : 
     - cd api && echo "Running tests for the markdowns api..."
     - npx env-cmd .env.dev jest && echo "Tests ran successfully." && cd ..
-  
+
+# Clean up to avoid potential naming conflicts.
+teardown-dev:
+  tags : [ 'test', 'build-containers' ]
+  stage : 'teardown-dev'
+  script :
+    - docker compose --file docker-compose.dev.yaml down
+
 # Build the ( production ) containers
 build-production-images: 
   tags : [ 'build-containers' ]
@@ -48,3 +56,4 @@ build-production-images:
     - ls -lah api
     - ls -lah ui  #&& echo "Building docker images..."
     #- docker compose --file docker-compose.prod.yaml build && echo "Production docker images built."
+
