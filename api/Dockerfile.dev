@@ -4,9 +4,12 @@ FROM node
 RUN echo 'root:Docker!' | chpasswd
 RUN echo 'node:Node!' | chpasswd
 
-USER node
 WORKDIR /app/
 COPY package.json .
+# All npm install proplems were by root / root group ownership of of the /app/node_modules directory.
+RUN mkdir /app/node_modules && chown -R node /app && chgrp -R node /app
+
+USER node
 RUN npm install .
 
 ENTRYPOINT bash

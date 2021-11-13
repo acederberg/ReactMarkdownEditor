@@ -1,16 +1,16 @@
 FROM node:14
 
-# Just use local packages.
-# Install from inside container.
 RUN echo 'node:node!' | chpasswd
 RUN echo 'root:root!' | chpasswd
 
-# The following procedure was recomended by `ohadgk` in [ this thread ]( https://stackoverflow.com/questions/35774714/how-to-cache-the-run-npm-install-instruction-when-docker-build-a-dockerfile )
-# The idea is to use changes to package.json to determine when node modules ought to be reinstalled,
-# this is the result of using a file in the container and not a reinstall a mounted file or dependencies.
 WORKDIR /app/
-USER node
 COPY package.json .
+
+# Avoids stupid npm install errors
+# Most npm error result from the mounted volume having root ownership/group ( hence the -R flag )
+RUN mkdir /app/node_modules && chown -R node /app && chgrp -R node /app
+
+USER node
 RUN npm install .
 
 ENTRYPOINT [ "bash" ]
