@@ -26,20 +26,28 @@ stages:
 # Build the api using the typescript compiler.
 # Hold on to build.
 build-dev-images:
-  tags: [ 'build-code' ]
+  tags: [ 'build' ]
   stage: build-dev-images
   script:
     - echo "Building images using docker-compose."
     - docker-compose --file docker-compose.dev.yaml up --detach --build
 
 build-api:
-  tags : [ 'build-code' ]
+  tags : [ 'build' ]
   stage: build-api
   script:
     - echo "Compiling typescript...."
     - docker exec api npm run build-prod
   artifacts:
     paths : [ ./api/dist ]
+
+build-ui:
+  tags : [ 'build' ]
+  stage : build-ui
+  script:
+    - docker exec ui npm run build-prod
+  artifacts :
+    paths : [ ./ui/build ]
 
 test-api:
   tags: [ 'test' ]
@@ -48,18 +56,9 @@ test-api:
     - echo "Testing api..."
     - docker exec api npm run test
 
-build-ui:
-  tags : [ 'build-code' ]
-  stage : build-ui
-  script:
-    - docker exec ui npm run build-prod
-  artifacts :
-    paths : [ ./ui/build ]
-
-
 # Clean up to avoid potential naming conflicts.
 teardown-dev: 
-  tags : [ 'test', 'build-containers' ]
+  tags : [ 'build' ]
   stage : 'teardown-dev'
   script:
     - echo 'Killing remaining containers.'
@@ -68,7 +67,7 @@ teardown-dev:
 
 # Build the ( production ) containers
 build-production-images: 
-  tags : [ 'build-containers' ]
+  tags : [ 'build' ]
   stage : 'build-production-images'
   script :
     - ls -lah api
