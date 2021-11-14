@@ -8,6 +8,9 @@
 # 3. Push the production images to DockerHub.
 # 4. Run an ansible playbook to deploy everything. 
 
+variables :
+  GIT_STRATAGY : none
+
 stages:     
   - build-dev-images
   - build-api
@@ -31,6 +34,7 @@ build-dev-images:
   script:
     - echo "Building images using docker-compose."
     - docker-compose --file docker-compose.dev.yaml up --detach --build
+    - ls
 
 build-api:
   tags : [ 'build' ]
