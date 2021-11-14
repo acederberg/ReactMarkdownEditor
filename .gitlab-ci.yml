@@ -9,7 +9,7 @@
 # 4. Run an ansible playbook to deploy everything. 
 
 variables :
-  GIT_STRATAGY : none
+  GIT_STRATEGY : none
 
 stages:     
   - build-dev-images
