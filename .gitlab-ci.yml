@@ -16,9 +16,12 @@ stages:
   - teardown-dev
   - build-production-images
 
-.pre :
-  - docker compose --file docker-compose.dev.yaml down
-  - docker compose --file docker-compose.prod.yaml down
+# list container ids and stop and kill.
+.pre : 
+  script:
+    - echo 'Killing remaining containers.'
+    - docker ps -aq | xargs docker stop
+    - docker ps -aq | xargs docker rm  
 
 # Build the api using the typescript compiler.
 # Hold on to build.
@@ -26,9 +29,8 @@ build-dev-images:
   tags: [ 'build-code' ]
   stage: build-dev-images
   script:
-    # Exit code is still determined by docker-compose success.
     - echo "Building images using docker-compose."
-    - docker compose --file docker-compose.dev.yaml up --detach --build
+    - docker-compose --file docker-compose.dev.yaml up --detach --build
 
 build-api:
   tags : [ 'build-code' ]
@@ -56,12 +58,13 @@ build-ui:
 
 
 # Clean up to avoid potential naming conflicts.
-teardown-dev:
+teardown-dev: 
   tags : [ 'test', 'build-containers' ]
   stage : 'teardown-dev'
-  script :
-    - docker compose --file docker-compose.dev.yaml down
-    - docker compose --file docker-compose.prod.yaml down
+  script:
+    - echo 'Killing remaining containers.'
+    - docker ps -aq | xargs docker stop
+    - docker ps -aq | xargs docker rm  
 
 # Build the ( production ) containers
 build-production-images: 
