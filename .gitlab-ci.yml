@@ -11,7 +11,8 @@
 variables :
   GIT_STRATEGY : none
 
-stages:     
+stages:    
+  - get-git
   - build-dev-images
   - build-api
   - build-ui
@@ -28,14 +29,19 @@ stages:
     - docker ps -aq | xargs docker stop
     - docker ps -aq | xargs docker rm  
 
+get-git:
+  tags : [ 'build' ]
+  stage : get-git
+  script :
+    - echo 'Manually fetching git repository...'
+    - git fetch && git checkout
+
 # Build the api using the typescript compiler.
 # Hold on to build.
 build-dev-images:
   tags: [ 'build' ]
   stage: build-dev-images
   script:
-    - echo 'Manually fetching git repository...'
-    - git fetch && git checkout
     - echo "Building images using docker-compose."
     - docker-compose --file docker-compose.dev.yaml up --detach --build
     - ls
