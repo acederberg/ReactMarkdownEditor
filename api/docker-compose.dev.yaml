@@ -16,9 +16,7 @@ services :
       - type : 'bind'
         source : '.'
         target : '/app/'
-      - type : 'bind'
-        source : './dist'
-        target : '/app/dist'
+      - '/app/dist'
       - '/app/node_modules'
   mongodb :
     container_name : 'mongodb'
