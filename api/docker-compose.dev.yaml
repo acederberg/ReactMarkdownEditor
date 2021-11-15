@@ -19,7 +19,6 @@ services :
       - type : 'bind'
         source : './dist'
         target : '/app/dist'
-        propagation : 'rshared'
       - '/app/node_modules'
   mongodb :
     container_name : 'mongodb'
