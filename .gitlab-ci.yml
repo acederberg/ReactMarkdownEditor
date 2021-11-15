@@ -34,7 +34,7 @@ get-git:
   stage : get-git
   script :
     - echo 'Manually fetching git repository...'
-    - git fetch && git checkout
+    - git fetch && git checkout origin/cicd
 
 # Build the api using the typescript compiler.
 # Hold on to build.
