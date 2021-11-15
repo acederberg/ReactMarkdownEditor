@@ -1,9 +1,15 @@
  import request from 'supertest'
 import app from '../src/app'
+import { db } from '../src/app'
 import { content_endpoints as endpoints } from '../src/endpoints'
 
+const test_articals = 'test_articals'
 const id = '_id'
 let ids ;
+
+
+
+afterAll( async () => await db.close() )
 
 describe( "Testing the /markdowns/ endpoint.", () => {
 	it( "Empty post should return nothing", () => {
@@ -17,7 +23,7 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 			return request( app ).post( endpoints.route )
 			.send( {
 				body : `# Test ${k}`,
-				collection : 'test_articals',
+				collection : test_articals,
 				metadata : {
 					author : 'sum dood',
 					title : 'sum thing',
@@ -85,7 +91,7 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 
 	} )
 	it( "Sending a GET request to clean up tests", () => request( app ).get( endpoints.route )
-		.send( { collection : 'test_articals', max_count : 1000 } )
+		.send( { collection : test_articals, max_count : 1000 } )
 		.expect( 200 )
 		.then( request => { 
 			ids = request.body.map( item => item._id )
@@ -95,12 +101,12 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 	it( "Sending a DELETE request to clean up tests.", () => {
 		console.log( ids )
 		return request( app ).get( endpoints.route )
-	   	.send( { collection : 'test_articals', _ids : ids } )
+	   	.send( { collection : test_articals, _ids : ids } )
 		.expect( 200 )
 	} )
 	it( "Sending a GET request to make sure the tests were actually destroyed.", () => {
 		return request( app ).get( endpoints.route )
-		.send( { collection : 'test_articals', max_count : 10 } )
+		.send( { collection : test_articals, max_count : 10 } )
 		.expect( 200 )
 		.then( request => !request.body )
 	} )

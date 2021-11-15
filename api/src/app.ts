@@ -8,7 +8,7 @@ import { consume_endpoints, content_endpoints } from './endpoints'
 
 // Instantiate the app and the database pool.
 const app = create_app()
-const db = create_db()
+export const db = create_db()
 
 // Set up endpoints
 extras( app )
