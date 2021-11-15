@@ -17,6 +17,7 @@ services :
         source : '.'
         target : '/app/'
       - '/app/node_modules'
+      - '/app/dist'
   mongodb :
     container_name : 'mongodb'
     environment:

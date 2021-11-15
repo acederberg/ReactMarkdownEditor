@@ -8,7 +8,9 @@ COPY package.json .
 
 # Avoids stupid npm install errors
 # Most npm error result from the mounted volume having root ownership/group ( hence the -R flag )
-RUN mkdir /app/node_modules && chown -R node /app && chgrp -R node /app
+RUN mkdir /app/node_modules /app/build \
+	&& chown -R node /app \
+	&& chgrp -R node /app
 
 USER node
 RUN npm install .

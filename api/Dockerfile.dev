@@ -7,7 +7,9 @@ RUN echo 'node:Node!' | chpasswd
 WORKDIR /app/
 COPY package.json .
 # All npm install proplems were by root / root group ownership of of the /app/node_modules directory.
-RUN mkdir /app/node_modules && chown -R node /app && chgrp -R node /app
+RUN mkdir /app/node_modules /app/dist \
+	&& chown -R node /app \
+	&& chgrp -R node /app
 
 USER node
 RUN npm install .
