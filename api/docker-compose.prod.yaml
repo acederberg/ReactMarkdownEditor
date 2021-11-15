@@ -5,7 +5,7 @@ services :
       context : '.'
       dockerfile : 'Dockerfile.prod'
     container_name : 'api_prod'
-    image : 'portfolio_images:api_prod'
+    image : 'acederberg/portfolio-images:api_prod'
     networks :
       back : {}
     ports :
