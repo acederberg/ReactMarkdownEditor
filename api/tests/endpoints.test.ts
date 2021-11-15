@@ -17,7 +17,7 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 			return request( app ).post( endpoints.route )
 			.send( {
 				body : `# Test ${k}`,
-				collection : 'tests',
+				collection : 'test_articals',
 				metadata : {
 					author : 'sum dood',
 					title : 'sum thing',
@@ -65,7 +65,7 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 	}
 	it( "Testing POST /markdowns/ without metadata", () => {
 		body[ 'body' ] = '# Test'
-		body[ 'collection' ] = 'python'
+		body[ 'collection' ] = 'python_articals'
 		return attempt()
 	} )
 	it( "Testing POST /markdowns/ with only bad metadata", () => {
@@ -85,19 +85,22 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 
 	} )
 	it( "Sending a GET request to clean up tests", () => request( app ).get( endpoints.route )
-		.send( { collection : 'tests', max_count : 1000 } )
-		.expect( 200 ) 
-		.then( request => { ids = request.body.map( item => item._id ); return true } )
+		.send( { collection : 'test_articals', max_count : 1000 } )
+		.expect( 200 )
+		.then( request => { 
+			ids = request.body.map( item => item._id )
+			return expect( request.body ).not.toBeFalsy() 
+		})
 	)
 	it( "Sending a DELETE request to clean up tests.", () => {
 		console.log( ids )
 		return request( app ).get( endpoints.route )
-	   	.send( { collection : 'tests', _ids : ids } )
+	   	.send( { collection : 'test_articals', _ids : ids } )
 		.expect( 200 )
 	} )
 	it( "Sending a GET request to make sure the tests were actually destroyed.", () => {
 		return request( app ).get( endpoints.route )
-		.send( { collection : 'tests', max_count : 10 } )
+		.send( { collection : 'test_articals', max_count : 10 } )
 		.expect( 200 )
 		.then( request => !request.body )
 	} )
