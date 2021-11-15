@@ -22,6 +22,8 @@ stages:
 # list container ids and stop and kill.
 .pre : 
   script:
+    - echo 'Manually fetching git repository...'
+    - git fetch
     - echo 'Killing remaining containers.'
     - docker ps -aq | xargs docker stop
     - docker ps -aq | xargs docker rm  
@@ -32,6 +34,8 @@ build-dev-images:
   tags: [ 'build' ]
   stage: build-dev-images
   script:
+    - echo 'Manually fetching git repository...'
+    - git fetch && git checkout
     - echo "Building images using docker-compose."
     - docker-compose --file docker-compose.dev.yaml up --detach --build
     - ls
