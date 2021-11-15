@@ -5,6 +5,7 @@ services :
       context : '.'
       dockerfile : './Dockerfile.prod'
     container_name : 'ui_prod'
+    image : 'portfolio-images:ui'
     ports :
       - target : 8080
         published : 8080
