@@ -87,7 +87,7 @@ build-production-images:
   stage : 'build-production-images'
   script :
     - echo "building production images..."
-    - docker compose --file docker-compose.prod.yaml build api ux && echo "Production docker images built."
+    - docker-compose --file docker-compose.prod.yaml build api ux && echo "Production docker images built."
 
 distribute-images:
   tags : [ 'build' ]
