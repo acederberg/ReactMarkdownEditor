@@ -39,9 +39,9 @@ get-git:
   stage : get-git
   script :
     - echo 'Manually fetching git repository...'
-    - GIT_IS_ALIVE=$( ls | grep .git | wc --words )
-    - echo $GIT_IS_ALIVE
     - >
+        GIT_IS_ALIVE=$( ls | grep .git | wc --words )
+        echo $GIT_IS_ALIVE
         source ~/.bashrc
         if [ $GIT_IS_ALIVE -eq 1 ]; then
           echo 'Fetching git repository...'
