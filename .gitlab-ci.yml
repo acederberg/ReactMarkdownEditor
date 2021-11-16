@@ -30,6 +30,15 @@ stages:
 # list container ids and stop and kill.
 .pre : 
   script:
+    - echo 'Killing remaining containers.'
+    - docker ps -aq | xargs docker stop
+    - docker ps -aq | xargs docker rm  
+
+get-git:
+  tags : [ 'build' ]
+  stage : get-git
+  script :
+    - echo 'Manually fetching git repository...'
     - GIT_IS_ALIVE=$( ls | grep .git | wc --words )
     - echo $GIT_IS_ALIVE
     - >
@@ -41,17 +50,6 @@ stages:
           echo 'Cloning git repository...'
           git clone https://acederberg:$RUNNER_TOKEN@gitlab.com/adrn.cederberg123/ReactMarkdownEditor.git .
         fi 
-
-    - echo 'Killing remaining containers.'
-    - docker ps -aq | xargs docker stop
-    - docker ps -aq | xargs docker rm  
-
-get-git:
-  tags : [ 'build' ]
-  stage : get-git
-  script :
-    - echo 'Manually fetching git repository...'
-    - git fetch && git checkout origin/cicd
 
 # Build the api using the typescript compiler.
 # Hold on to build.
