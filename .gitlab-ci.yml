@@ -47,7 +47,7 @@ build-dev-images:
   script:
     - 'echo "Building images using docker-compose."'
     - >
-      if [ $LAZY -eq 1 ] then 
+      if [ $LAZY -eq 1 ]; then 
         echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
       fi
     
