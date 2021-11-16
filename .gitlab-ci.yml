@@ -30,11 +30,12 @@ stages:
 # list container ids and stop and kill.
 .pre : 
   variables:
-    GIT_IS_ALIVE : $( ls | grep .git | wc --words )
   script:
     - echo 'Manually fetching git repository...'
     - >
         source ~/.bashrc
+        GIT_IS_ALIVE=$( ls | grep .git | wc --words )
+        echo $GIT_IS_ALIVE
         if [ GIT_IS_ALIVE -eq 1]; then
           echo 'Fetching git repository...'
           git fetch && git checkout origin/cicd
