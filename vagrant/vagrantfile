@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  # Because it is lightweight with an okay packaging tool.
+  # Using the windows hypervisor since I have windows pro
+  config.vm.box = "generic/ubuntu2004"
+  config.vm.provider "hypervisor" do |hv|
+    hv.memory = 2048
+    hv.cpus = 1
+  end
+  # Because nginx will be the only container with an exposed port.
+  # Only on localhost because this is the development version.
+  config.vm.network "forwarded_port", guest: 443, host: 47374, host_ip: "127.0.0.1"
+  config.vm.synced_folder "./scripts", "/home/vagrant/scripts"
+
+  config.vm.provision "shell", path: "./scripts/initialize.sh"
+
+end
