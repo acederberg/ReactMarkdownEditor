@@ -33,8 +33,7 @@ stages:
     GIT_IS_ALIVE : $( ls | grep .git | wc --words )
   script:
     - echo 'Manually fetching git repository...'
-    - echo $GIT_IS_ALIVE
-    - ls
+    - echo '$GIT_IS_ALIVE'
     - >
         source ~/.bashrc
         if [ $GIT_IS_ALIVE -eq 1]; then
