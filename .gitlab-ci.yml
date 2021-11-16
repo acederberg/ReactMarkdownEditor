@@ -115,7 +115,7 @@ distribute-images:
   stage : 'distribute-images'
   script :
     - echo "pushing images to dockerhub."
-    - docker push acederberg/portfolio_images:ui_prod && docker push acederberg/portfolio_images:api_prod
+    - docker push acederberg/portfolio-images:ui_prod && docker push acederberg/portfolio-images:api_prod
 
 deploy:
   tags : [ 'build' ]
