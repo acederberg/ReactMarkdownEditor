@@ -50,6 +50,7 @@ get-git:
         else
           echo 'Cloning git repository...'
           git clone https://acederberg:$RUNNER_TOKEN@gitlab.com/adrn.cederberg123/ReactMarkdownEditor.git .
+          git checkout origin/cicd
         fi 
 
 # Build the api using the typescript compiler.
