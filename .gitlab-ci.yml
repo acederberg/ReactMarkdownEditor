@@ -9,6 +9,7 @@
 # 4. Run an ansible playbook to deploy everything. 
 
 variables :
+  COMPOSE_HTTP_TIMEOUT : 3600
   GIT_STRATEGY : none
   LAZY : 1 #Must be int.
 
@@ -47,12 +48,12 @@ build-dev-images:
   script:
     - 'echo "Building images using docker-compose."'
     - >
-      if [ $LAZY -eq 1 ]; then 
+      if [ $LAZY -eq 0 ]; then 
         echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
       fi
     
     - >
-      if [ $LAZY -eq 1 ]; then
+      if [ $LAZY -eq 0 ]; then
         docker-compose --file docker-compose.dev.yaml up --detach --build 
       else
         docker-compose --file docker-compose.dev.yaml up --detach
@@ -66,7 +67,7 @@ build-api:
   script:
     - echo "Compiling typescript...."
     - >
-      if [ $LAZY -eq 1 ]; then
+      if [ $LAZY -eq 0 ]; then
         docker exec api npm run build-prod
       else
         echo -e "\e[31mWARNING: Too lazy to compile.\e[0"
@@ -77,7 +78,7 @@ build-ui:
   script:
     - echo "Building ui..."
     - >
-      if [ $LAZY -eq 1 ]; then 
+      if [ $LAZY -eq 0 ]; then 
         docker exec ui npm run build-prod \
       else
         echo -e "\e[31WARNING: Too lazy to build.\e[0"
@@ -105,7 +106,7 @@ build-production-images:
   script :
     - echo "building production images..."
     - > 
-      if [ $LAZY -eq 1 ]; then
+      if [ $LAZY -eq 0 ]; then
         docker-compose --file docker-compose.prod.yaml build api ux
         echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
 
