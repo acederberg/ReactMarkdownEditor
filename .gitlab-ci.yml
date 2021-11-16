@@ -45,11 +45,18 @@ build-dev-images:
   tags: [ 'build' ]
   stage: build-dev-images
   script:
-    - echo "Building images using docker-compose."
-    - [[ $LAZY -eq 1 ]] && echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
-    - [[ $LAZY -eq 1 ]]\
-        && docker-compose --file docker-compose.dev.yaml up --detach --build \ 
-        || docker-compose --file docker-compose.dev.yaml up --detach
+    - 'echo "Building images using docker-compose."'
+    - >
+      if [ $LAZY -eq 1 ] then 
+        echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
+      fi
+    
+    - >
+      if [ $LAZY -eq 1 ]; then
+        docker-compose --file docker-compose.dev.yaml up --detach --build \ 
+      else
+        docker-compose --file docker-compose.dev.yaml up --detach
+      fi
 
 build-api:
   variables : 
@@ -58,18 +65,22 @@ build-api:
   stage: build-api
   script:
     - echo "Compiling typescript...."
-    - [[ $LAZY -eq 1 ]] \
-        && docker exec api npm run build-prod \
-        || echo -e "\e[31mWARNING: Too lazy to compile.\e[0"
+    - >
+      if [ $LAZY -eq 1 ]; then
+        docker exec api npm run build-prod
+      else
+        echo -e "\e[31mWARNING: Too lazy to compile.\e[0"
 
 build-ui:
   tags : [ 'build' ]
   stage : build-ui
   script:
     - echo "Building ui..."
-    - [[ $LAZY -eq 1 ]] \
-        && docker exec ui npm run build-prod \
-        || echo -e "\e[31WARNING: Too lazy to build.\e[0"
+    - >
+      if [ $LAZY -eq 1 ]; then 
+        docker exec ui npm run build-prod \
+      else
+        echo -e "\e[31WARNING: Too lazy to build.\e[0"
 
 test-api:
   tags: [ 'test' ]
@@ -93,9 +104,10 @@ build-production-images:
   stage : 'build-production-images'
   script :
     - echo "building production images..."
-    - [[ $LAZY -eq 1 ]] \
-        && ( docker-compose --file docker-compose.prod.yaml build api ux ) \
-        || echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
+    - > 
+      if [ $LAZY -eq 1 ]; then
+        docker-compose --file docker-compose.prod.yaml build api ux
+        echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
 
 distribute-images:
   tags : [ 'build' ]
