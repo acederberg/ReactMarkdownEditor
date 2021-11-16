@@ -35,20 +35,20 @@ stages:
     - docker ps -aq | xargs docker rm  
 
 get-git:
-  variables :
-    GIT_IS_ALIVE : $( ls | grep .git | wc --words )
     
   tags : [ 'build' ]
   stage : get-git
   script :
     - echo 'Manually fetching git repository...'
     - source ~/.bashrc
+    - GIT_IS_ALIVE=$( ls | grep .git | wc --words )
     - >
         if [ $GIT_IS_ALIVE -eq 1 ]; then
           echo 'Fetching git repository...'
           git fetch && git checkout origin/cicd
         else
           echo 'Cloning git repository...'
+          echo $GIT_IS_ALIVE
           git clone https://acederberg:$RUNNER_TOKEN@gitlab.com/adrn.cederberg123/ReactMarkdownEditor.git .
         fi 
 
