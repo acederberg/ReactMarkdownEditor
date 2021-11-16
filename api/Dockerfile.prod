@@ -9,7 +9,7 @@ RUN echo 'node:Node!' | chpasswd
 
 # Install as node so that permissions don't ge messed up.
 USER node
-COPY ./package.json ./package-lock.json /app
+COPY ./package.json ./package-lock.json /app/
 COPY dist ./dist
 COPY .env.prod .
 RUN npm ci
