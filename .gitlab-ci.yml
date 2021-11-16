@@ -35,13 +35,14 @@ stages:
     - docker ps -aq | xargs docker rm  
 
 get-git:
-    
+  variables : 
+    GIT_IS_ALIVE : $( ls | grep .git | wc --words )
+
   tags : [ 'build' ]
   stage : get-git
   script :
     - echo 'Manually fetching git repository...'
     - source ~/.bashrc
-    - GIT_IS_ALIVE=$( ls | grep .git | wc --words )
     - >
         if [ $GIT_IS_ALIVE -eq 1 ]; then
           echo 'Fetching git repository...'
