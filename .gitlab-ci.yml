@@ -43,17 +43,17 @@ get-git:
   script :
     - echo 'Manually fetching git repository...'
     - source ~/.bashrc
-    - >
-        if [ $GIT_IS_ALIVE -eq 1 ]; then
-          echo 'Fetching git repository...'
-          git fetch && git checkout origin/cicd
+    - > 
+        if (( $(ls -a | grep --max-count=1 .git | wc --words) == 1 ));
+        then
+                echo 'Fetching git repository...'
+                git fetch && git checkout origin/cicd;
         else
-          echo 'Cloning git repository...'
-          echo $GIT_IS_ALIVE
-          git clone https://acederberg:$RUNNER_TOKEN@gitlab.com/adrn.cederberg123/ReactMarkdownEditor.git .
-          git checkout origin/cicd
-        fi 
-
+                echo 'Cloning git repository...'
+                echo $GIT_IS_ALIVE
+                git clone https://acederberg:$RUNNER_TOKEN@gitlab.com/adrn.cederberg123/ReactMarkdownEditor.git .
+                git checkout origin/cicd
+        fi
 # Build the api using the typescript compiler.
 # Hold on to build.
 build-dev-images:
