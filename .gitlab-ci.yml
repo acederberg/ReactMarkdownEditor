@@ -53,7 +53,7 @@ build-dev-images:
     
     - >
       if [ $LAZY -eq 1 ]; then
-        docker-compose --file docker-compose.dev.yaml up --detach --build \ 
+        docker-compose --file docker-compose.dev.yaml up --detach --build 
       else
         docker-compose --file docker-compose.dev.yaml up --detach
       fi
