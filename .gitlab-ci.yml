@@ -48,14 +48,10 @@ build-dev-images:
   script:
     - 'echo "Building images using docker-compose."'
     - >
-      if [ $LAZY -eq 0 ]; then 
-        echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
-      fi
-    
-    - >
       if [ $LAZY -eq 0 ]; then
         docker-compose --file docker-compose.dev.yaml up --detach --build 
       else
+        echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
         docker-compose --file docker-compose.dev.yaml up --detach
       fi
 
@@ -71,6 +67,7 @@ build-api:
         docker exec api npm run build-prod
       else
         echo -e "\e[31mWARNING: Too lazy to compile.\e[0"
+      fi
 
 build-ui:
   tags : [ 'build' ]
@@ -82,6 +79,7 @@ build-ui:
         docker exec ui npm run build-prod \
       else
         echo -e "\e[31WARNING: Too lazy to build.\e[0"
+      fi
 
 test-api:
   tags: [ 'test' ]
@@ -108,7 +106,9 @@ build-production-images:
     - > 
       if [ $LAZY -eq 0 ]; then
         docker-compose --file docker-compose.prod.yaml build api ux
+      else
         echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
+      fi
 
 distribute-images:
   tags : [ 'build' ]
