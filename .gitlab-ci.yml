@@ -15,6 +15,7 @@ variables :
   COMPOSE_HTTP_TIMEOUT : 3600
   GIT_STRATEGY : none
   LAZY : 0 #Must be int.
+  LAZY_BUILD_DEV_IMAGES : 1
 
 stages:    
   - get-git
@@ -62,7 +63,7 @@ build-dev-images:
   script:
     - 'echo "Building images using docker-compose."'
     - >
-      if [ $LAZY -eq 0 ]; then
+      if [ $LAZY -eq 0 || $LAZY_BUILD_DEV_IMAGES -eq 0 ]; then
         docker-compose --file docker-compose.dev.yaml up --detach --build 
       else
         echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
@@ -90,7 +91,7 @@ build-ui:
     - echo "Building ui..."
     - >
       if [ $LAZY -eq 0 ]; then 
-        docker exec ui npm run build-prod \
+        docker exec ui npm run build-prod
       else
         echo -e "\e[31WARNING: Too lazy to build.\e[0"
       fi
