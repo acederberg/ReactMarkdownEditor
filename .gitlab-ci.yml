@@ -54,16 +54,12 @@ build-api:
   script:
     - echo "Compiling typescript...."
     - docker exec api npm run build-prod
-  artifacts:
-    paths : [ ./api/dist ]
 
 build-ui:
   tags : [ 'build' ]
   stage : build-ui
   script:
     - docker exec ui npm run build-prod
-  artifacts :
-    paths : [ ./ui/build ]
 
 test-api:
   tags: [ 'test' ]
