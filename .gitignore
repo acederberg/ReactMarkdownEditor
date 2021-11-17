@@ -4,3 +4,5 @@
 *.swp
 *.swo
 ANSIBLE.md
+.env.*
+.vagrant
