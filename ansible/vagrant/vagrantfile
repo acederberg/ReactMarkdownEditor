@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  # Config for the application runner.  
+  # https://www.vagrantup.com/docs/multi-machine
+  config.vm.define "app" do |app|
+
+    # Provisioning is to be done by ansible.
+    # Using the windows hypervisor since I have windows pro
+
+    app.vm.box = "generic/ubuntu2004"
+    app.vm.hostname = "app-runner"
+    app.vm.provider "hypervisor" do |hv|
+      hv.memory = 2048
+      hv.cpus = 1
+    end
+
+    # Because nginx will be the only container with an exposed port.
+    # Only on localhost because this is the development version.
+
+    app.vm.network "forwarded_port", guest: 443, host: 47374, host_ip: "127.0.0.1"
+    app.vm.synced_folder "./scripts", "/home/vagrant/scripts"
+
+  end
+
+  config.vm.define "gitlab-runner" do |gl|
+    
+    config.vm.box = "generic/ubuntu2004"
+    config.vm.hostname = "gitlab-runner"
+    config.vm.provider "vmware" do |vw|
+      vw.memory = 4096
+      vw.cpus = 1
+    end
+
+  end
+
+end
