@@ -1,0 +1,5 @@
+- hosts : my_runners
+  roles : [ common, app-runner ]
+- hosts : my_server
+  roles : [ common, app-runner ]
+

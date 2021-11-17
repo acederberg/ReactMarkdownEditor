@@ -1,0 +1,11 @@
+version : '3.7'
+services :
+  ansible-runner:
+    build : '.'
+    container_name : 'ansible-runner'
+    volumes : 
+      - source : '.'
+        target : /opt/ansible/
+        type : 'bind'
+    tty : true
+
