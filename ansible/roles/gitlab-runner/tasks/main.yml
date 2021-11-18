@@ -1,9 +1,8 @@
 ---
-# tasks file for roles/gitlab-runner
-- name : "Add gitlab-runner"
+- name : "Install a gitlab runner."
   tags : [ install ]
   become : true
-  ansible.builtins.shell : >
+  shell : >
     # Install gitlab runner and add it to the docker group.
     # The adr1an user will be responsible for creating runner instances.
     # Cannot use `arch` here since the values do not line up with values defined for the runnr.
@@ -14,16 +13,15 @@
 - name : "Add the runner to the docker group and sudoers group."
   tags : [ install ]
   become : true
-  ansible.builtins.shell : >
+  shell : >
     usermod -aG sudo gitlab-runner
     usermod -aG docker gitlab-runner
-
     # name : "Change user passwords from defaults"
     # tags : [ install, security ]
     # become : true
 
 - name : "Add a bashrc with aliases to the various profiles."
-  ansible.builtins.copy :
+  copy :
     src : '../../resources/.bashrc'
     dest : '/home/gitlab-runner/'
   

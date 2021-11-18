@@ -1,4 +1,4 @@
-- hosts : my_runners
+- hosts : my_runner
   roles : [ common, gitlab-runner ]
 - hosts : my_server
   roles : [ common, app-runner ]
