@@ -1,27 +1,29 @@
 ---
-- name : "Install a gitlab runner."
+- name : "Install gitlab-runner."
   tags : [ install ]
   become : true
-  shell : >
-    # Install gitlab runner and add it to the docker group.
-    # The adr1an user will be responsible for creating runner instances.
-    # Cannot use `arch` here since the values do not line up with values defined for the runnr.
-    echo -e "\e[31mWARNING: Gitlab runner must be manually registed.\e[0m"
-    curl -LJO "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
-    dpkg -i "gitlab-runner_amd64.deb"
+  script : './install-gitlab-runner.sh'
 
 - name : "Add the runner to the docker group and sudoers group."
-  tags : [ install ]
+  tags : [ install, security ]
   become : true
-  shell : >
-    usermod -aG sudo gitlab-runner
-    usermod -aG docker gitlab-runner
-    # name : "Change user passwords from defaults"
-    # tags : [ install, security ]
-    # become : true
+  user :
+    name : gitlab-runner
+    groups : docker,sudo
+    password : '{{ password0 }}'
+    
+- name : "Change the vagrant password"
+  tags : [ install, security ]
+  become : true
+  user :
+    name : vagrant
+    groups : sudo, docker
+    password : '{{ password1 }}'
 
-- name : "Add a bashrc with aliases to the various profiles."
-  copy :
-    src : '../../resources/.bashrc'
-    dest : '/home/gitlab-runner/'
+
+
+# - name : "Add a bashrc with aliases to the various profiles."
+#   copy :
+#     src : '../../resources/.bashrc'
+#     dest : '/home/gitlab-runner/'
   

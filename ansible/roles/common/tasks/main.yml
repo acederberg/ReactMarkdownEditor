@@ -12,3 +12,9 @@
   tags : [ install ]
   script : './install-docker-compose.sh'
   become : true
+
+
+- name : "Make sure the docker group exists."
+  group :
+    name : docker
+    state : present

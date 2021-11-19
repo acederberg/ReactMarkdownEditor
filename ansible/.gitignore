@@ -1,2 +1,7 @@
 configs
 hosts.*
+.passwd
+.password
+.vault_passwd
+.vault_password
+.vault_password.*
