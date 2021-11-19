@@ -84,7 +84,7 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 		# Put the ansible-runner ssh key onto the machines.	
 		echo "Please run the following commands and authenticate yourself:"
 		for addr in $( cat temp ); do
-			docker exec -it ansible-runner ssh-copy-id -f vagrant@$addr
+			docker exec -it ansible-runner ssh-copy-id -f ansible@$addr
 		done
 		rm temp
 		echo "Done."

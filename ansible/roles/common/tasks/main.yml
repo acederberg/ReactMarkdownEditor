@@ -1,20 +1,58 @@
-# Install docker and docker-compose on both vms.
-# Notes on shell scripts [ here ]( https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html )
-# Notes on copy [ here ]( https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html )
----
-- name : "Install docker"
-  tags : [ install ]
-  script : './install-docker.sh' 
+# I followed this very helpful tutorial to replace my scripts.
+# https://github.com/xcad2k/ansible-boilerplates/blob/main/Provision/Ubuntu/install_docker.yaml
+
+- name : "Add ansible to the sudo group"
+
+- name : "Install tools for docker installation"
   become : true
-
-
-- name : "Install docker-compose."
-  tags : [ install ]
-  script : './install-docker-compose.sh'
-  become : true
-
-
-- name : "Make sure the docker group exists."
-  group :
-    name : docker
+  apt :
+    name : [ apt-transport-https, ca-certificates, curl, gnupg-agent, software-properties-common ]
     state : present
+    update_cache: true
+
+- name : "Add the docker gpg key."
+  apt_key :
+    state: present
+    url : https://download.docker.com/linux/ubuntu/gpg
+
+- name : "Add the docker repository to apt"
+  apt_repository :
+    state : present
+    repo :  https://download.docker.com/linux/ubuntu focal stable
+
+- name : "Install docker."
+  apt :
+    name : [ docker-ce, docker-ce-cli, containerd.io ]
+    update_cache: true
+
+# Looked around for a way to go scriptless.
+# Found this: https://www.srijn.net/install-docker-and-docker-compose-using-ansible/
+- name : "Is docker compose installed?"
+  command : docker-compose --version
+  register: docker_compose_version
+  changed_when: false
+  failed_when: false
+  check_mode : no
+
+- set_fact :
+    docker_compose_current_version  "{{ docker_compose_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
+  when : 
+    - docker_compose_version.stdout is defined
+
+- name : "Install docker-compose"
+  get_url:
+    url : "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+    dest: /usr/local/bin/docker-compose
+    mode: 'a+x'
+    force: true
+  when: >
+    docker_compose_current_version is not defined
+
+
+- name : "Install pip."
+  apt :
+    name : python3-pip
+
+- name : "Install the docker sdk so ansible can do magic."
+  pip :
+    name : [ docker, docker-compose ]

@@ -2,7 +2,9 @@
 - name : "Install gitlab-runner."
   tags : [ install ]
   become : true
-  script : './install-gitlab-runner.sh'
+  apt : 
+    deb : "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
+    status : 'present'
 
 - name : "Add the runner to the docker group and sudoers group."
   tags : [ install, security ]
@@ -31,9 +33,6 @@
   user :
     name : vagrant
     groups : ''
-
-
-
 
 
 # - name : "Add a bashrc with aliases to the various profiles."
