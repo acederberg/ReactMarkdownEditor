@@ -5,3 +5,4 @@ hosts.*
 .vault_passwd
 .vault_password
 .vault_password.*
+temp

@@ -12,13 +12,27 @@
     groups : docker,sudo
     password : '{{ password0 }}'
     
-- name : "Change the vagrant password"
+- name : "Setup the ansible user."
+  # This user is build in to the vagrantfiles
+  tags : [ install, security ]
+  become : true
+  user :
+    name : ansible
+    groups : sudo,docker
+    password : '{{ password1 }}'
+
+- name : "Change the vagrant user to have fewer permissions."
+  # Does not yet change password. 
+  # This is due to some issues with authentication during vagrant up
+  # The issue is authentication failure.
+  # This is likely happening due to overriding ssh keys.
   tags : [ install, security ]
   become : true
   user :
     name : vagrant
-    groups : sudo, docker
-    password : '{{ password1 }}'
+    groups : ''
+
+
 
 
 

@@ -8,14 +8,14 @@
     password : '{{password2}}'
   become : true
 
-- name : "Change the vagrant user."
+- name : "Change the ansible user."
   tags : [ "install", "security" ]
   user :
-    name : vagrant
+    name : ansible
     groups : sudo,docker
     password : '{{password3}}'
   become : true
 
-- name : "Pull production images."
-  tags : [ "deploy" ]
-  docker :
+  #- name : "Pull production images."
+  #  tags : [ "deploy" ] 
+  #  docker : 
