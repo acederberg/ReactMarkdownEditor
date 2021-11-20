@@ -61,9 +61,3 @@
   become : true
   pip :
     name : [ docker, docker-compose ]
-
-- name : "Remove the vagrant user sudoers.d"
-  tags : [ "install", "security", "current" ]
-  become : true
-  shell : test -f /etc/sudoers.d/vagrant && rm /etc/sudoers.d/vagrant || echo 
-

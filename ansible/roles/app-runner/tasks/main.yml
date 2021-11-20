@@ -24,3 +24,22 @@
     password : '{{password1}}'
   become : true
 
+ # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
+ # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
+- name : "Become the app-runner user, build/start containers."
+  tags : [ "run", "docker-container", "app-runner" ]
+  ports : 
+    - 9000 : 9000
+    - 8000 : 8000
+  community.docker.docker_container :
+    name : portainer
+    image : portainer/portainer-ce
+    volumes :
+      # Mount the docker socket.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Persist data in a volume.
+      - portainer_data:/data
+    restart_policy: always
+
+
+
