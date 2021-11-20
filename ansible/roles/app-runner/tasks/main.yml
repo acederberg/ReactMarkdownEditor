@@ -1,21 +1,26 @@
 ---
 # tasks file for roles/app-runner
 - name : "Create the app-runner user."
-  tags : [ "install", "security" ]
+  tags : [ "install", "security", "app-runner" ]
   user :
     name : app-runner
     groups : sudo,docker
     password : '{{password2}}'
   become : true
 
-- name : "Change the ansible users password. No docker permissions."
-  tags : [ "install", "security" ]
+- name : "Change the ansible users password."
+  tags : [ "install", "security", "app-runner" ]
   user :
     name : ansible
-    groups : sudo,docker
+    groups : sudo
     password : '{{password3}}'
   become : true
 
-  #- name : "Pull production images."
-  #  tags : [ "deploy" ] 
-  #  docker : 
+- name : "Change the ansible user."
+  tags : [ "install", "security", "app-runner" ]
+  user :
+    name : vagrant
+    groups : ''
+    password : '{{password1}}'
+  become : true
+

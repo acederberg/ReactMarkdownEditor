@@ -36,7 +36,6 @@
   tags : [ "install", "docker" ]
   become : true
   shell : "ls /usr/local/bin/ | grep docker-compose | wc --word"
-  okay_when : docker_compose_exists.rc == 1
   register: docker_compose_exists
   
 

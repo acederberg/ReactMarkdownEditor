@@ -1,13 +1,13 @@
 ---
 - name : "Install gitlab-runner."
-  tags : [ install ]
+  tags : [ install, gitlab-runner ]
   become : true
   apt : 
     deb : "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
-    status : 'present'
+    state : 'present'
 
 - name : "Add the runner to the docker group and sudoers group."
-  tags : [ install, security ]
+  tags : [ install, gitlab-runner, current ]
   become : true
   user :
     name : gitlab-runner
@@ -16,22 +16,19 @@
     
 - name : "Add the anisible user to the docker group."
   # This user is build in to the vagrantfiles
-  tags : [ install, security ]
+  tags : [ install, gitlab-runner, security, current ]
   become : true
   user :
     name : ansible
     groups : sudo,docker
     password : '{{ password1 }}'
 
-- name : "Change the vagrant user to have fewer permissions."
-  # Does not yet change password. 
-  # This is due to some issues with authentication during vagrant up
-  # The issue is authentication failure.
-  # This is likely happening due to overriding ssh keys.
-  tags : [ install, security ]
+- name : "Change the vagrant users password and remove it from the sudoers group."
+  tags : [ install, gitlab-runner, security ]
   become : true
   user :
     name : vagrant
+    password : '{{ password2 }}'
     groups : ''
 
 
