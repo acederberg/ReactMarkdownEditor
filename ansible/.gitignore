@@ -2,6 +2,8 @@ configs
 hosts.*
 .passwd
 .password
+.dockerhub_passwd
+.dockerhub_user
 .vault_passwd
 .vault_password
 .vault_password.*

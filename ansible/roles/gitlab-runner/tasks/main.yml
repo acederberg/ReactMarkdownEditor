@@ -7,7 +7,7 @@
     state : 'present'
 
 - name : "Add the runner to the docker group and sudoers group."
-  tags : [ install, gitlab-runner, current ]
+  tags : [ install, gitlab-runner ]
   become : true
   user :
     name : gitlab-runner
@@ -16,7 +16,7 @@
     
 - name : "Add the anisible user to the docker group."
   # This user is build in to the vagrantfiles
-  tags : [ install, gitlab-runner, security, current ]
+  tags : [ install, gitlab-runner, security ]
   become : true
   user :
     name : ansible

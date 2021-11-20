@@ -1,6 +1,7 @@
 FROM ubuntu
 
 RUN apt update --yes && apt install --yes ansible
+RUN ansible-galaxy collection install community.docker
 RUN mkdir /home/ansible && useradd -d /home/ansible/ ansible
 RUN echo 'ansible:Ans1ble!' | chpasswd
 WORKDIR /opt/ansible
