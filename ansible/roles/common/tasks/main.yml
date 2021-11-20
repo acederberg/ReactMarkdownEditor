@@ -1,9 +1,8 @@
 # I followed this very helpful tutorial to replace my scripts.
 # https://github.com/xcad2k/ansible-boilerplates/blob/main/Provision/Ubuntu/install_docker.yaml
 
-- name : "Add ansible to the sudo group"
-
 - name : "Install tools for docker installation"
+  tags : [ "install", "docker" ]
   become : true
   apt :
     name : [ apt-transport-https, ca-certificates, curl, gnupg-agent, software-properties-common ]
@@ -11,16 +10,22 @@
     update_cache: true
 
 - name : "Add the docker gpg key."
+  tags : [ "install", "docker" ]
+  become : true
   apt_key :
     state: present
     url : https://download.docker.com/linux/ubuntu/gpg
 
 - name : "Add the docker repository to apt"
+  tags : [ "install", "docker" ]
+  become : true
   apt_repository :
     state : present
-    repo :  https://download.docker.com/linux/ubuntu focal stable
+    repo :  deb https://download.docker.com/linux/ubuntu focal stable
 
 - name : "Install docker."
+  tags : [ "install", "docker" ]
+  become : true
   apt :
     name : [ docker-ce, docker-ce-cli, containerd.io ]
     update_cache: true
@@ -28,31 +33,32 @@
 # Looked around for a way to go scriptless.
 # Found this: https://www.srijn.net/install-docker-and-docker-compose-using-ansible/
 - name : "Is docker compose installed?"
-  command : docker-compose --version
-  register: docker_compose_version
-  changed_when: false
-  failed_when: false
-  check_mode : no
+  tags : [ "install", "docker" ]
+  become : true
+  shell : "ls /usr/local/bin/ | grep docker-compose | wc --word"
+  okay_when : docker_compose_exists.rc == 1
+  register: docker_compose_exists
+  
 
-- set_fact :
-    docker_compose_current_version  "{{ docker_compose_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
-  when : 
-    - docker_compose_version.stdout is defined
-
-- name : "Install docker-compose"
-  get_url:
-    url : "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+- name : "Install docker-compose if it isn't."
+  tags : [ "install", "docker" ]
+  become : true
+  get_url :
+    url : "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64"
     dest: /usr/local/bin/docker-compose
-    mode: 'a+x'
-    force: true
+    mode : a+x
+    force : true
   when: >
-    docker_compose_current_version is not defined
-
+    docker_compose_exists.stdout == '0'
 
 - name : "Install pip."
+  tags : [ "install", "docker" ]
+  become : true
   apt :
     name : python3-pip
 
 - name : "Install the docker sdk so ansible can do magic."
+  tags : [ "install", "docker" ]
+  become : true
   pip :
     name : [ docker, docker-compose ]

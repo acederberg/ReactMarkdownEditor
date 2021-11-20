@@ -14,7 +14,7 @@
     groups : docker,sudo
     password : '{{ password0 }}'
     
-- name : "Setup the ansible user."
+- name : "Add the anisible user to the docker group."
   # This user is build in to the vagrantfiles
   tags : [ install, security ]
   become : true

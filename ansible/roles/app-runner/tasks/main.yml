@@ -1,6 +1,6 @@
 ---
 # tasks file for roles/app-runner
-- name : "Create the application runner user."
+- name : "Create the app-runner user."
   tags : [ "install", "security" ]
   user :
     name : app-runner
@@ -8,7 +8,7 @@
     password : '{{password2}}'
   become : true
 
-- name : "Change the ansible user."
+- name : "Change the ansible users password. No docker permissions."
   tags : [ "install", "security" ]
   user :
     name : ansible
