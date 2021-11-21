@@ -138,7 +138,7 @@ distribute-images:
       if [ $LAZY -eq 0 || $LAZY_DISTRIBUTE_IMAGES -eq 0 ]; then
         echo "\e[31mWARNING: Too lazy too push images. It makes since as they were not build in the last step."
       else
-        docker push acederberg/portfolio_images:ui_prod && docker push acederberg/portfolio_images:api_prod
+        docker push acederberg/portfolio_images:ui_prod && docker push acederberg/portfolio_images:api_prod && docker push acederberg/portfolio_images:ssl
       fi
 
 deploy:
