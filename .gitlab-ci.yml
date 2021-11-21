@@ -21,7 +21,7 @@ variables :
   GIT_STRATEGY : none
   LAZY : 0 #Must be int.
   LAZY_BUILD_DEV_IMAGES : 1
-  LAZY_DISTRIBUTE_IMAGES : 1
+  LAZY_DISTRIBUTE_IMAGES : 0
 
 stages:    
   - get-git
@@ -67,11 +67,11 @@ build-dev-images:
   script:
     - 'echo "Building images using docker-compose."'
     - >
-      if [ $LAZY -eq 0 || $LAZY_BUILD_DEV_IMAGES -eq 0 ]; then
-        docker-compose --file docker-compose.dev.yaml up --detach --build 
-      else
-        echo -e "\e[031mWARNING: LAZY=true. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
+      if [ $LAZY -eq 1 || $LAZY_BUILD_DEV_IMAGES -eq 1 ]; then
+        echo -e "\e[031mWARNING: LAZY=1 or LAZY_BUILD_DEV_IMAGES=1. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
         docker-compose --file docker-compose.dev.yaml up --detach
+      else
+        docker-compose --file docker-compose.dev.yaml up --detach --build 
       fi
 
 build-api:
@@ -124,7 +124,7 @@ build-production-images:
     - echo "building production images..."
     - > 
       if [ $LAZY -eq 0 ]; then
-        docker-compose --file docker-compose.prod.yaml build api ux
+        docker-compose --file docker-compose.prod.yaml build api ux ssl
       else
         echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
       fi
@@ -135,7 +135,7 @@ distribute-images:
   script :
     - echo "pushing images to dockerhub."
     - > 
-      if [[ $LAZY -eq 0 || $LAZY_DISTRIBUTE_IMAGES -eq 0 ]]; then
+      if [ $LAZY -eq 1 || $LAZY_DISTRIBUTE_IMAGES -eq 1 ]; then
         echo "\e[31mWARNING: Too lazy too push images. It makes since as they were not build in the last step."
       else
         docker push acederberg/portfolio_images:ui_prod && docker push acederberg/portfolio_images:api_prod && docker push acederberg/portfolio_images:ssl
