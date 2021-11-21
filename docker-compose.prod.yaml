@@ -5,7 +5,7 @@ services :
       context : './nginx'
       dockerfile : 'Dockerfile.prod'
     container_name : 'ssl_prod'
-    image : 'acederberg/portfolio-images:ssl'
+    image : 'acederberg/portfolio_images:ssl'
     networks :
       front : {}
       back : {}
