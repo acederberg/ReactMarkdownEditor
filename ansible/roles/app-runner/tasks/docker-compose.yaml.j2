@@ -1,0 +1,41 @@
+version : '3.7'
+services :
+
+  # Services whose image must be pulled from dockerhub
+  ui_prod : 
+    image : '{{docker_username}}/{{docker_repo}}:api_prod'
+    networks : 
+      back : {}
+  ssl_prod : 
+    image : '{{docker_username}}/{{docker_repo}}:api_prod'  
+    networks :
+      back : {}
+      front : {}
+  api_prod : 
+    image : '{{docker_username}}/{{docker_repo}}:api_prod'
+    networks : 
+      back : {}
+
+  # The mongodb service.
+  mongodb_ : 
+    environment:
+      MONGO_INITDB_USERNAME : {{mongodb_initdb_root_username}}
+      MONGO_INITDB_PASSWORD : {{mongodb_initdb_root_password}}
+    container_name: mongo
+    image : mongo
+    networks : 
+      back : {}
+    ports : [ 27017 ]
+    volumes : 
+      # This will be used to persist data between containers.
+      # It must be backed up regularly.
+      - mongo_data:/data/db
+
+# NB these networks are build into the containers.
+networks :
+  front :
+    driver : 'bridge'
+    attachable : true
+  back :
+    driver : 'bridge'
+    attachable : true

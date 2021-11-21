@@ -1,5 +1,6 @@
 ---
 # tasks file for roles/app-runner
+- include : "../vars/main.yml"
 - name : "Create the app-runner user."
   tags : [ "install", "security", "app-runner" ]
   user :
