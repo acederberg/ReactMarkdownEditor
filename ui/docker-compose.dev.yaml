@@ -14,5 +14,5 @@ services :
         source : '.'
         target : '/app/'
       - '/app/node_modules'
-      - '/app/build'
+      - './build:/app/build'
     tty: true
