@@ -1,6 +1,6 @@
 ---
 # tasks file for roles/app-runner
-- include : "../vars/main.yml"
+- include_vars : "../vars/main.yml"
 - name : "Create the app-runner user."
   tags : [ "install", "security", "app-runner" ]
   user :
@@ -21,14 +21,13 @@
   tags : [ "install", "security", "app-runner" ]
   user :
     name : vagrant
-    groups : ''
     password : '{{password1}}'
   become : true
 
 # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
 # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
-- name : "Build/start containers."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+- name : "Add portainer"
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_container :
     name : portainer
     ports : 
@@ -41,21 +40,29 @@
       # Persist data in a volume.
       - portainer_data:/data
     restart_policy: always
+  become : true
 
-- name : "Make a folder for docker-compose.yaml"
+- name : "Make a folder for docker-compose.yaml and artifacts"
   tags : [ "deploy", "docker-container", "app-runner", "current" ]
   shell : test -d /home/ansible/app || mkdir /home/ansible/app
 
 - name : "Copy over the docker compose."
   tags : [ "deploy", "docker-container", "app-runner", "current" ]
-  copy : 
-    src : ../docker-compose.sourceless.yaml  
+  template : 
+    src : ./docker-compose.yaml.j2
     dest : /home/ansible/app/docker-compose.yaml
 
-# - name : "Read the deployment docker compose."
-#   tags : [ "deploy", "docker-container", "app-runner", "current" ]
-#   community.docker.docker_compose :
-#     project_src : "/home/ansible/app"
-#     state : present
-#    
-# 
+- name : "Login to docker"
+  tags : [ "deploy", "docker-container", "app-runner", "login", "security", "current" ]
+  community.docker.docker_login :
+    username : "{{dockerhub_username}}"
+    password : "{{dockerhub_password}}"
+
+- name : "Read the deployment docker compose."
+  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  community.docker.docker_compose :
+    project_src : "/home/ansible/app"
+    state : present
+  become : true
+   
+

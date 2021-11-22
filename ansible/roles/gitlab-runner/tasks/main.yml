@@ -29,7 +29,6 @@
   user :
     name : vagrant
     password : '{{ password2 }}'
-    groups : ''
 
 
 # - name : "Add a bashrc with aliases to the various profiles."
