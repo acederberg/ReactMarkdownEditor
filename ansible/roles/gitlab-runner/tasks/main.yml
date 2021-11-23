@@ -30,9 +30,13 @@
     name : vagrant
     password : '{{ password2 }}'
 
-
-# - name : "Add a bashrc with aliases to the various profiles."
-#   copy :
-#     src : '../../resources/.bashrc'
-#     dest : '/home/gitlab-runner/'
+- name : "Add a bashrc for gitlab-ci script to source important environment variables from."
+  tags : [ "current2" ]
+  become : true
+  copy :
+    owner : gitlab-runner
+    group : gitlab-runner
+    decrypt : true
+    src : './.bashrc'
+    dest : '/home/gitlab-runner/'
   
