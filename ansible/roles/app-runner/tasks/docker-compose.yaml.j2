@@ -6,15 +6,31 @@ services :
     image : '{{dockerhub_username}}/{{dockerhub_repo}}:ui_prod'
     networks : 
       back : {}
-  ssl_prod : 
-    image : '{{dockerhub_username}}/{{dockerhub_repo}}:ssl'  
-    networks :
-      back : {}
-      front : {}
   api_prod : 
     image : '{{dockerhub_username}}/{{dockerhub_repo}}:api_prod'
     networks : 
       back : {}
+
+  ssl :
+
+    # This directory should be made by the adjacent tasks
+    # It should have the following shape
+    # nginx
+    # - nginx.conf
+    # - ssl : [ crt.key, crt.pem ]
+
+    build : './nginx'
+    container_name : 'ssl_prod'
+    ports :
+      - target : 443
+        published : 443
+        protocol : 'tcp'
+
+    # This will be made by ansible templates in the docker host.
+    volumes :
+      - type : 'bind'
+        source : './nginx/ssl'
+        target : '/root/ssl'
 
   # The mongodb service.
   mongodb : 
@@ -30,6 +46,9 @@ services :
       # This will be used to persist data between containers.
       # It must be backed up regularly.
       - ./mongo_data:/data/db
+
+
+
 
 # NB these networks are build into the containers.
 networks :

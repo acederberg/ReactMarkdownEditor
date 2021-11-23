@@ -1,4 +1,5 @@
 ---
+# USERS 
 # tasks file for roles/app-runner
 - include_vars : "../vars/main.yml"
 - name : "Create the app-runner user."
@@ -17,16 +18,47 @@
     password : '{{password3}}'
   become : true
 
-- name : "Change the ansible user."
-  tags : [ "install", "security", "app-runner" ]
+- name : "Determine if the vagrant user exists."
+  tags : [ "install", "security", "app-runner", "current" ]
+  # Test by looking for the home directory since vagrant always makes a home directory.
+  shell : ls /home | grep vagrant | wc --word
+  register: vagrant_exists
+
+- name : "Change the vagrant user if it exists."
+  tags : [ "install", "security", "app-runner", "current" ]
   user :
     name : vagrant
     password : '{{password1}}'
+  when : >
+    vagrant_exists != '0'
   become : true
 
+# RESOURCES
+# Read this snippet about adding encrypted data: https://ahelpme.com/software/ansible/ansible-using-ansible-vault-with-copy-module-to-decrypt-on-the-fly-files/.
+- name : "RESOURCES: Make a folder for docker-compose.yaml and artifacts"
+  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  shell : test -d /home/ansible/app || mkdir /home/ansible/app
+
+- name : "RESOURCES: Copy docker compose into /home/ansible/app."
+  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  template : 
+    src : ./docker-compose.yaml.j2
+    dest : /home/ansible/app/docker-compose.yaml
+
+- name : "RESOURCES: Copy decrypted ssl resourced to /home/ansible/app"
+  tags : [ "install", "security", "app-runner", "ssl", "nginx", "current" ]
+  copy : 
+    src : './nginx'
+    dest : /home/ansible/app
+    decrypt : true
+    owner : ansible 
+    group : ansible
+    backup : no
+
+# DOCKER
 # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
 # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
-- name : "Add portainer"
+- name : "DOCKER: Add portainer"
   tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_container :
     name : portainer
@@ -42,24 +74,14 @@
     restart_policy: always
   become : true
 
-- name : "Make a folder for docker-compose.yaml and artifacts"
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
-  shell : test -d /home/ansible/app || mkdir /home/ansible/app
-
-- name : "Copy over the docker compose."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
-  template : 
-    src : ./docker-compose.yaml.j2
-    dest : /home/ansible/app/docker-compose.yaml
-
-- name : "Login to docker"
-  tags : [ "deploy", "docker-container", "app-runner", "login", "security", "current" ]
+  - name : "DOCKER: Login to dockerhub"
+  tags : [ "deploy", "docker-container", "app-runner", "login", "security" ]
   community.docker.docker_login :
     username : "{{dockerhub_username}}"
     password : "{{dockerhub_password}}"
 
-- name : "Read the deployment docker compose."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+- name : "DOCKER: Run the deployment docker compose."
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_compose :
     project_src : "/home/ansible/app"
     state : present
