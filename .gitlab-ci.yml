@@ -20,8 +20,8 @@ variables :
   COMPOSE_HTTP_TIMEOUT : 3600
   GIT_STRATEGY : none
   LAZY : 0 #Must be int.
-  LAZY_BUILD_DEV_IMAGES : 0
-  LAZY_DISTRIBUTE_IMAGES : 0
+  LAZY_BUILD_DEV_IMAGES : 1
+  LAZY_DISTRIBUTE_IMAGES : 1
 
 stages:    
   - get-git
@@ -83,6 +83,7 @@ build-api:
     - echo "Compiling typescript...."
     - >
       if [ $LAZY -eq 0 ]; then
+        docker exec -u 0 api chow node:node ./build
         docker exec api npm run build-prod
       else
         echo -e "\e[31mWARNING: Too lazy to compile.\e[0"
@@ -95,6 +96,8 @@ build-ui:
     - echo "Building ui..."
     - >
       if [ $LAZY -eq 0 ]; then 
+        # Change permissions here since it seems like this issue will never resolve nicely using docker: https://github.com/docker/compose/issues/3270
+        docker exec --user 0 ui chown node:node ./build
         docker exec ui npm run build-prod
       else
         echo -e "\e[31WARNING: Too lazy to build.\e[0"
