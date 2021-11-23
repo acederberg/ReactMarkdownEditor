@@ -74,7 +74,7 @@
     restart_policy: always
   become : true
 
-  - name : "DOCKER: Login to dockerhub"
+- name : "DOCKER: Login to dockerhub"
   tags : [ "deploy", "docker-container", "app-runner", "login", "security" ]
   community.docker.docker_login :
     username : "{{dockerhub_username}}"

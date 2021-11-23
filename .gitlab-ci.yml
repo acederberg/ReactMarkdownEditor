@@ -20,7 +20,7 @@ variables :
   COMPOSE_HTTP_TIMEOUT : 3600
   GIT_STRATEGY : none
   LAZY : 0 #Must be int.
-  LAZY_BUILD_DEV_IMAGES : 1
+  LAZY_BUILD_DEV_IMAGES : 0
   LAZY_DISTRIBUTE_IMAGES : 0
 
 stages:    
