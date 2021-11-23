@@ -83,7 +83,7 @@ build-api:
     - echo "Compiling typescript...."
     - >
       if [ $LAZY -eq 0 ]; then
-        docker exec -u 0 api chow node:node ./build
+        docker exec -u 0 api chown node:node ./build
         docker exec api npm run build-prod
       else
         echo -e "\e[31mWARNING: Too lazy to compile.\e[0"
