@@ -20,9 +20,9 @@ Vagrant.configure("2") do |config|
     # Because nginx will be the only container with an exposed port.
     # Only on localhost because this is the development version.
 
-    app.vm.network "forwarded_port", guest: 443, host: 8080, host_ip: "127.0.0.1"
-    app.vm.network "forwarded_port", guest: 9000, host: 9000, host_ip: "127.0.0.1"
-    app.vm.network "forwarded_port", guest: 8000, host: 8000, host_ip: "127.0.0.1"
+    app.vm.network "forwarded_port", guest: 443, host: 4343, host_ip: "127.0.0.1"
+    app.vm.network "forwarded_port", guest: 9000, host: 9999, host_ip: "127.0.0.1"
+    app.vm.network "forwarded_port", guest: 8000, host: 8888, host_ip: "127.0.0.1"
     app.vm.provision "shell" do |s|
       s.path = 'add_ansible.sh'
     end
