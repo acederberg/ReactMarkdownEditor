@@ -1,14 +1,18 @@
 FROM node:14
 
-# Just use local packages.
-# Install from inside container.
 RUN echo 'node:node!' | chpasswd
 RUN echo 'root:root!' | chpasswd
 
 WORKDIR /app/
-RUN chown node /app
-RUN chmod +w /app
-USER node
+COPY package.json .
 
+# Avoids stupid npm install errors
+# Most npm error result from the mounted volume having root ownership/group ( hence the -R flag )
+RUN mkdir /app/node_modules /app/build \
+	&& chown -R node /app \
+	&& chgrp -R node /app
+
+USER node
+RUN npm install .
 
 ENTRYPOINT [ "bash" ]
