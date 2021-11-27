@@ -5,24 +5,28 @@ Vagrant.configure("2") do |config|
 
   # Config for the application runner.  
   # https://www.vagrantup.com/docs/multi-machine
+
   config.vm.define "app-runner" do |app|
 
     # Provisioning is to be done by ansible.
-    # Using the windows hypervisor since I have windows pro
+    # Using the windows hyperv since I have windows pro
 
     app.vm.box = "generic/ubuntu2004"
     app.vm.hostname = "app-runner"
-    app.vm.provider "hypervisor" do |hv|
-      hv.memory = 2048
-      hv.cpus = 1
+    app.vm.provider "hyperv" do |vb|
+      vb.enable_virtualization_extensions = false
+      vb.linked_clone = false
+      vb.memory = 2048
+      vb.cpus = 1
     end
+    app.vm.network "public_network", bridge: "Bridge"
 
     # Because nginx will be the only container with an exposed port.
     # Only on localhost because this is the development version.
 
     app.vm.network "forwarded_port", guest: 443, host: 4343, host_ip: "127.0.0.1"
-    app.vm.network "forwarded_port", guest: 9000, host: 9999, host_ip: "127.0.0.1"
-    app.vm.network "forwarded_port", guest: 8000, host: 8888, host_ip: "127.0.0.1"
+    app.vm.network "forwarded_port", guest: 9000, host: 9090, host_ip: "127.0.0.1"
+    app.vm.network "forwarded_port", guest: 8000, host: 8080, host_ip: "127.0.0.1"
     app.vm.provision "shell" do |s|
       s.path = 'add_ansible.sh'
     end
@@ -34,10 +38,14 @@ Vagrant.configure("2") do |config|
     
     gl.vm.box = "generic/ubuntu2004"
     gl.vm.hostname = "gitlab-runner"
-    gl.vm.provider "vmware" do |vw|
-      vw.memory = 4096
-      vw.cpus = 1
+    gl.vm.provider "hyperv" do |vb|
+      vb.enable_virtualization_extensions = false
+      vb.linked_clone = false
+      vb.memory = 2048
+      vb.cpus = 1
     end
+    gl.vm.network "public_network", bridge: "Bridge"
+
     gl.vm.provision "shell" do |s|
       s.path = 'add_ansible.sh'
     end

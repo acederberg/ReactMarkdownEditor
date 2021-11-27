@@ -1,5 +1,7 @@
 # The dry run option will also exist.
 
+echo "WARNING: This will only work with vmware and not the windows hypervisor."
+
 if [[ -z $1 || $1 != 'DryRun' ]]; then
 
 	echo -e "\e[33mWARNING: This will destroy both virtual machines ( and worst of all, take a long time ) and result in the need to re-register a runner. A better option is \e[37m'vagrant.exe reload'. \n\e[33mProceed? ('Yes' to continue, 'Soft' for \e[37mvagrant.exe reload\e[33m, and 'Restart' for a plane \e[37mvagrant.exe up\e[31m )\e[0m"
@@ -38,7 +40,7 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 		
 	# Make the new hosts file.
 	echo -e "\e[31mCreating a new hosts.ini with updated ip addresses...\e[0m"
-	echo $( sh ./rebuild_hosts.sh )>>temp
+	echo $( sh ./rebuild_hosts.sh )>temp
 
 	# Start the ansible container.
 	# It will mount hosts.ini and use it to setup ssh between hosts and the ansible runner.
@@ -55,7 +57,7 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 	elif ((	$( docker container ls --format '{{.Names}}' \
 		| grep 'ansible-runner' \
 		| wc --word ) == 1 )); then
-
+		
 		echo -e "\e[32mAnsible-runner is already running\e[0m"
 
 	else
@@ -84,6 +86,7 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 		# Put the ansible-runner ssh key onto the machines.	
 		echo "Please run the following commands and authenticate yourself:"
 		for addr in $( cat temp ); do
+			echo addr
 			docker exec -it ansible-runner ssh-copy-id -f ansible@$addr
 		done
 		rm temp
