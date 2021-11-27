@@ -13,4 +13,6 @@ services :
       - type : 'bind'
         source : '.'
         target : '/app/'
+      - '/app/node_modules'
+      - './build:/app/build'
     tty: true
