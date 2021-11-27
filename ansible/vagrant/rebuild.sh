@@ -1,10 +1,8 @@
 # The dry run option will also exist.
 
-echo "WARNING: This will only work with vmware and not the windows hypervisor."
-
 if [[ -z $1 || $1 != 'DryRun' ]]; then
 
-	echo -e "\e[33mWARNING: This will destroy both virtual machines ( and worst of all, take a long time ) and result in the need to re-register a runner. A better option is \e[37m'vagrant.exe reload'. \n\e[33mProceed? ('Yes' to continue, 'Soft' for \e[37mvagrant.exe reload\e[33m, and 'Restart' for a plane \e[37mvagrant.exe up\e[31m )\e[0m"
+	echo -e "\e[33mWARNING: This will destroy both virtual machines ( and worst of all, take a long time ) and result in the need to re-register a runner. A better option is \e[37m'vagrant reload'. \n\e[33mProceed? ('Yes' to continue, 'Soft' for \e[37mvagrant reload\e[33m, and 'Restart' for a plane \e[37mvagrant.exe up\e[31m )\e[0m"
 	read proceed
 
 else
@@ -25,14 +23,14 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 		# Decide what to do with vagrant.
 		if [[ $proceed == 'Yes' ]]; then
 			echo -e "\e[31mProceeding with hard rebuild...\e[0m"
-			vagrant.exe destroy
-			vagrant.exe up
+			vagrant destroy
+			vagrant up
 		elif [[ $proceed == 'Restart' ]]; then
 			echo -e "\e[31mJust restarting...\e[0m"
-			vagrant.exe up
+			vagrant up
 		else
 			echo -e "\e[31mSoft rebuild...\e[0m"
-			vagrant.exe reload
+			vagrant reload
 		fi
 
 

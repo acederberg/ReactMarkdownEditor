@@ -1,6 +1,40 @@
 # I followed this very helpful tutorial to replace my scripts.
 # https://github.com/xcad2k/ansible-boilerplates/blob/main/Provision/Ubuntu/install_docker.yaml
 
+# Asssumes that there is already an ansible user and potentially a vagrant user.
+- name : "Remove access for non-root users via ssh."
+  tags : [ "security" ]
+  become : true
+  lineinfile :
+    dest : /etc/ssh/sshd_config
+    regexp : '^PermitRootLogin'
+    line : "PermitRootLogin no"
+    state : present
+
+- name : "Remove password authentication for ssh"
+  tags : [ "security" ]
+  become : true
+  lineinfile :
+    dest : /etc/ssh/sshd_config
+    regexp : '^PasswordAuthentication'
+    line : "PasswordAuthentication no"
+    state : present
+
+- name : "Add AllowUsers to ssh"
+  tags : [ "security" ]
+  become : true
+  lineinfile :
+    dest : /etc/ssh/sshd_config
+    line : 'AllowUsers vagrant ansible'
+    insertbefore : EOF
+
+- name : "Restart the ssh daemon"
+  tags : [ "security" ]
+  become : true
+  service :
+    name : sshd
+    state : restarted
+
 - name : "Install tools for docker installation"
   tags : [ "install", "docker" ]
   become : true
