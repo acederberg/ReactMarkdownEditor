@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
       vb.memory = 2048
       vb.cpus = 1
     end
-    app.vm.network "public_network", bridge: "Bridge"
+    app.vm.network "public_network", bridge: "Default Switch"
 
     # Because nginx will be the only container with an exposed port.
     # Only on localhost because this is the development version.
@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
       vb.memory = 2048
       vb.cpus = 1
     end
-    gl.vm.network "public_network", bridge: "Bridge"
+    gl.vm.network "public_network", bridge: "Default Switch"
 
     gl.vm.provision "shell" do |s|
       s.path = 'add_ansible.sh'
