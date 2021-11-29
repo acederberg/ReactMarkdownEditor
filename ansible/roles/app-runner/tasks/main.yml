@@ -45,16 +45,6 @@
     src : ./docker-compose.yaml.j2
     dest : /home/ansible/app/docker-compose.yaml
 
-- name : "RESOURCES: Copy decrypted ssl resourced to /home/ansible/app"
-  tags : [ "install", "security", "app-runner", "ssl", "nginx", "current" ]
-  copy : 
-    src : './nginx'
-    dest : /home/ansible/app
-    decrypt : true
-    owner : ansible 
-    group : ansible
-    backup : no
-
 # DOCKER
 # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
 # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
