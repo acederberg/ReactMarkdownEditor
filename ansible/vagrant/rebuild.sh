@@ -82,7 +82,7 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 
 
 		# Put the ansible-runner ssh key onto the machines.	
-		echo "Please run the following commands and authenticate yourself:"
+		echo "Distributing ssh keys..."
 		for addr in $( cat temp ); do
 			echo addr
 			docker exec -it ansible-runner ssh-copy-id -f ansible@$addr
