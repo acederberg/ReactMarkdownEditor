@@ -1,9 +1,10 @@
 configs
 test_hosts.ini
-real_hosts.init
+real_hosts.ini
 .passwd
 .password
 .vault_passwd
 .vault_password
 .vault_password.*
 temp
+vars
