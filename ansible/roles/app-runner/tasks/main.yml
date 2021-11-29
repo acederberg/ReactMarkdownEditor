@@ -64,6 +64,26 @@
     restart_policy: always
   become : true
 
+- name : "DOCKER: Add Nginx Proxy Manager Database"
+  community.docker.docker_container
+
+- name : "DOCKER: Add Nginx Proxy Manager."
+  community.docker.docker_container : 
+    name : portainer
+    ports :
+      - '80:80'
+      - '81:8181'
+      - '443:443'
+    environment :
+      DB_MYSQL_HOST : {{npm_db}}
+      DB_MYSQL_PORT : 3306
+      DB_MYSQL_USER : '{{npm_db_username}}'
+      DB_MYSQL_PASSWORD : '{{npm_db_password}}'
+      DB_MYSQL_NAME : 'npm'
+  volumes :
+    - ./data:/data
+    - ./letsencrypt:/etc/letsencrypt
+
 - name : "DOCKER: Login to dockerhub"
   tags : [ "deploy", "docker-container", "app-runner", "login", "security" ]
   community.docker.docker_login :
