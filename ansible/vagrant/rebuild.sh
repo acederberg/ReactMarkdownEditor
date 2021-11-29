@@ -1,8 +1,13 @@
-# The dry run option will also exist.
+# First Arguement: Vagrant method, must be 'Soft', 'Restart', or 'DryRun' when the second arguement is not specified.
+# Second Arguement: `NoVagrant` to not use the first arguement. Same as dryrun.
+# Third Arguement: Executable to use. Sepcifies value `v`.
+
+shopt -s expand_aliases
+alias v=$DEFAULT_VAGRANT
 
 if [[ -z $1 || $1 != 'DryRun' ]]; then
 
-	echo -e "\e[33mWARNING: This will destroy both virtual machines ( and worst of all, take a long time ) and result in the need to re-register a runner. A better option is \e[37m'vagrant reload'. \n\e[33mProceed? ('Yes' to continue, 'Soft' for \e[37mvagrant reload\e[33m, and 'Restart' for a plane \e[37mvagrant.exe up\e[31m )\e[0m"
+	echo -e "\e[33mWARNING: This will destroy both virtual machines ( and worst of all, take a long time ) and result in the need to re-register a runner. A better option is \e[37m'v reload'. \n\e[33mProceed? ('Yes' to continue, 'Soft' for \e[37mv reload\e[33m, and 'Restart' for a plane \e[37mv.exe up\e[31m )\e[0m"
 	read proceed
 
 else
@@ -11,26 +16,25 @@ else
 
 fi
 
-
 if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proceed == 'DryRun' ]]; then
 
 	if [[ $proceed == 'DryRun' || $2 == 'NoVagrant' ]]; then
 
-		echo -e "\e[31mDryRun: Nothing done with vagrant.\e[0m"
+		echo -e "\e[31mDryRun: Nothing done with v.\e[0m"
 
 	else
 
-		# Decide what to do with vagrant.
+		# Decide what to do with v.
 		if [[ $proceed == 'Yes' ]]; then
 			echo -e "\e[31mProceeding with hard rebuild...\e[0m"
-			vagrant destroy
-			vagrant up
+			v destroy
+			v up
 		elif [[ $proceed == 'Restart' ]]; then
 			echo -e "\e[31mJust restarting...\e[0m"
-			vagrant up
+			v up
 		else
 			echo -e "\e[31mSoft rebuild...\e[0m"
-			vagrant reload
+			v reload
 		fi
 
 
