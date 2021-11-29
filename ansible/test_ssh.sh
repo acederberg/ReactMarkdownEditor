@@ -1,1 +1,1 @@
-ansible all -i test_hosts.ini -m command -a date
+ansible all -i $1 -m command -a date
