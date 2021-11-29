@@ -27,7 +27,7 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 		# Decide what to do with v.
 		if [[ $proceed == 'Yes' ]]; then
 			echo -e "\e[31mProceeding with hard rebuild...\e[0m"
-			v destroy
+			v destroy -f
 			v up
 		elif [[ $proceed == 'Restart' ]]; then
 			echo -e "\e[31mJust restarting...\e[0m"
@@ -88,7 +88,7 @@ if [[ $proceed == 'Yes' || $proceed == 'Soft' || $proceed == 'Restart' || $proce
 		# Put the ansible-runner ssh key onto the machines.	
 		echo "Distributing ssh keys..."
 		for addr in $( cat temp ); do
-			echo addr
+			echo $addr
 			docker exec -it ansible-runner ssh-copy-id -f ansible@$addr
 		done
 		rm temp
