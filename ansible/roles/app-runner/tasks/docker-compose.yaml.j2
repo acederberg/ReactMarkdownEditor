@@ -28,34 +28,6 @@ services :
       # It must be backed up regularly.
       - ./mongo_data:/data/db
 
-  # NPM - Found out about this [here](https://www.the-digital-life.com/nginx-proxy-manager/)
-  npm :
-    images : 'jc21/nginx-proxy-manager:latest'
-    ports :
-      - 80:80
-      - 81:8181
-      - 443:443
-    environment :
-      DB_MYSQL_HOST : {{npm_db}}
-      DB_MYSQL_PORT : 3306
-      DB_MYSQL_USER : '{{npm_db_username}}'
-      DB_MYSQL_PASSWORD : '{{npm_db_password}}'
-      DB_MYSQL_NAME : 'npm'
-  volumes :
-    - ./data:/data
-    - ./letsencrypt:/etc/letsencrypt
-
-  {{npm_db}} :
-    # More info: https://github.com/jc21/docker-mariadb-aria
-    images : 'jc21/mariadb-aria:latest'
-    environment :
-      MYSQL_ROOT_PASSWORD : {{npm_db_root_password}}
-      MYSQL_DATABASE : 'npm'
-      MYSQL_USER : {{npm_db_username}}
-      MYSQL_PASSWORD : {{npm_db_password}}
-    volumes :
-      - ./data/mysql:/var/lib/mysql
-
 # NB these networks are build into the containers.
 networks :
   front :
