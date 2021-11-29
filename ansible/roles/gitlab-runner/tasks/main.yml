@@ -30,13 +30,17 @@
     name : vagrant
     password : '{{ password2 }}'
 
-- name : "Add a bashrc for gitlab-ci script to source important environment variables from."
+- name : "Add a .bashrc for gitlab-ci script to source important environment variables from."
   tags : [ "current2" ]
   become : true
-  copy :
-    owner : gitlab-runner
+  template :
+    src : './.bashrc.j2'
+    dest : '/home/gitlab-runner/.bashrc'
+
+- name : "Set correct permissions for the gitlab-runner .bashrc"
+  tags : [ "current2" ]
+  become : true
+  file :
     group : gitlab-runner
-    decrypt : true
-    src : './.bashrc'
-    dest : '/home/gitlab-runner/'
-  
+    owner : gitlab-runner
+    path : /home/gitlab-runner/.bashrc
