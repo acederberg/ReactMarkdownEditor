@@ -7,4 +7,3 @@ real_hosts.ini
 .vault_password
 .vault_password.*
 temp
-vars
