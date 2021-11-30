@@ -37,10 +37,8 @@ function new-TestHosts
 
 function new-Vagrant
 {
-
 	vagrant.exe destroy -f
 	vagrant.exe up
-
 }
 
 
