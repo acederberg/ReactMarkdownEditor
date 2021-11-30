@@ -19,13 +19,13 @@
   become : true
 
 - name : "Determine if the vagrant user exists."
-  tags : [ "install", "security", "app-runner", "current" ]
+  tags : [ "install", "security", "app-runner" ]
   # Test by looking for the home directory since vagrant always makes a home directory.
   shell : ls /home | grep vagrant | wc --word
   register: vagrant_exists
 
 - name : "Change the vagrant user if it exists."
-  tags : [ "install", "security", "app-runner", "current" ]
+  tags : [ "install", "security", "app-runner" ]
   user :
     name : vagrant
     password : '{{password1}}'
@@ -36,11 +36,11 @@
 # RESOURCES
 # Read this snippet about adding encrypted data: https://ahelpme.com/software/ansible/ansible-using-ansible-vault-with-copy-module-to-decrypt-on-the-fly-files/.
 - name : "RESOURCES: Make a folder for docker-compose.yaml and artifacts"
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   shell : test -d /home/ansible/app || mkdir /home/ansible/app
 
 - name : "RESOURCES: Copy docker compose into /home/ansible/app."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   template : 
     src : ./docker-compose.yaml.j2
     dest : /home/ansible/app/docker-compose.yaml
@@ -48,8 +48,24 @@
 # DOCKER
 # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
 # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
+- name : "DOCKER: Add front network"
+  tags : ["current"]
+  community.docker.docker_network :
+    name : front
+    driver : 'bridge'
+    attachable : true
+
+
+- name : "DOCKER: Add back network"
+  tags : ["current"]
+  community.docker.docker_network :
+    name : back
+    driver : 'bridge'
+    attachable : true
+
+
 - name : "DOCKER: Add portainer"
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_container :
     name : portainer
     ports : 
@@ -64,42 +80,54 @@
     restart_policy: always
   become : true
 
+
 - name : "DOCKER: Add Nginx Proxy Manager Database"
+  tags : ["current"]
   community.docker.docker_container :
     # More info: https://github.com/jc21/docker-mariadb-aria
-    name : {{npm_db}} 
-    images : 'jc21/mariadb-aria:latest'
-    environment :
-      MYSQL_ROOT_PASSWORD : {{npm_db_root_password}}
+    name : '{{npm_db}}'
+    image : jc21/mariadb-aria:latest
+    env :
+      MYSQL_ROOT_PASSWORD : '{{npm_db_root_password}}'
       MYSQL_DATABASE : 'npm'
-      MYSQL_USER : {{npm_db_username}}
-      MYSQL_PASSWORD : {{npm_db_password}}
+      MYSQL_USER : '{{npm_db_username}}'
+      MYSQL_PASSWORD : '{{npm_db_password}}'
+    networks :  
+      - name  : back 
     volumes :
-      - ./data/mysql:/var/lib/mysql
+      - ./app/data/mysql:/var/lib/mysql
+
 
 
 - name : "DOCKER: Add Nginx Proxy Manager."
+  tags : ["current"]
   community.docker.docker_container : 
-    name : portainer
+    image: 'jc21/nginx-proxy-manager:latest'
+    name : NPM
     ports :
       - '80:80'
       - '81:8181'
       - '443:443'
-    environment :
-      DB_MYSQL_HOST : {{npm_db}}
-      DB_MYSQL_PORT : 3306
+    env :
+      DB_MYSQL_HOST : '{{npm_db}}'
+      DB_MYSQL_PORT : '3306'
       DB_MYSQL_USER : '{{npm_db_username}}'
       DB_MYSQL_PASSWORD : '{{npm_db_password}}'
       DB_MYSQL_NAME : 'npm'
+    networks :  
+      - name : back 
+      - name : front
     volumes :
-     - ./data:/data
-     - ./letsencrypt:/etc/letsencrypt
+      - ./app/data:/data
+      - ./app/letsencrypt:/etc/letsencrypt
+
 
 - name : "DOCKER: Login to dockerhub"
-  tags : [ "deploy", "docker-container", "app-runner", "login", "security", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner", "login", "security" ]
   community.docker.docker_login :
     username : "{{dockerhub_username}}"
     password : "{{dockerhub_password}}"
+
 
 - name : "DOCKER: Run the deployment docker compose."
   tags : [ "deploy", "docker-container", "app-runner", "current" ]

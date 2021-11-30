@@ -31,8 +31,8 @@ services :
 # NB these networks are build into the containers.
 networks :
   front :
-    driver : 'bridge'
-    attachable : true
+    external : true
+    name : front
   back :
-    driver : 'bridge'
-    attachable : true
+    external : true
+    name : front
