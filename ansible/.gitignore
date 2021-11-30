@@ -6,6 +6,5 @@ real_hosts.ini
 .vault_passwd
 .vault_password
 .vault_password.*
-rebuild.ps1
 temp
 vars
