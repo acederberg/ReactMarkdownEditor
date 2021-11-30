@@ -1,6 +1,3 @@
-param ( $vagrant )
-
-
 function get-IPAddr
 {
 	param( $name )
@@ -104,5 +101,3 @@ function main(){
 	docker exec -it ansible-runner bash -c "sed -i $'1s/^\357\273\277//' test_hosts.ini"
 }
 
-
-#main -vagrant $vagrant
