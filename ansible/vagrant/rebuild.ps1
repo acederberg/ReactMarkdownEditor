@@ -1,5 +1,8 @@
-param ( $vagrant )
+param ( 
+	$vagrant,
+	$mode
+)
 
-import-Module './powershell-scripts/rebuild-modules.ps1'
+import-Module './powershell-scripts/rebuild-modules.ps1' -force
 
-main -vagrant $vagrant
+main -vagrant $vagrant -mode $mode 

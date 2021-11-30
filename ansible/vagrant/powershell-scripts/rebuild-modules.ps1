@@ -1,3 +1,6 @@
+$UndefinedMode = "Undefined Mode."
+
+
 function get-IPAddr
 {
 	param( $name )
@@ -67,37 +70,92 @@ function restart-Ansible
 
 function create-SSHKey
 {
-	if ( !( ( docker exec ansible-runner ls '/home/ansible' -a ) -contains '.ssh' ) )
+
+	param( $mode )
+
+	$args = "ssh-keygen -N '' -f '/home/{0}/.ssh/id_rsa'"
+
+	if ( $mode -eq 'docker' )
 	{
 		docker exec ansible-runner mkdir '/home/ansible/.ssh'
-		docker exec ansible-runner bash -c "ssh-keygen -N '' -f '/home/ansible/.ssh/id_rsa'"
+		docker exec ansible-runner bash -c ( $args -f 'ansible' )
+	}
+	elseIf ( $mode -eq 'vagrant' )
+	{
+		cd ..
+		vagrant ssh -c ( $args -f 'vagrant' )
+		cd vagrant
 	}
 	else
-	{
-		out-Host -InputObject "Keys already exists."
-	}
+	{ out-Host -InputObject $UndefinedMode }
+
 }
 
 
 function distribute-SSHKey
 {
-	param( $hosts )
+	param( $mode, $host_ )
+
+	$args = "ssh-copy-id -f ansible@{0}" -f $host_
+	out-Host -InputObject ( "Adding ssh key to {0}" -f $host_ ) 
+	if ( $mode -eq 'docker' )
+	{
+			docker exec -it ansible-runner bash -c $args
+	}
+	elseIf ( $mode -eq 'vagrant' )
+	{
+			cd .. 
+			vagrant ssh -c $args
+			cd vagrant 
+	}
+	else
+	{
+		out-Host -InputObject $UndefinedMode
+	}
+
+}
+
+
+function distribute-SSHKeys
+{
+
+	param( $hosts, $mode )
+	echo $hosts
 	$hosts | forEach-Object{
-		$args = "ssh-copy-id -f ansible@{0}" -f $_ 
-		out-Host -InputObject ( "Adding ssh key to {0}" -f $_ )
-		docker exec -it ansible-runner bash -c $args
+		echo $_
+		distribute-SSHKey -mode $mode -host_ $_
 	}
 }
 
 
 function main(){
-	param( $vagrant ) 
+	
+	param( $vagrant, $mode )
+
   if ( $vagrant -eq $true ){ new-Vagrant }
+
 	$hosts = new-TestHosts
-	restart-Ansible
-	create-SSHKey
-	distribute-SSHKey -hosts $hosts	
+	
+	if ( $mode -eq 'docker' ){ restart-Ansible }
+	
+	create-SSHKey -mode $mode
+	distribute-SSHKeys -hosts $hosts	-mode $mode
+	
 	# Remove Byte Ordering Mark for unix.
-	docker exec -it ansible-runner bash -c "sed -i $'1s/^\357\273\277//' test_hosts.ini"
+	if ( $mode -eq 'docker' )
+	{
+		docker exec -it ansible-runner bash -c "sed -i $'1s/^\357\273\277//' test_hosts.ini"
+	}
+	elseIf ( $mode -eq 'vagrant' )
+	{
+		cd ..
+		vagrant ssh -c "sed -i $'1s/^\357\273\277//' test_hosts.ini"
+		cd vagrant
+	}
+	else
+	{
+		out-Host -inputObject $UndefinedMode
+	}
+
 }
 
