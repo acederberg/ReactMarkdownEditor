@@ -21,6 +21,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.network "public_network", bridge: "Default Switch"
   config.vm.provision "shell" do |s|
-    s.path = 'vagrant/add_ansible.sh'
+    s.path = 'provision.sh'
   end
 end
