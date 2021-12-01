@@ -3,12 +3,12 @@ services :
 
   # Services whose image must be pulled from dockerhub
   ui_prod : 
-    image : '{{dockerhub_username}}/{{dockerhub_repo}}:ui_prod'
+    image : {{ dockerhub_repo }}:ui_prod
     container_name : ui_prod
     networks : 
       back : {}
   api_prod : 
-    image : '{{dockerhub_username}}/{{dockerhub_repo}}:api_prod'
+    image : {{ dockerhub_repo }}:api_prod
     container_name : api_prod
     networks : 
       back : {}

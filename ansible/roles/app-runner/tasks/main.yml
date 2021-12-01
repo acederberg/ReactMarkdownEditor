@@ -40,11 +40,12 @@
   shell : test -d /home/ansible/app || mkdir /home/ansible/app
 
 - name : "RESOURCES: Copy docker compose into /home/ansible/app."
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ "deploy", "docker-container", "app-runner", "current", "now" ]
   template : 
     src : ./docker-compose.yaml.j2
     dest : /home/ansible/app/docker-compose.yaml
-
+    force : true # Because update should be pushed.
+      
 # DOCKER
 # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
 # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
@@ -98,7 +99,6 @@
       - ./app/data/mysql:/var/lib/mysql
 
 
-
 - name : "DOCKER: Add Nginx Proxy Manager."
   tags : ["current"]
   community.docker.docker_container : 
@@ -106,7 +106,7 @@
     name : NPM
     ports :
       - '80:80'
-      - '81:8181'
+      - '81:81'
       - '443:443'
     env :
       DB_MYSQL_HOST : '{{npm_db}}'
@@ -123,10 +123,10 @@
 
 
 - name : "DOCKER: Login to dockerhub"
-  tags : [ "deploy", "docker-container", "app-runner", "login", "security" ]
+  tags : [ "deploy", "docker-container", "app-runner", "login", "security", "now" ]
   community.docker.docker_login :
-    username : "{{dockerhub_username}}"
-    password : "{{dockerhub_password}}"
+    username : '{{dockerhub_username}}'
+    password : '{{dockerhub_password}}'
 
 
 - name : "DOCKER: Run the deployment docker compose."
