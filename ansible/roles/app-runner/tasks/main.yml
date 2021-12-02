@@ -50,7 +50,7 @@
 # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
 # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
 - name : "DOCKER: Add front network"
-  tags : ["current"]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_network :
     name : front
     driver : 'bridge'
@@ -58,7 +58,7 @@
 
 
 - name : "DOCKER: Add back network"
-  tags : ["current"]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_network :
     name : back
     driver : 'bridge'
@@ -83,7 +83,7 @@
 
 
 - name : "DOCKER: Add Nginx Proxy Manager Database"
-  tags : ["current"]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_container :
     # More info: https://github.com/jc21/docker-mariadb-aria
     name : '{{npm_db}}'
@@ -100,7 +100,7 @@
 
 
 - name : "DOCKER: Add Nginx Proxy Manager."
-  tags : ["current"]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_container : 
     image: 'jc21/nginx-proxy-manager:latest'
     name : NPM
@@ -129,11 +129,30 @@
     password : '{{dockerhub_password}}'
 
 
+- name : "DOCKER: Pull production ui images."
+  tags : [ "deploy", "docker-container", "app-runner", "current", "now" ]
+  community.docker.docker_image:
+    repository : '{{dockerhub_repo}}'
+    tag : ui_prod
+    source : pull
+    force_source : true
+    state : present
+    name : '{{dockerhub_repo}}'
+
+
+- name : "DOCKER: Pull production aip image."
+  tags : [ "deploy", "docker-container", "app-runner", "current", "now" ]
+  community.docker.docker_image:
+    repository : '{{dockerhub_repo}}'
+    tag : api_prod
+    source : pull
+    force_source : true
+    state : present
+    name : '{{dockerhub_repo}}'
+
+
 - name : "DOCKER: Run the deployment docker compose."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner", "current", "now" ]
   community.docker.docker_compose :
     project_src : "/home/ansible/app"
     state : present
-  become : true
-   
-
