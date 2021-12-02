@@ -94,9 +94,11 @@
   community.docker.docker_container :
     name : portainer
     ports : 
-    - '9000:9000'
-    - '8000:8000'
+      - '9000:9000'
+      - '8000:8000'
     image : portainer/portainer-ce
+    networks :
+      - name : back
     volumes :
       # Mount the docker socket.
       - /var/run/docker.sock:/var/run/docker.sock
@@ -177,6 +179,8 @@
 
 - name : "DOCKER: Run the deployment docker compose."
   tags : [ "deploy", "docker-container", "app-runner", "current", "now" ]
+  become : true
   community.docker.docker_compose :
     project_src : "/home/ansible/app"
+    build : true
     state : present
