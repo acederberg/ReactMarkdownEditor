@@ -1,0 +1,36 @@
+---
+# mongodb container tasks
+
+- include_vars : "../vars/main.yml"
+
+
+- name : "Make a directory for the backups inside the ansible home directory if it does not exist."
+  shell : test -d {{remote_backups_dir}} || mkdir {{remote_backups_dir}}
+
+
+- name : "Create {{item.key}} archive."
+  # By default will tar before gzing
+  become : true
+  archive :
+    owner : ansible
+    group : ansible 
+    format : gz
+    path : '{{mongo_data}}'
+    dest : '{{mongo_data_archived}}'
+  loop : '{{ mapping | dict2items }}'
+
+
+- name : "Scp to ansible-runner."
+  # This is a variable to be input upon the execution of the playbook.
+  fetch :
+    src : '{{item.value}}'
+    dest : '{{local_backups_dir}}/'
+    flat : true
+  loop : '{{ mapping | dict2items }}'
+
+
+- name : "Destroy all artifacts"
+  tags : ["now"]
+  become : true
+  shell : rm -r {{remote_backups_dir}}
+
