@@ -1,6 +1,9 @@
 $UndefinedMode = "Undefined Mode."
 
 
+function get-Line{ 	echo "=======================================================" }
+
+
 function get-IPAddr
 {
 	param( $name )
@@ -128,10 +131,6 @@ function distribute-SSHKeys
 	}
 }
 
-function get-Line{
-	echo "======================================================="
-
-}
 
 function main(){
 	
