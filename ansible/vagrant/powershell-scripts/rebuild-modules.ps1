@@ -72,7 +72,7 @@ function restart-Ansible
 
 function create-SSHKey
 {
-
+	# Add parameter to rotate.
 	param( $mode )
 
 	$args = "ssh-keygen -N '' -f '/home/{0}/.ssh/id_rsa'"
@@ -134,19 +134,38 @@ function distribute-SSHKeys
 
 function main(){
 	
-	param( $vagrant, $mode )
+	param( 
+		$vagrant, 	# run the new vagrant step when true.
+		$mode, 			# Either vagrant or docker. 
+		$ssh_keys 	# Do ssh key stuff when true. Do not do after initial ssh-keys. Functionality must be added.
+	)
 
-  if ( $vagrant -eq $true ){ get-Line; new-Vagrant }
-
+	# Rebuild vagrant
+  if ( $vagrant -eq $true )
+	{ 
+		get-Line
+		new-Vagrant 
+	}
+	
+	# Rebuild test_hosts.ini
 	get-Line
 	$hosts = new-TestHosts
 	
-	if ( $mode -eq 'docker' ){ get-Line; restart-Ansible }
-	
-	get-Line
-	create-SSHKey -mode $mode
-	get-Line
-	distribute-SSHKeys -hosts $hosts	-mode $mode
+	# Restart the docker container.
+	if ( $mode -eq 'docker' ){ 
+		get-Line
+		restart-Ansible 
+	}
+
+	# Make a new ssh_key
+	if ( $ssh_keys -eq $true )
+	{
+		get-Line
+		create-SSHKey -mode $mode
+		get-Line
+		distribute-SSHKeys -hosts $hosts	-mode $mode
+	}
+
 	
 	# Remove Byte Ordering Mark for unix.
 	get-Line
