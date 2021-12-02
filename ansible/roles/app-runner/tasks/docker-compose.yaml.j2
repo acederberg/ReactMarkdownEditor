@@ -7,8 +7,11 @@ services :
     container_name : ui_prod
     networks : 
       back : {}
+
   api_prod : 
-    image : {{ dockerhub_repo }}:api_prod
+    build : 
+      context : '.'
+      dockerfile : 'Dockerfile.api_prod'
     container_name : api_prod
     networks : 
       back : {}
