@@ -1,24 +1,25 @@
 $UndefinedMode = "Undefined Mode."
-
+$VAGRANT_DIR = $ENV:VAGRANT_DIR
 
 function get-Line{ 	echo "=======================================================" }
 
 
-function get-IPAddr
+function get-LocalIPAddr
 {
 	param( $name )
 	return ( vagrant ssh $name -c "ip address show eth0 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//'" )
 }
 
 
-function new-TestHosts
+function new-LocalAppRunnerHostsFile
 {
+	cd $VAGRANT_DIR
 	
   # Make a new hosts file and return a list of hosts.
 	$outfile = '../test_hosts.ini'
   if ( test-Path $outfile ){ rm $outfile }
 
-	$hosts  = ( @( 'gitlab-runner', 'app-runner' ) | forEach-Object{ get-IPAddr -name $_ } )
+	$hosts  = ( @( 'gitlab-runner', 'app-runner' ) | forEach-Object{ get-LocalIPAddr -name $_ } )
 	$addrs = @{
 		my_runner = $hosts[0];
 		my_server = $hosts[1];
@@ -37,14 +38,16 @@ function new-TestHosts
 }
 
 
-function new-Vagrant
+function rebuild-LocalAppRunner
 {
+	cd $VAGRANT_DIR
+
 	vagrant.exe destroy -f
 	vagrant.exe up
 }
 
 
-function restart-Ansible
+function restart-AnsibleContainerContainerContainer
 {
 	
 	$ansible = 'ansible-runner'
@@ -70,7 +73,7 @@ function restart-Ansible
 }
 
 
-function create-SSHKey
+function new-SSHKey
 {
 	# Add parameter to rotate.
 	param( $mode )
@@ -85,7 +88,7 @@ function create-SSHKey
 	elseIf ( $mode -eq 'vagrant' )
 	{
 		cd ..
-		$addr = get-IPAddr
+		$addr = get-LocalIPAddr
 		ssh ansible@$addr ( $args -f 'ansible' )
 		cd vagrant
 	}
@@ -95,7 +98,7 @@ function create-SSHKey
 }
 
 
-function distribute-SSHKey
+function share-SSHKey
 {
 	param( $mode, $host_, $ansibleAddr )
 
@@ -108,7 +111,7 @@ function distribute-SSHKey
 	elseIf ( $mode -eq 'vagrant' )
 	{
 			cd .. 
-			$addr = get-IPAddr
+			$addr = get-LocalIPAddr
 			ssh -t ansible@$addr ( "ssh-copy-id -i ~/.ssh/id_rsa.pub {0}" -f $host_ ) 
 			cd vagrant 
 	}
@@ -120,19 +123,19 @@ function distribute-SSHKey
 }
 
 
-function distribute-SSHKeys
+function share-SSHKeys
 {
 
 	param( $hosts, $mode )
 	echo $hosts
 	$hosts | forEach-Object{
 		echo $_
-		distribute-SSHKey -mode $mode -host_ $_
+		share-SSHKey -mode $mode -host_ $_
 	}
 }
 
 
-function main(){
+function rebuild-LocalAppRunnerEnvironment(){
 	
 	param( 
 		$vagrant, 	# run the new vagrant step when true.
@@ -140,30 +143,32 @@ function main(){
 		$SSHKeys 	# Do ssh key stuff when true. Do not do after initial ssh-keys. Functionality must be added.
 	)
 
+	cd $VAGRANT_DIR
+
 	# Rebuild vagrant
   if ( $vagrant -eq $true )
 	{ 
 		get-Line
-		new-Vagrant 
+		rebuild-LocalAppRunner 
 	}
 	
 	# Rebuild test_hosts.ini
 	get-Line
-	$hosts = new-TestHosts
+	$hosts = new-LocalAppRunnerHostsFile
 	
 	# Restart the docker container.
 	if ( $mode -eq 'docker' ){ 
 		get-Line
-		restart-Ansible 
+		restart-AnsibleContainerContainerContainer 
 	}
 
 	# Make a new ssh_key
 	if ( $SSHKeys -eq $true )
 	{
 		get-Line
-		create-SSHKey -mode $mode
+		new-SSHKey -mode $mode
 		get-Line
-		distribute-SSHKeys -hosts $hosts	-mode $mode
+		share-SSHKeys -hosts $hosts	-mode $mode
 	}
 
 	
@@ -183,6 +188,65 @@ function main(){
 	{
 		out-Host -inputObject $UndefinedMode
 	}
+
+}
+
+
+$PLAYBOOK = playbook.yaml 
+
+function invoke-AnsiblePlaybook
+{
+	param ( 
+		$hosts, 
+		$extraVariables,
+		$tags
+	)
+
+	cd $VAGRANT_DIR/..
+
+	$ansible_runner_addr = get-LocalIPAddr
+	$optional = ""
+
+	if ( $extraVariables -ne $null )
+	{
+		$optional = $optional + ( "--extra-variables {0}" -f $extraVariables )
+	}
+	if ( $tags -ne $null )
+	{
+		$optional = $optional + ( "--tags {0}" -f $tags )
+	}
+
+	ssh $ansible_runner_addr `
+		ansible $PLAYBOOK `
+			-i $hosts \
+			--extra-variables $extraVariables \
+			--tags $tags
+
+}
+
+
+function rebuild-LocalAppRunner
+{
+
+	# GOAL : Pull backups from the cloud or from a local server. 
+	# Make a new instance from this data from a new vagrant machine.
+
+	params ( $hosts )
+
+	# Backup volumes prior to tearing down.
+	invoke-AnsiblePlaybook -hosts $hosts -tags "capture"
+
+	# Tear down the vagrant machines.
+	rebuild-LocalAppRunnerEnvironment
+
+	# Distribute volumes to the new machines.
+	invoke-AnsiblePlaybook -hosts $hosts -tags "distribute"
+
+	# Run the main playbook on the main machines.
+	# Usually have to do this twice, thus the try catch.
+	# Not sure why it does that.
+	try: invoke-AnsiblePlaybook -hosts $hosts
+	catch : invoke-AnsiblePlaybook -hosts $hosts 
 
 }
 
