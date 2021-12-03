@@ -137,7 +137,7 @@ function main(){
 	param( 
 		$vagrant, 	# run the new vagrant step when true.
 		$mode, 			# Either vagrant or docker. 
-		$ssh_keys 	# Do ssh key stuff when true. Do not do after initial ssh-keys. Functionality must be added.
+		$SSHKeys 	# Do ssh key stuff when true. Do not do after initial ssh-keys. Functionality must be added.
 	)
 
 	# Rebuild vagrant
@@ -158,7 +158,7 @@ function main(){
 	}
 
 	# Make a new ssh_key
-	if ( $ssh_keys -eq $true )
+	if ( $SSHKeys -eq $true )
 	{
 		get-Line
 		create-SSHKey -mode $mode
