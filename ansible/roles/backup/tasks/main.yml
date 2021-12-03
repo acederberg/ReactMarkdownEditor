@@ -5,23 +5,27 @@
 
 
 - name : "Make a directory for the backups inside the ansible home directory if it does not exist."
+  tags : [ "backup", "capture" ]
   shell : test -d {{remote_backups_dir}} || mkdir {{remote_backups_dir}}
 
 
 - name : "Create {{item.key}} archive."
   # By default will tar before gzing
+  tags : [ "backup", "capture" ]
   become : true
   archive :
     owner : ansible
     group : ansible 
     format : gz
-    path : '{{mongo_data}}'
-    dest : '{{mongo_data_archived}}'
+    path : '{{item.key}}'
+    dest : '{{item.value}}'
   loop : '{{ mapping | dict2items }}'
 
 
 - name : "Scp to ansible-runner."
   # This is a variable to be input upon the execution of the playbook.
+  tags : [ "backup", "capture" ]
+  become : true
   fetch :
     src : '{{item.value}}'
     dest : '{{local_backups_dir}}/'
@@ -29,8 +33,19 @@
   loop : '{{ mapping | dict2items }}'
 
 
+- name : "Move backups to their appropriate locations."
+  tags : [ "backup", "distribute" ]
+  copy : 
+    force : true
+    src : '{{item.value}}'
+    dest : '{{ansible_home}}/app/'
+    owner : ansible
+    group : ansible 
+  loop : '{{ mapping | dict2items }}'
+
+
 - name : "Destroy all artifacts"
-  tags : ["now"]
+  tags : [ "backup", "capture" ]
   become : true
   shell : rm -r {{remote_backups_dir}}
 
