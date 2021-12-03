@@ -2,6 +2,7 @@
 # vars file for backup
 # NB: The archived files will have dates and file extensions added.
 ansible_home : "/home/ansible"
+ansible_workdir : "{{ansible_home}}/app"
 remote_backups_dir : "{{ansible_home}}/backups"
 local_backups_dir : "{{ansible_home}}/backups" # This is on the ansible runner, not to be confused with the remaining paths, which are in the target hosts.
 

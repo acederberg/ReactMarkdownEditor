@@ -6,7 +6,7 @@
 
 - name : "Get current time as an iso string."
   tags : [ "backup", "capture" ]
-  shell : date +%F%R
+  shell : date +%F-%H-%M
   register : now
 
 
@@ -39,17 +39,25 @@
   loop : '{{ mapping | dict2items }}'
 
 
+- name : "Create folder to unpack backups into."
+  tags : [ "backup", "distribute" ]
+  shell : test -d {{ansible_workdir}} || mkdir {{ansible_workdir}}
+  when : |
+    backup_timestamp is defined
+
+
 - name : "Move backups to their appropriate locations."
   tags : [ "backup", "distribute" ]
-  copy : 
+  unarchive : 
     force : true
     src : '{{item.value}}_{{backup_timestamp}}.tar.gz'
-    dest : '{{ansible_home}}/app/'
+    remote_src : false
+    dest : '{{ansible_workdir}}'
     owner : ansible
     group : ansible 
   loop : '{{ mapping | dict2items }}'
   when : |
-    backup_timestap != null
+    backup_timestamp is defined
 
 
 - name : "Destroy all artifacts"
