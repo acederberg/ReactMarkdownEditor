@@ -1,16 +1,17 @@
 ---
 # vars file for backup
+# NB: The archived files will have dates and file extensions added.
 ansible_home : "/home/ansible"
 remote_backups_dir : "{{ansible_home}}/backups"
 local_backups_dir : "{{ansible_home}}/backups" # This is on the ansible runner, not to be confused with the remaining paths, which are in the target hosts.
 
 mongo_data : "{{ansible_home}}/app/mongo_data"
-mongo_data_archived : "{{remote_backups_dir}}/mongo_data.tar.gz"
+mongo_data_archived : "{{remote_backups_dir}}/mongo_data"
 
 npm_letsencrypt_data : "{{ansible_home}}/app/letsencrypt"
-npm_letsencrypt_data_archived : "{{remote_backups_dir}}/letsencrypt.tar.gz"
+npm_letsencrypt_data_archived : "{{remote_backups_dir}}/letsencrypt"
 npm_db_data : "{{ansible_home}}/app/data"
-npm_db_data_archived : "{{remote_backups_dir}}/data.tar.gz"
+npm_db_data_archived : "{{remote_backups_dir}}/data"
 
 mapping :
   "{{mongo_data}}" : "{{mongo_data_archived}}"
