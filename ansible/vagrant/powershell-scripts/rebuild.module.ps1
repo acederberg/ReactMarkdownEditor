@@ -1,5 +1,16 @@
 $UndefinedMode = "Undefined Mode."
 $VAGRANT_DIR = $ENV:VAGRANT_DIR
+$ANSIBLE_DIR = $ENV:VAGRANT_DIR + '/..'
+$ANSIBLE_DOCKER_COMPOSE = $ANSIBLE_DIR + '/docker-compose.yaml'
+
+$ANSIBLE_RUNNER_WORKDIR = "/home/ansible/app"
+$PLAYBOOK_MAIN = $ANSIBLE_RUNNER_WORKDIR + "/playbook.yaml"
+$PLAYBOOK_BACKUP = $ANSIBLE_RUNNER_WORKDIR + "/backup.yaml"
+
+
+$LOCAL_INVENTORY =  $ANSIBLE_DIR + "/test_hosts.ini"
+$REMOTE_INVENTORY = $ANSIBLE_RUNNER_WORKDIR + "/test_hosts.ini"
+
 
 function get-Line{ 	echo "=======================================================" }
 
@@ -11,8 +22,9 @@ function get-LocalIPAddr
 }
 
 
-function new-LocalAppRunnerHostsFile
+function new-LocalInventory
 {
+	$there = $PWD
 	cd $VAGRANT_DIR
 	
   # Make a new hosts file and return a list of hosts.
@@ -32,24 +44,58 @@ function new-LocalAppRunnerHostsFile
 		echo ( '[{0}]' -f $item.Name )| out-File $outfile -append -encoding utf8
 		echo $item.Value | out-File $outfile -append -encoding utf8
 	}
-	
+	cd $there
 	return $hosts
+
+}
+
+
+function remove-BOMFromInventory
+{
+
+	param( $mode, $inventory )
+
+	if ( $inventory -eq $null ){ $inventory = 'test_hosts.ini' }
+	if ( $mode -eq 'docker' )
+	{
+		$cmd = "sed -i $'1s/^\357\273\277//' {0}" -f $inventory 
+		docker exec -it ansible-runner bash -c $cmd
+		
+	}
+	elseIf ( $mode -eq 'vagrant' )
+	{
+		$there = $PWD
+		cd $ANSIBLE_DIR
+		$cmd = "sudo sed -i $'1s/^\357\273\277//' /home/ansible/app/{0}" -f $inventory 
+		echo $cmd
+		vagrant ssh -c $cmd
+		cd $there
+	}
+	else
+	{
+		out-Host -inputObject $UndefinedMode
+	}
 
 }
 
 
 function rebuild-LocalAppRunner
 {
+	$there = $PWD
 	cd $VAGRANT_DIR
 
-	vagrant.exe destroy -f
+	$hosts = @( 'app-runner'; 'gitlab-runner' )
+	$hosts | forEach-Object{
+		vagrant.exe destroy -f $_
+	}
 	vagrant.exe up
+
+	cd $there
 }
 
 
-function restart-AnsibleContainerContainerContainer
+function restart-LocalAnsibleContainer
 {
-	
 	$ansible = 'ansible-runner'
 	$all_containers = docker container ls -a --format '{{.Names}}' 
 	$active_containers = docker container ls --format '{{.Names}}'
@@ -58,7 +104,7 @@ function restart-AnsibleContainerContainerContainer
 	if ( !($all_containers -contains $ansible ) )
 	{
 		out-Host -InputObject ( 'Creating {0}.' -f $ansible )
-		docker compose --file ../docker-compose.yaml up --detach 
+		docker compose --file $ANSIBLE_DOCKER_COMPOSE up --detach 
 	}
 	# Container is already running.
 	elseIf( $active_containers -contains $ansible )
@@ -69,7 +115,38 @@ function restart-AnsibleContainerContainerContainer
 		out-Host -InputObject ( 'Start {0}.' -f $ansible )
 		docker start ansible-runner
 	}
+}
 
+
+function restart-LocalAnsibleRunner
+{
+	param( $mode )
+	if ( $mode -eq 'vagrant' )
+	{
+		$there = $PWD
+		cd $ANSIBLE_DIR
+
+		$runner = get-VM | where-Object{ $_.Name -match 'ansible-runner' }
+		if ( $runner.State -ne "Running" )
+		{
+			out-Host -InputObject "Bringing up local ansible runner"
+			vagrant.exe  up
+		}
+		else 
+		{
+			out-Host -InputObject "Ansible-runner is already running"
+		}
+		
+		cd $there
+	}
+	elseIf ( $mode -eq 'docker' )
+	{
+		restart-LocalAnsibleContainer
+	}
+	else
+	{
+		out-Host -InputObject $UndefinedMode
+	}
 }
 
 
@@ -87,10 +164,11 @@ function new-SSHKey
 	}
 	elseIf ( $mode -eq 'vagrant' )
 	{
-		cd ..
+		$there = $PWD
+		cd $ANSIBLE_DIR
 		$addr = get-LocalIPAddr
 		ssh ansible@$addr ( $args -f 'ansible' )
-		cd vagrant
+		cd $there
 	}
 	else
 	{ out-Host -InputObject $UndefinedMode }
@@ -98,11 +176,12 @@ function new-SSHKey
 }
 
 
-function share-SSHKey
+function invoke-SSHKey
 {
 	param( $mode, $host_, $ansibleAddr )
 
 	out-Host -InputObject ( "Adding ssh key to {0}" -f $host_ ) 
+
 	if ( $mode -eq 'docker' )
 	{
 			$args = "ssh-copy-id -f ansible@{0}" -f $host_
@@ -110,10 +189,13 @@ function share-SSHKey
 	}
 	elseIf ( $mode -eq 'vagrant' )
 	{
-			cd .. 
+			$there
+			cd $ANSIBLE_DIR
+
 			$addr = get-LocalIPAddr
 			ssh -t ansible@$addr ( "ssh-copy-id -i ~/.ssh/id_rsa.pub {0}" -f $host_ ) 
-			cd vagrant 
+
+			cd $there 
 	}
 	else
 	{
@@ -123,14 +205,13 @@ function share-SSHKey
 }
 
 
-function share-SSHKeys
+function invoke-SSHKeys
 {
-
 	param( $hosts, $mode )
 	echo $hosts
 	$hosts | forEach-Object{
 		echo $_
-		share-SSHKey -mode $mode -host_ $_
+		invoke-SSHKey -mode $mode -host_ $_
 	}
 }
 
@@ -140,9 +221,10 @@ function rebuild-LocalAppRunnerEnvironment(){
 	param( 
 		$vagrant, 	# run the new vagrant step when true.
 		$mode, 			# Either vagrant or docker. 
-		$SSHKeys 	# Do ssh key stuff when true. Do not do after initial ssh-keys. Functionality must be added.
+		$SSHKeys 		# Do ssh key stuff when true. Do not do after initial ssh-keys. Functionality must be added.
 	)
 
+	$there = $PWD
 	cd $VAGRANT_DIR
 
 	# Rebuild vagrant
@@ -151,60 +233,46 @@ function rebuild-LocalAppRunnerEnvironment(){
 		get-Line
 		rebuild-LocalAppRunner 
 	}
-	
-	# Rebuild test_hosts.ini
 	get-Line
-	$hosts = new-LocalAppRunnerHostsFile
+	$hosts = new-LocalInventory
 	
-	# Restart the docker container.
-	if ( $mode -eq 'docker' ){ 
-		get-Line
-		restart-AnsibleContainerContainerContainer 
-	}
-
+	# Start the ansible runner if it is nost.
+	get-Line
+	restart-LocalAnsibleRunner  -mode $mode
+	
 	# Make a new ssh_key
 	if ( $SSHKeys -eq $true )
 	{
 		get-Line
 		new-SSHKey -mode $mode
+
 		get-Line
-		share-SSHKeys -hosts $hosts	-mode $mode
+		invoke-SSHKeys -hosts $hosts	-mode $mode
 	}
 
-	
 	# Remove Byte Ordering Mark for unix.
 	get-Line
-	if ( $mode -eq 'docker' )
-	{
-		docker exec -it ansible-runner bash -c "sed -i $'1s/^\357\273\277//' test_hosts.ini"
-	}
-	elseIf ( $mode -eq 'vagrant' )
-	{
-		cd ..
-		vagrant ssh -c "sudo sed -i $'1s/^\357\273\277//' /home/ansible/app/test_hosts.ini"
-		cd vagrant
-	}
-	else
-	{
-		out-Host -inputObject $UndefinedMode
-	}
+	remove-BOMFromInventory
+
+	cd $there
 
 }
 
 
-$PLAYBOOK = playbook.yaml 
-
 function invoke-AnsiblePlaybook
 {
+
 	param ( 
-		$hosts, 
+		$runnerIPAddr,
+		$hosts,
+		$playbook,
 		$extraVariables,
 		$tags
 	)
 
+	$there = $PWD
 	cd $VAGRANT_DIR/..
 
-	$ansible_runner_addr = get-LocalIPAddr
 	$optional = ""
 
 	if ( $extraVariables -ne $null )
@@ -216,37 +284,45 @@ function invoke-AnsiblePlaybook
 		$optional = $optional + ( "--tags {0}" -f $tags )
 	}
 
-	ssh $ansible_runner_addr `
-		ansible $PLAYBOOK `
-			-i $hosts \
-			--extra-variables $extraVariables \
-			--tags $tags
+	# $ANSIBLE_VAULT_PASSWORD_FILE is defined in powershell profile
+	$cmd = 'ansible-playbook {0} -i {1} {2} --ask-vault' -f $playbook, $hosts, $optional
+	out-Host -inputObject $cmd
+	ssh ansible@$runnerIPAddr $cmd
+	cd $there
 
 }
 
 
-function rebuild-LocalAppRunner
+function invoke-FullMainAnsiblePlaybook
+{ 
+	param( $runnerIPAddr )
+	get-Line
+	invoke-AnsiblePlaybook -hosts $REMOTE_INVENTORY -playbook $PLAYBOOK_MAIN -runnerIPAddr $runnerIPAddr
+}
+
+
+function new-LocalAppRunner
 {
 
 	# GOAL : Pull backups from the cloud or from a local server. 
 	# Make a new instance from this data from a new vagrant machine.
+	cd $ANSIBLE_DIR
+	$runnerIPAddr = get-LocalIPAddr
 
-	params ( $hosts )
+	# 1. Backup volumes prior to tearing down.
+	invoke-AnsiblePlaybook -playbook $PLAYBOOK_BACKUP -hosts $REMOTE_INVENTORY -tags "capture" -runnerIPAddr $runnerIPAddr
 
-	# Backup volumes prior to tearing down.
-	invoke-AnsiblePlaybook -hosts $hosts -tags "capture"
+	# 2. Tear down the vagrant machines, rebuild the local development environment.
+	rebuild-LocalAppRunnerEnvironment -mode 'vagrant' -vagrant $true -SSHKeys $true
 
-	# Tear down the vagrant machines.
-	rebuild-LocalAppRunnerEnvironment
+	# 3. Distribute volumes to the new machines.
+	get-Line
+	invoke-AnsiblePlaybook -playbook $PLAYBOOK_BACKUP -hosts $REMOTE_INVENTORY -tags "distribute" -runnerIPAddr $ansible_runner_addr 
 
-	# Distribute volumes to the new machines.
-	invoke-AnsiblePlaybook -hosts $hosts -tags "distribute"
-
-	# Run the main playbook on the main machines.
-	# Usually have to do this twice, thus the try catch.
-	# Not sure why it does that.
-	try: invoke-AnsiblePlaybook -hosts $hosts
-	catch : invoke-AnsiblePlaybook -hosts $hosts 
+	# 4. Run the main playbook on the main machines. This will deploy everything.
+	# N.B. Usually have to do this twice, thus the try catch.
+	try {		invoke-FullMainAnsiblePlaybook -runnerIPAddr $ansible_runner_addr }
+	catch { invoke-FullMainAnsiblePlaybook -runnerIPAddr $ansible_runner_addr }
 
 }
 
