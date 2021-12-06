@@ -1,6 +1,6 @@
 configs
 test_hosts.ini
-real_hosts.ini
+actual_hosts.ini
 .passwd
 .password
 .vault_passwd
