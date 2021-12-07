@@ -1,9 +1,0 @@
----
-# Docker template values.
-# These all have dummy values and will be replaced by loading the real deal on runtime.
-mongo_initdb_root_username : test_mongo_initdb_root_password
-mongo_initdb_root_password : test_mongo_initdb_root_password
-npm_db : npm_db
-npm_db_username : npm_user
-npm_db_password : testing
-npm_db_root_password : testing
