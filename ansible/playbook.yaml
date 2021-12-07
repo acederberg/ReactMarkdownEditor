@@ -2,12 +2,12 @@
   vars :
     env : 'dev'
   vars_files : 
-    - "./vars/main.{{env}}.yml"
+    - "./vars/main.yml"
   roles : [ common, gitlab-runner ]
 - hosts : my_server
   vars :
     env : 'dev'
   vars_files : 
-    - "./vars/main.{{env}}.yml"
+    - "./vars/main.yml"
   roles : [ common, app-runner ]
 
