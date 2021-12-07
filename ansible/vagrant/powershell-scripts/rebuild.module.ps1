@@ -3,7 +3,8 @@ $VAGRANT_DIR = $ENV:VAGRANT_DIR
 $ANSIBLE_DIR = $ENV:VAGRANT_DIR + '/..'
 $ANSIBLE_DOCKER_COMPOSE = $ANSIBLE_DIR + '/docker-compose.yaml'
 
-$ANSIBLE_RUNNER_WORKDIR = "/home/ansible/app"
+$ANSIBLE_RUNNER_WORKDIR = $ANSIBLE_RUNNER_WORKDIR + "/app"
+$ANSIBLE_RUNNER_HOMEDIR = "/home/ansible"
 $PLAYBOOK_MAIN = $ANSIBLE_RUNNER_WORKDIR + "/playbook.yaml"
 $PLAYBOOK_BACKUP = $ANSIBLE_RUNNER_WORKDIR + "/backup.yaml"
 
@@ -256,6 +257,21 @@ function rebuild-LocalAppRunnerEnvironment(){
 
 	cd $there
 
+}
+
+
+function share-Secrets
+{
+	param( $secretPath )
+	$there = $PWD
+	cd $ANSIBLE_DIR
+	
+	$ansibleIPAddr = get-LocalIPAddr
+  $destination = ( 'ansible@{0}:{1}' -f $ansibleIPAddr, $ANSIBLE_RUNNER_HOMEDIR )
+	echo $destination
+	scp $secretPath $destination
+
+	cd $there
 }
 
 
