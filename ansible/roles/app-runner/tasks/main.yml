@@ -19,7 +19,7 @@
   user :
     name : ansible
     groups : sudo,docker
-    password : '{{ password3 | password_hash( 'sha512' )}}'
+    password : "{{ password3 | password_hash( 'sha512' )}}"
   become : true
   when : |
     env is defined and env == 'dev'
@@ -36,7 +36,7 @@
   tags : [ "install", "security", "app-runner" ]
   user :
     name : vagrant
-    password : '{{ password1 | password_hash( 'sha512' ) }}'
+    password : "{{ password1 | password_hash( 'sha512' ) }}"
   when : >
     vagrant_exists != '0'
   become : true

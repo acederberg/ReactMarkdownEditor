@@ -12,7 +12,7 @@
   user :
     name : gitlab-runner
     groups : docker,sudo
-    password : '{{ password0 | password_hash( 'sha512' ) }}'
+    password : "{{ password0|password_hash('sha512') }}"
     
 - name : "Add the anisible user to the docker group."
   # This user is build in to the vagrantfiles
@@ -21,14 +21,14 @@
   user :
     name : ansible
     groups : sudo,docker
-    password : '{{ password1 | password_hash( 'sha512' ) }}'
+    password : "{{ password1 | password_hash('sha512') }}"
 
 - name : "Change the vagrant users password and remove it from the sudoers group."
   tags : [ install, gitlab-runner, security ]
   become : true
   user :
     name : vagrant
-    password : '{{ password2 | password_hash( 'sha512' ) }}'
+    password : "{{ password2 | password_hash( 'sha512' ) }}"
 
 - name : "Add a .bashrc for gitlab-ci script to source important environment variables from."
   tags : [ "current2" ]
