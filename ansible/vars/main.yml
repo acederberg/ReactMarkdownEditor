@@ -1,10 +1,7 @@
-# test_password_one
-password0 : $5$jOHpaSu2HAJ$r0QA0BQ5XM7wLiUAi5HlbTpw35KyWsLWvEXBzm86.58
-# test_password_two
-password1 : $5$kcskbwf5bztm$RlbyYKkA1.rQpQNYDcYeGYFQUtbuaKVtKalXuDA41Q1
-# test_password_three
-password2 : $5$s3VC2LQOTVPAN5B$z5XEa56HH6BH5/FUAjszA6IgvSvjokTSsnOl3kPL1s1
-# test_password_four
-password3 : $5$KeiBQ1lNcxH$7mVeEGyAb5M9GORuSp6rmtoD4moxWj9vHP9pIXUEUl4
+# Hashing is done by jinja templates
+password0 : password0
+password1 : password1
+password2 : password3
+password3 : password4
 
 

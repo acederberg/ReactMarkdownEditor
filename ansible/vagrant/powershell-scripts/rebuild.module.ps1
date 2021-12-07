@@ -190,7 +190,7 @@ function invoke-SSHKey
 	}
 	elseIf ( $mode -eq 'vagrant' )
 	{
-			$there
+			$there = $PWD
 			cd $ANSIBLE_DIR
 
 			$addr = get-LocalIPAddr
