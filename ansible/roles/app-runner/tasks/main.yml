@@ -2,14 +2,14 @@
 # USERS 
 # tasks file for roles/app-runner
 - include_vars : "../vars/main.yml"
-- name : "Create the app-runner user."
-  tags : [ "install", "security", "app-runner" ]
-  user :
-    name : app-runner
-    groups : sudo,docker
-    password : '{{password2}}'
-  become : true
-
+# - name : "Create the app-runner user."
+#   tags : [ "install", "security", "app-runner" ]
+#   user :
+#     name : app-runner
+#     groups : sudo,docker
+#     password : '{{password2}}'
+#   become : true
+ 
 
 - name : "Change the ansible users password."
   tags : [ "install", "security", "app-runner" ]
