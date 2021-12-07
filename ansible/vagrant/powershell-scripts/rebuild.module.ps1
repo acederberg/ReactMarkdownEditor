@@ -253,7 +253,7 @@ function rebuild-LocalAppRunnerEnvironment(){
 
 	# Remove Byte Ordering Mark for unix.
 	get-Line
-	remove-BOMFromInventory
+	remove-BOMFromInventory -mode $mode
 
 	cd $there
 
