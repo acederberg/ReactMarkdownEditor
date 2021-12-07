@@ -34,13 +34,7 @@
   tags : [ "current2" ]
   become : true
   template :
-    src : './.bashrc.j2'
-    dest : '/home/gitlab-runner/.bashrc'
-
-- name : "Set correct permissions for the gitlab-runner .bashrc"
-  tags : [ "current2" ]
-  become : true
-  file :
     group : gitlab-runner
     owner : gitlab-runner
-    path : /home/gitlab-runner/.bashrc
+    src : './.bashrc.j2'
+    dest : '/home/gitlab-runner/.bashrc'
