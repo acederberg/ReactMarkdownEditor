@@ -50,3 +50,11 @@ api_token_jwks_uri :
           61636261646166626331643036346161343364653633643165646432386435656464666634333362
           636230646338383933613965373135313938
 
+# Docker template values.
+# These all have dummy values and will be replaced by loading the real deal on runtime.
+mongo_initdb_root_username : test_mongo_initdb_root_password
+mongo_initdb_root_password : test_mongo_initdb_root_password
+npm_db : npm_db
+npm_db_username : npm_user
+npm_db_password : testing
+npm_db_root_password : testing
