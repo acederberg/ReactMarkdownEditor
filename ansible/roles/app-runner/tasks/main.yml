@@ -1,7 +1,10 @@
 ---
 # USERS 
 # tasks file for roles/app-runner
+
 - include_vars : "../vars/main.yml"
+
+
 # - name : "Create the app-runner user."
 #   tags : [ "install", "security", "app-runner" ]
 #   user :
@@ -16,8 +19,10 @@
   user :
     name : ansible
     groups : sudo,docker
-    password : '{{password3}}'
+    password : '{{ password3 | password_hash( 'sha512' )}}'
   become : true
+  when : |
+    env is defined and env == 'dev'
 
 
 - name : "Determine if the vagrant user exists."
@@ -31,7 +36,7 @@
   tags : [ "install", "security", "app-runner" ]
   user :
     name : vagrant
-    password : '{{password1}}'
+    password : '{{ password1 | password_hash( 'sha512' ) }}'
   when : >
     vagrant_exists != '0'
   become : true
