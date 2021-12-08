@@ -14,7 +14,7 @@ npm_letsencrypt_data_archived : "{{remote_backups_dir}}/letsencrypt"
 npm_db_data : "{{ansible_home}}/app/data"
 npm_db_data_archived : "{{remote_backups_dir}}/data"
 
-mapping :
+backup_mapping :
   "{{mongo_data}}" : "{{mongo_data_archived}}"
   "{{npm_letsencrypt_data}}" : "{{npm_letsencrypt_data_archived}}"
   "{{npm_db_data}}" : "{{npm_db_data_archived}}"

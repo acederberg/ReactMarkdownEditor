@@ -25,7 +25,7 @@
     format : gz
     path : '{{item.key}}'
     dest : '{{item.value}}_{{now.stdout}}.tar.gz'
-  loop : '{{ mapping | dict2items }}'
+  loop : '{{ backup_mapping | dict2items }}'
 
 
 - name : "Scp to ansible-runner."
@@ -36,7 +36,7 @@
     src : '{{item.value}}_{{now.stdout}}.tar.gz'
     dest : '{{local_backups_dir}}/'
     flat : true
-  loop : '{{ mapping | dict2items }}'
+  loop : '{{ backup_mapping | dict2items }}'
 
 
 - name : "Create folder to unpack backups into."
@@ -55,7 +55,7 @@
     dest : '{{ansible_workdir}}'
     owner : ansible
     group : ansible 
-  loop : '{{ mapping | dict2items }}'
+  loop : '{{ backup_mapping | dict2items }}'
   when : |
     backup_timestamp is defined
 
