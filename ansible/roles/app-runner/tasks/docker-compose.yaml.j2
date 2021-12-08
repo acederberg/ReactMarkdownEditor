@@ -5,6 +5,8 @@ services :
   ui_prod : 
     image : {{dockerhub_repo}}:ui_prod
     container_name : ui_prod
+    depends_on : 
+    - api_prod
     networks : 
       front : {}
 
@@ -13,6 +15,8 @@ services :
       context : '.'
       dockerfile : 'Dockerfile.api_prod'
     container_name : api_prod
+    depends_on : 
+    - mongodb
     networks : 
       back : {}
     ports : 
@@ -32,7 +36,7 @@ services :
     volumes : 
       # This will be used to persist data between containers.
       # It must be backed up regularly.
-      - ./mongo_data:/data/db
+    - ./mongo_data:/data/db
 
 # NB these networks are build into the containers.
 networks :

@@ -51,7 +51,7 @@
 
 
 - name : "RESOURCES: Copy docker compose into /home/ansible/app."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   template : 
     src : ./docker-compose.yaml.j2
     dest : /home/ansible/app/docker-compose.yaml
@@ -59,7 +59,7 @@
 
 
 - name : "RESOURCES: Add the .env for the api container."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   template : 
     src : ./.env.api_prod.j2
     dest : /home/ansible/app/.env.api_prod
@@ -67,7 +67,7 @@
 
 
 - name : "RESOURCES: Add the dockerfile for the api container to copy the .env into the api container."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   template : 
     src : ./Dockerfile.api_prod.j2
     dest : /home/ansible/app/Dockerfile.api_prod
@@ -161,7 +161,7 @@
 
 
 - name : "DOCKER: Pull production ui images."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_image:
     repository : '{{dockerhub_repo}}'
     tag : ui_prod
@@ -172,7 +172,7 @@
 
 
 - name : "DOCKER: Pull production api image."
-  tags : [ "deploy", "docker-container", "app-runner", "current" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_image:
     repository : '{{dockerhub_repo}}'
     tag : api_prod
@@ -183,7 +183,7 @@
 
 
 - name : "DOCKER: Run the deployment docker compose."
-  tags : [ "deploy", "docker-container", "app-runner", "current", "now" ]
+  tags : [ "deploy", "docker-container", "app-runner" ]
   become : true
   community.docker.docker_compose :
     project_src : "/home/ansible/app"
