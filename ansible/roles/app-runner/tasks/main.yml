@@ -99,8 +99,8 @@
   community.docker.docker_container :
     name : portainer
     ports : 
-      - '9000:9000'
-      - '8000:8000'
+      - '9000'
+      - '8000'
     image : portainer/portainer-ce
     networks :
       - name : back

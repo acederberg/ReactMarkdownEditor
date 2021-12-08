@@ -15,7 +15,8 @@ services :
     container_name : api_prod
     networks : 
       back : {}
-    entrypoint : sh
+    ports : 
+    - 14747
     tty : true
 
   # The mongodb service.
@@ -40,4 +41,3 @@ networks :
     name : front
   back :
     external : true
-    name : front
