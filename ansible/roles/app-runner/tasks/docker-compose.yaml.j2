@@ -1,6 +1,7 @@
 version : '3.7'
 services :
 
+
   # Services whose image must be pulled from dockerhub
   ui_prod : 
     image : {{dockerhub_repo}}:ui_prod
@@ -9,6 +10,8 @@ services :
     - api_prod
     networks : 
       front : {}
+    ports :
+    - 8080
 
   api_prod : 
     build : 
@@ -22,6 +25,7 @@ services :
     ports : 
     - 14747
     tty : true
+
 
   # The mongodb service.
   mongodb : 
