@@ -1,11 +1,12 @@
 ---
-# - name : "Install gitlab-runner."
-#   tags : [ install, gitlab-runner ]
-#   become : true
-#   apt : 
-#     deb : "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
-#     state : 'present'
-# 
+- include_vars : '../vars/main.yml'
+- name : "Install gitlab-runner."
+  tags : [ install, gitlab-runner ]
+  become : true
+  apt : 
+    deb : "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
+    state : 'present'
+
 - name : "Add the runner to the docker group and sudoers group."
   tags : [ install, gitlab-runner ]
   become : true
@@ -23,18 +24,51 @@
     groups : sudo,docker
     password : "{{ password1 | password_hash('sha512') }}"
 
-- name : "Change the vagrant users password and remove it from the sudoers group."
+- name : "Change the vagrant users password."
   tags : [ install, gitlab-runner, security ]
   become : true
   user :
     name : vagrant
     password : "{{ password2 | password_hash( 'sha512' ) }}"
 
+
 - name : "Add a .bashrc for gitlab-ci script to source important environment variables from."
-  tags : [ "current2" ]
+  tags : [ gitlab-runner, current ]
   become : true
   template :
     group : gitlab-runner
     owner : gitlab-runner
+    force : true
     src : './.bashrc.j2'
     dest : '/home/gitlab-runner/.bashrc'
+
+
+- name : "Remove .bash_logout and .profile file  since it may exist and will cause issues with gitlab."
+  tags : [ gitlab-runner, current ]
+  file : 
+    path : '/home/gitlab-runner/{{item}}'
+    state : absent
+  with_items : 
+    - .profile
+    - .bash_logout
+
+
+# This will fail before any ci jobs are done on the gitlab runner.
+# For optimal performence, perform the first stage of the pipeline,
+# stop, run this task and the subsequent task, and restart the pipeline.
+- name : "See if the 'ReactMarkdownEditor/ui' directory exists. If it does, saves its absolute path."
+  tags : [ gitlab-runner, current ]
+  raw : find /home/gitlab-runner -name ui 
+  register : gitlab_runner_ui_filepath
+
+- name : "Render the template into the appropraite loaction."
+  tags : [ gitlab-runner, current ]
+  become : true
+  template :
+    group : gitlab-runner
+    owner : gitlab-runner
+    force : true
+    src : './ui.env.prod'
+    dest : '{{ gitlab_runner_ui_filepath.stdout.__str__( ).strip() }}/.env.prod'
+  when : |
+    gitlab_runner_ui_filepath.rc == 0
