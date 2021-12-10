@@ -33,7 +33,7 @@
 
 
 - name : "Add a .bashrc for gitlab-ci script to source important environment variables from."
-  tags : [ gitlab-runner, current ]
+  tags : [ gitlab-runner ]
   become : true
   template :
     group : gitlab-runner
@@ -57,12 +57,13 @@
 # For optimal performence, perform the first stage of the pipeline,
 # stop, run this task and the subsequent task, and restart the pipeline.
 - name : "See if the 'ReactMarkdownEditor/ui' directory exists. If it does, saves its absolute path."
-  tags : [ gitlab-runner, current ]
+  tags : [ gitlab-runner ]
   raw : find /home/gitlab-runner -name ui 
   register : gitlab_runner_ui_filepath
 
+
 - name : "Render the template into the appropraite loaction."
-  tags : [ gitlab-runner, current ]
+  tags : [ gitlab-runner ]
   become : true
   template :
     group : gitlab-runner
@@ -72,3 +73,32 @@
     dest : '{{ gitlab_runner_ui_filepath.stdout.__str__( ).strip() }}/.env.prod'
   when : |
     gitlab_runner_ui_filepath.rc == 0
+
+
+- name : "Login to dockerhub."
+  tags : [ gitlab-runner, distribute, current ]
+  community.docker.docker_login :
+    username : '{{dockerhub_username}}'
+    password : '{{dockerhub_password}}'
+  when : 
+    push_to_dockerhub is defined
+
+
+- name : "DOCKER: Pull production ui images."
+  tags : [ gitlab-runner, distribute, current ]
+  community.docker.docker_image:
+    # Object
+    repository : '{{ dockerhub_repo }}'
+    name : '{{ dockerhub_repo }}'
+    tag : '{{ item }}'
+    # Action
+    source : local
+    push : true
+    #state : present
+
+  loop :
+  - api_prod
+  - ui_prod  
+
+  when :
+    push_to_dockerhub is defined

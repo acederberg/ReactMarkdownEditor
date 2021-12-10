@@ -164,22 +164,14 @@
   tags : [ "deploy", "docker-container", "app-runner" ]
   community.docker.docker_image:
     repository : '{{dockerhub_repo}}'
-    tag : ui_prod
+    tag : '{{ item }}'
     source : pull
     force_source : true
     state : present
     name : '{{dockerhub_repo}}'
-
-
-- name : "DOCKER: Pull production api image."
-  tags : [ "deploy", "docker-container", "app-runner" ]
-  community.docker.docker_image:
-    repository : '{{dockerhub_repo}}'
-    tag : api_prod
-    source : pull
-    force_source : true
-    state : present
-    name : '{{dockerhub_repo}}'
+  loop:
+    - api_prod
+    - ui_prod
 
 
 - name : "DOCKER: Run the deployment docker compose."
