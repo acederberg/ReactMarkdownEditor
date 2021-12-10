@@ -132,20 +132,14 @@ build-production-images:
         echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
       fi
 
-distribute-images:
-  tags : [ 'build' ]
-  stage : 'distribute-images'
-  script :
-    - echo "pushing images to dockerhub."
-    - > 
-      if [ $LAZY -eq 1 || $LAZY_DISTRIBUTE_IMAGES -eq 1 ]; then
-        echo "\e[31mWARNING: Too lazy too push images. It makes since as they were not build in the last step."
-      else
-        docker push acederberg/portfolio_images:ui_prod && docker push acederberg/portfolio_images:api_prod
-      fi
-
-deploy:
-  tags : [ 'build' ]
-  stage : 'deploy'
-  script :
-    - echo "running ansible...."
+# distribute-images:
+#   tags : [ 'build' ]
+#   stage : 'distribute-images'
+#   script :
+#     - echo "pushing images to dockerhub."
+#     - > 
+#       if [ $LAZY -eq 1 || $LAZY_DISTRIBUTE_IMAGES -eq 1 ]; then
+#         echo "\e[31mWARNING: Too lazy too push images. It makes since as they were not build in the last step."
+#       else
+#         docker push acederberg/portfolio_images:ui_prod && docker push acederberg/portfolio_images:api_prod
+#       fi
