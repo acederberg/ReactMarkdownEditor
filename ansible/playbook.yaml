@@ -3,11 +3,13 @@
     env : 'dev'
   vars_files : 
     - "./vars/main.yml"
+    - "./vars/dockerhub.yml"
   roles : [ common, gitlab-runner ]
 - hosts : my_server
   vars :
     env : 'dev'
   vars_files : 
     - "./vars/main.yml"
+    - "./vars/dockerhub.yml"
   roles : [ common, app-runner ]
 
