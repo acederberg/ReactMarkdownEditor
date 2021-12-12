@@ -4,5 +4,6 @@
 *.swp
 *.swo
 *.env.*
+ansible
 ANSIBLE.md
 TODO.md
