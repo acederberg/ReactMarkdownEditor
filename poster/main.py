@@ -1,40 +1,74 @@
 import requests
-from json import load
+import yaml
+from os.path import join, abspath, dirname
 
 _URI = 'http://127.0.0.1:9001'
 URI = f'{_URI}/markdown'
 
+def getAbsPath( filename ): return abspath( 
+    join(
+        dirname( __file__ ),
+        filename
+    )
+)
+
+def getYaml( filename ):
+
+    import yaml
+
+    with open( 
+            getAbsPath( filename ) 
+        ) as file : return yaml.load( 
+            file, 
+            Loader = yaml.SafeLoader 
+        )
+
+
 def getHeader():
+
+    config = getYaml( 'config.yaml' )
+
     res = requests.post( 
-        "https://dev-xr7t2jq8.us.auth0.com/oauth/token", 
+        config[ 'auth0_token_uri' ],
         json = { 
-            "client_id" : "oHLtHhkc0op7Bgjb31wAK73qwrHZ2YpW",
-            "client_secret" : "t0x8modG4Ao7zHSq-Kt8yxNv81viiFnnuNZPY6gyO0R0XkF1W9D6QFaektTzZBzL",
-            "audience" : "http://localhost:9001",
-            "grant_type" : "client_credentials" 
+            field : config[ f'auth0_{field}' ]
+            for field  in ( 
+                "client_id", 
+                "client_secret", 
+                "audience", 
+                "grant_type" 
+            )
         } 
     )
-    return { 'Authorization' : f'Bearer { res.json()[ "access_token" ] }' }
+
+    return { 
+        'Authorization' : f'Bearer { res.json()[ "access_token" ] }' 
+    }
+
 
 def main( callback = None ):
-    with open( 'tests.json' , 'r' ) as file: data = load( file )
-    
+   
+    content = getYaml( 'content.yaml' )
+
     # Get all collections
     collections = requests.get( f'{_URI}/collections' ).json()
-    Header = getHeader()
+    header = getHeader()
 
     # Fill each collection with test data
     posts = (
+
         requests.post( 
             URI, 
             json = { 'collection' : collection, **item },
-            headers = Header
+            headers = header
         )
-        for item in data
+        for item in content
         for collection in collections
+
     ) 
-    return posts if callback is None else callback( posts )
+    return posts if callback is None else callback( posts ) 
 
 data = main()
-#print( *data, sep = '\n' )
+
+
 print ( *( d.content for d in data ), sep = '\n' )
