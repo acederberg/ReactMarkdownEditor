@@ -4,7 +4,6 @@
 *.swp
 *.swo
 *.env.*
-ansible
 ANSIBLE.md
 .env.*
 .vagrant
