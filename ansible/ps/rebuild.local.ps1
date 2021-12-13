@@ -1,6 +1,6 @@
 $UndefinedMode = "Undefined Mode."
 $VAGRANT_DIR = $ENV:VAGRANT_DIR
-$ANSIBLE_DIR = $ENV:VAGRANT_DIR + '/..'
+$ANSIBLE_DIR = $ENV:VAGRANT_DIR + '/../ansible-runner'
 $ANSIBLE_DOCKER_COMPOSE = $ANSIBLE_DIR + '/docker-compose.yaml'
 
 $ANSIBLE_RUNNER_WORKDIR = $ANSIBLE_RUNNER_WORKDIR + "/app"
@@ -217,7 +217,7 @@ function invoke-SSHKeys
 }
 
 
-function rebuild-LocalAppRunnerEnvironment(){
+function rebuild-LocalAppRunnerEnvironment{
 	
 	param( 
 		$vagrant, 	# run the new vagrant step when true.
