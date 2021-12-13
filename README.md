@@ -22,8 +22,7 @@ There were some interesting problems here due to the way that `react-markdown` w
 
 These problems include making routing change the DOM while not returning any noticable `HTML`. This problem was circumvented by having the `react-router-dom` `Route` components `render` prop calls a method that renders the markdown into some part of the DOM. 
 
-
-<a label = 'api'></>
+<a name = api></a>
 ## API
 
 This API uses sqlite since the scale of the system and the amount of metadata included is insignificant, e.g. things like a description, title, author name, links for images, etc. could be included. In this case the metadata consists exclusively of a file name and its location. If more metadata were included, due to the lengthly nature of descriptions and edit histories, it would be better to use a non-relation database like mongodb. This would offer the additional convenience of allowing us to keep the text and metadata in the same location and unify the data. Since markdowns are typically fairly small this is fairly attainable. 
