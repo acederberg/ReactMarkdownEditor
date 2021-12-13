@@ -103,6 +103,7 @@ build-ui:
         echo -e "\e[31WARNING: Too lazy to build.\e[0"
       fi
 
+
 test-api:
   tags: [ 'test' ]
   stage: test-api
