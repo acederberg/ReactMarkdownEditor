@@ -1,14 +1,17 @@
 import express from "express"
 import cors from "cors"
 
+
 // should use es6
 var jwt = require('express-jwt');
 var jwtAuthz = require('express-jwt-authz')
 var jwks = require('jwks-rsa');
 
+
 // Use trivial middleware to avoid using up tokens. 
 const TESTING = ( process.env.TESTING === 'true' )
 const testing_middleware = ( request, response, next ) => next()
+
 
 var checkUser =  !TESTING ? jwt({
 	secret: jwks.expressJwtSecret({
@@ -22,10 +25,14 @@ var checkUser =  !TESTING ? jwt({
 	algorithms: ['RS256']
 }) : testing_middleware
 
+
 var checkAdmin = !TESTING ? jwtAuthz(
 	[ "modify:articals" ], 
 	{ customScopeKey : "permissions" }
 ) : testing_middleware
+
+console.log( TESTING )
+
 
 // Export the optional  middlewares and make an app using the universal middlewares.
 export { checkUser, checkAdmin }
