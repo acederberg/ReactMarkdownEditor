@@ -1,6 +1,9 @@
 version : '3.7'
+
 services :
+
   api :
+
     build : 
       context : '.'
       dockerfile : 'Dockerfile.dev'
@@ -16,7 +19,11 @@ services :
       - type : 'bind'
         source : '.'
         target : '/app/'
+    depends_on : 
+      - mongodb
+
   mongodb :
+
     container_name : 'mongodb'
     environment:
       MONGO_INITDB_ROOT_USERNAME : 'dev'
@@ -26,8 +33,12 @@ services :
       back : {}
     ports :
       - 27017
+
+
 networks : 
+
   back :
+
     driver : 'bridge'
     attachable : true
 

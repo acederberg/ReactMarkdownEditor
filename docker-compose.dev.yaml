@@ -5,6 +5,10 @@ services :
       context : './nginx'
       dockerfile : 'Dockerfile.dev'
     container_name : 'ssl'
+    depends_on :
+      - mongodb
+      - api
+      - ux
     networks :
       front : {}
       back : {}
