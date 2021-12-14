@@ -64,11 +64,13 @@ def main( callback = None ):
         )
         for item in content
         for collection in collections
+        if 'main' not in collection
 
     ) 
     return posts if callback is None else callback( posts ) 
 
-data = main()
 
-
-print ( *( d.content for d in data ), sep = '\n' )
+if __name__ == '__main__' :
+    
+    data = main()
+    print ( *( d.content for d in data ), sep = '\n' )
