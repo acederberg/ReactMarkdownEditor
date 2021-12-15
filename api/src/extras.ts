@@ -85,7 +85,7 @@ export default function extras( app : Express ){
 		const filter = {
 			title : request.params.title
 		}
-		const data = await models[ 'main_articals' ].findOne( filter ).exec()
+		const data = await models[ 'main_articles' ].findOne( filter ).exec()
 
 		result.send( data )
 
