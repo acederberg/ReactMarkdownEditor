@@ -7,9 +7,9 @@ export default function Navbar_( { withLogin } ){
 			<Navbar.Brand>HolyPortfolio.com</Navbar.Brand>
 			<Navbar.Collapse id = 'etc'>
 				<Nav className = 'me-auto' >
-					<Nav.Link href = '/'>Home</Nav.Link>
+					<Nav.Link href = '/home'>Home</Nav.Link>
 					<Nav.Link href = '/projects'>Projects</Nav.Link>
-					<Nav.Link href = '/collections'>Articals</Nav.Link>
+					<Nav.Link href = '/collections'>Articles</Nav.Link>
 				</Nav>
 			</Navbar.Collapse>
 			{ withLogin && <Login/> }

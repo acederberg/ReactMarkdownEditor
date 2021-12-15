@@ -4,11 +4,14 @@ const HEADERS = {
 	'Content-type' : 'application/json',
 	'Sec-Fetch-Mode' : 'no-cors'
 }
+
+
 const createAuthHeader = async ( token_promise ) => { 
 	const token = await token_promise; 
 	const header = { ...HEADERS, Authorization : `Bearer ${token}` }
 	return header
 }
+
 
 export function clean( data ){
 	return {
@@ -20,6 +23,7 @@ export function clean( data ){
 		}
 	} 
 }
+
 
 function create( fetcher ){
 	// Make a function that takes in the same parameters as the fetcher used.
@@ -33,10 +37,23 @@ function create( fetcher ){
 	return wrapper
 }
 
+
 export const get_markdown = create( 
 	// Get a markdown document.
 	( { collection, _id } ) => fetch( `${uri}/markdown/${collection}/${_id}` )
 )
+
+
+export const get_markdown_by_title = create(
+	( { title } ) => {
+
+		const addr = `${uri}/resources/${title}` 
+		console.log( addr )
+		return fetch( addr )
+
+	}
+)
+
 
 export const put_markdown = create( async function( { collection, filter, content, token } ){
 		const headers = await createAuthHeader( token )
@@ -62,6 +79,7 @@ export const post_markdown = create( async function( { collection, content, toke
 	} )
 
 } )
+
 
 export const delete_markdown = create( async function( { collection, _id, token } ){
 

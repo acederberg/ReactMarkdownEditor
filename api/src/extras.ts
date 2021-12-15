@@ -1,4 +1,4 @@
-// Miscillanious utility endpoints.
+// Mis illanious utility endpoints.
 import { models } from "./endpoints/model/"
 import mongoose from "mongoose"
 import { listCollections } from "./db"
@@ -7,6 +7,7 @@ import { Express } from "express"
 const get_name = ( request ) => request.params.collection 
 
 export default function extras( app : Express ){
+
 	app.get( 
 		"/collections/", 
 		async ( request, result ) => {
@@ -17,6 +18,8 @@ export default function extras( app : Express ){
 			result.send( collections )
 		} 
 	)
+
+
 	app.get( 
 		"/markdown/:collection/:_id/", 
 		async( request, result ) => {
@@ -45,15 +48,20 @@ export default function extras( app : Express ){
 			}
 		} 
 	)
+
+	
 	app.get( "/collections/:collection/:count/", async( request, result ) => {
+		
 		// Get metadata for front end rendering.
+		
 		const name = get_name( request ) 
 		const count = parseInt( request.params.count ) 
 		const collection = models[ name ]
-	        if ( collection ){
+		
+		if ( collection ){
 			var out = {}
 			try{
-				const data = await collection.find().exec()
+				const data = await collection.find().limit( count ).exec()
 				await data.map( item => out[ item._id ] = item.metadata )
 				result.send( out )
 			}
@@ -67,5 +75,21 @@ export default function extras( app : Express ){
 			result.status( 400 )
 			result.send( { msg : 'Failed to find collection' } )
 		}
-	} )
+
+	})
+
+
+	// Get an artical from the `main` collection.
+	app.get( "/resources/:title", async( request, result ) => {
+		
+		const filter = {
+			title : request.params.title
+		}
+		const data = await models[ 'main_articles' ].findOne( filter ).exec()
+
+		result.send( data )
+
+	})
+
+
 }

@@ -1,4 +1,8 @@
+# Vim.
 *.swp
 *.swo
+
+# Folders.
+data
 dist
 node_modules

@@ -29,7 +29,6 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Object {
 
 	// decorated function
 	const wrapper = async ( request, result ) => {
-		console.log( request.body )
 		// Check the keys
 		if ( !can_be_empty ){
 			if ( !request.body ){
@@ -78,4 +77,5 @@ export function create_endpoint( endpoint : EndpointInterface, args) : Object {
 		method : wrapper,
 		middleware : endpoint.middleware
 	}
+
 }

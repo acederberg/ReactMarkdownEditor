@@ -1,5 +1,7 @@
-import { AuthProviderWithHistory, Collections, Edit, View, ProtectedRoute, ViewerContextProvider } from './components'
-import { Route } from "react-router-dom"
+
+import { AuthProviderWithHistory, Collections, Edit, Home, View, Projects, ProtectedRoute, ViewerContextProvider } from './components'
+import { Route, Redirect } from "react-router-dom"
+
 
 export default function App() {
 	return <AuthProviderWithHistory>
@@ -21,16 +23,23 @@ export default function App() {
 				path = '/edit'
 				component = { Edit }
 			/>
+			<Route 
+				path = '/projects'
+				component = { Projects }
+			/>
+			<Route 
+				path = '/home'
+				component = { Home }
+			/>
+
 		</ViewerContextProvider>
 	</AuthProviderWithHistory>
 }
-/*		<Route 
-			path = '/projects'
-			component = { () => <><h1>Projects</h1><p>Currently adding projects. Website is under development.</p></> }
-		/>
-		<Route 
-			path = '/home'
-			component = { () => <><h1>Home</h1><p>This is a placeholder</p></> }
-		/>
-*/
+
+			/*
+			<Route 
+				path = '*'
+				element = { <Navigate to = "/home"/> }
+			/>
+			*/
 
