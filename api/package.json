@@ -7,7 +7,7 @@
     "start": "tsc-watch --onSuccess 'env-cmd --file .env.dev nodemon dist/index.js'",
     "build-prod" : "tsc",
     "start-prod" : "env-cmd --file .env.prod node ./dist/index.js",
-    "test": "jest --watchAll --runInBand"
+    "test": "env-cmd --file .env.test jest --watchAll --runInBand"
   },
   "author": "Adrian Cederberg",
   "license": "ISC",
