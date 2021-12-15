@@ -1,40 +1,79 @@
-# Markdown Editor
-
-A small project I wrote for some practice with `docker`, `docker-compose`, `react`, and `flask-sqlalchemy`. I also used `bootstrap` to make `css` and wrote `css` for the rendered markdowns, excluding syntax highlighting, which is done using `prism` with `react-syntax-highlighter`, which was used a plugin in `react-markdown`. The front end uses a minimal RESTful CRUD API built from `NginX` and `FlaskSQLAlchemy`. The purpose being that Nginx will serve our raw markdown files while the `FlaskSQLAlchemy` app allows us to `POST` new markdowns, edit existing markdowns using `PUT` requests, view the existing markdowns with `GET` requests, and `DELETE` markdowns by specifying the id. *(This app only defines a single endpoint)*. The API is RESTful in the sense that it is a stateless, cachable, layered system ( especially if a reverse proxy were put in the way ) that is build to serve a client, the markdown renderer and editor.
+# The Portfolio Project
 
 
-## Running
-
-Install [Docker]( https://www.docker.com/ ). Modern versions of docker will include `docker-compose` (as `docker compose`), while others will require separate installation. Pull this repository using `git pull <link for repo>` and `cd` into it. Then
-
-	docker compose up
-
-to start the backend and
-
-	cd ux && docker compose up
-
-to start the frontend. Hypothetically this could be set up without docker using another means of containerization, e.g. `containerd`. However not using containers will likely require you to run `NginX` locally or on a vm, niether of which is convenient as running a container.
+The following are some notes about the making of this portfolio. For more on the applications, see the [github repository]( https://github.com/acederberg/ReactMarkdownEditor/tree/cicd ). This document is not a read me.
 
 
-## UX
-
-There were some interesting problems here due to the way that `react-markdown` works. In particular, `react-markdown`s `RenderMarkdown` component must be rendered into the `ReactDOM` and not directly, since there is useful since it makes a 'virtual dom' to render the elements into, allowing real time rendering without calling `dangerouslySetInnerHTML` ( as the name implies, is dangerous since it allows for nasty things like code injection ) or completely overriding. This is especially import since rerendering the markdown frequently would decrease performance an maximize the ammount of work on the client side, which is done with great frequency the markdown editor. Read more about `react-markdown` [here](https://www.npmjs.com/package/react-markdown).
-
-These problems include making routing change the DOM while not returning any noticable `HTML`. This problem was circumvented by having the `react-router-dom` `Route` components `render` prop calls a method that renders the markdown into some part of the DOM. 
-
-<a name = api></a>
-## API
-
-This API uses sqlite since the scale of the system and the amount of metadata included is insignificant, e.g. things like a description, title, author name, links for images, etc. could be included. In this case the metadata consists exclusively of a file name and its location. If more metadata were included, due to the lengthly nature of descriptions and edit histories, it would be better to use a non-relation database like mongodb. This would offer the additional convenience of allowing us to keep the text and metadata in the same location and unify the data. Since markdowns are typically fairly small this is fairly attainable. 
-
-I used `NginX` to serve the raw markdowns ( by requesting their name by URI ) in addition to talking to the `uwsgi` http-socket on the `flask` container.
+## Intended Functionality
 
 
-## POSTER
+The objectives of the end product are:
 
-A `Python3` script using the `requests` library to post dummy data to the [markdowns api]( #api ). This is useful for the development of the UX, since it only has full functionality when there is data.
+1. Edit markdowns in a UI, use an API to store these markdowns and their metadata.
+2. Add authentication to sensitive API endpoints and particular routes in the user interface.
+3. Implement infrastructure as code such that the website may be torn down and relocated, and additionally simulated on a local machine.
+4. Scripts to automate various tasks in the local 'lab' environment and the actual production environment.
 
 
-## Gitlab CI/CD and Ansible
+## Why?
 
-In the cicd branch you will find a variety of tools for running the website locally, bringing up a gitlab-runner to run gitlab tasks, `PowerShell` scripts to automate various tasks in this environment, and for the time being some shell scripts. Soon I will link to an artical here.
+
+The initial objective of this project was to familiarize myself further with some devops tools by making a blog out of a markdown editor made in `react` and the ascociated express `typescript` api which I had made. Further, I need a portfolio to make applying to jobs make any sense and absolutaley refuse to use wordpress or some other prepackaged solution *( though if you need one, I am working on a similar boilerplate which will be revealed soon )*. To list a few such technologies:
+
+- `ansible` -- For automation. A instances for which it was used
+	*	Bring up new webservers with minimal configuration and running jobs on webservers. *(e.g. install `docker` and `docker-compose`, the `docker` `python` sdk, run the docker compose, etc ).* 
+	*	Bring up new gitlab-runners with minimal configuration ( registration of the runner must be done manually, but that is it ). Push images build by the continuous integration pipeline.
+	*	Back up and distribute docker volumes.
+	*	Various configuration templates ( e.g. docker-compose ), security issues ( passwords and secrets ).
+- `gitlab` -- For continuous integration.
+	* Run tests on code. Build production images for deployment. 
+	* Will eventually trigger ansible jobs depending on success or fialure.
+- `vagrant` -- For building local versions of the simulation.
+	* Make a local ansible controller with basically no manual cofiguration.
+	* Make local web servers and gitlab-runners to simulate the production environment locally and run gitlab CI jobs locally.
+- `docker` and `docker compose` -- Containerization an scaling of apps.
+
+
+In this case, I had to learn `ansible` and `vagrant`, both of which were simple with excellent documentation. I also learned `gitlab`, which was a more painful experience but nonetheless with great documentation.
+
+
+
+## Why such a lame domain name?
+
+
+Well, I now recall it was ten dollars for the first year on porkbun. I will likely change it, though I must brainstorm a better name first.
+
+
+
+## What are the `PowerShell` Scripts For?
+
+
+I wrote some powershell scripts to automate redundant tasks, such as:
+
+
+- Generating a new ansible inventory for the vagrant machines.
+- Distributing ssh-keys from the ansible controller to the controlled servers.
+- Destroying and reconstructing the local lab environment ( the local ansible controller, local webserver, and local gitlab-runner ). This is done by destorying and rebuilding vagrant machines, creating and distributing ssh-keys, etc.
+
+
+
+### Why `PowerShell` and not `Bash`?
+
+
+Though I prefer `bash` for a commanline, I must admit that `powershell` is much better for scripting due to its superior modern syntax. Further, `powershell` ( and the entire dotnet platfom ) is open source and cross platform, for more read [the official microsoft documentation about powershell 7]( https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-70?view=powershell-7.2 ). Finally, powershell is more readable and extremely intuitive and additionally there is nice syntax highlighting available in `vim`.
+
+This decision was after I began to write a bash script for the afforementioned purposes and it was not nearly as coherent as I would like. I like the ability to use functions from my scripts in the commandline, and the addition of these is merely a one line addition to the `powershell` profile :
+
+~~~powershell
+	echo 'Import-Module /absolute/path/to/module -Force' >> $Profile
+~~~
+
+
+
+## Auth0
+
+
+Since I wanted to learn a bit more about authentication for user interfaces and APIs, I decided I ought to try out `Auth0` on the applications running here. For now it only serves the purpose of allowing only myself to edit articals in the ui markdown editor and protecting sensitive API endpoints ( for instance create, destroy, and update method endpoints ).
+
+
+
