@@ -76,10 +76,10 @@ if __name__ == '__main__' :
 
     presets : dict = {
         "abs_path" : "/mnt/c/Dev/notes/AboutThePortfolio.md",
-        "author" : "tester",
+        "author" : "Adrian Cederberg",
         "collection" : "main_articals",
-        "description" : "a test",
-        "title" : "test"
+        "description" : "A brief explanation of the portfolio.",
+        "title" : "About The Portfolio"
     }
 
     result = postJsonFromUserInput( 
