@@ -29,6 +29,8 @@ services :
       MONGO_INITDB_ROOT_USERNAME : 'dev'
       MONGO_INITDB_ROOT_PASSWORD : 'goofy'
     image : 'mongo'
+    volumes : 
+      - './data/:/usr/local/var/mongodb'
     networks :
       back : {}
     ports :
