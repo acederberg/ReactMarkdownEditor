@@ -1,5 +1,5 @@
 
-import { AuthProviderWithHistory, Collections, Edit, Home, View, ProtectedRoute, ViewerContextProvider } from './components'
+import { AuthProviderWithHistory, Collections, Edit, Home, View, Projects, ProtectedRoute, ViewerContextProvider } from './components'
 import { Route, Redirect } from "react-router-dom"
 
 
@@ -25,7 +25,7 @@ export default function App() {
 			/>
 			<Route 
 				path = '/projects'
-				component = { () => <><h1>Projects</h1><p>Currently adding projects. Website is under development.</p></> }
+				component = { Projects }
 			/>
 			<Route 
 				path = '/home'
