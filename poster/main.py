@@ -40,7 +40,7 @@ def getHeader():
             )
         } 
     )
-
+    print( res.status_code, res.reason )
     return { 
         'Authorization' : f'Bearer { res.json()[ "access_token" ] }' 
     }

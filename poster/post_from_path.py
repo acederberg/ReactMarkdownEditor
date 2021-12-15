@@ -58,7 +58,8 @@ def postJsonFromUserInput( presets : dict = {}, verbose : bool = None, no_ask : 
         print( f'{ data = }' )
         print( 100 * '=' )
         print( 'posting...' )
-    
+   
+    print( URI )
     result = requests.post(
         URI,
         json = data,
