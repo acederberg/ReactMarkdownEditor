@@ -72,14 +72,20 @@
 
 
 - name : "Check if gitlab runner exists."
-  tags : [ gitlab-runner ]
+  tags : [ gitlab-runner, rn ]
   become : true
-  raw : $( cat /etc/gitlab-runner/config.toml  | grep runners | test $( wc --word ) -eq 0  ) && echo 1 || echo 0
+  raw : cat /etc/gitlab-runner/config.toml | grep runners | wc --word
   register : runner_exists
 
 
+- name : debug
+  tags : [ gitlab-runner, rn ]
+  debug : 
+    msg : '{{ runner_exists }}'
+
+
 - name : "If no gitlab runner, register one."
-  tags : [ gitlab-runner ]
+  tags : [ gitlab-runner, rn ]
   become : true
   raw : |
     gitlab-runner register \
@@ -91,7 +97,7 @@
       --tag-list "build,test" 
 
   when:
-    runner_exists.rc == 0
+    runner_exists.stdout == '0'
 
 
 # Application configs
