@@ -6,7 +6,7 @@
 
 
 # - name : "Create the app-runner user."
-#   tags : [ "install", "security", "app-runner" ]
+#   tags : [ install, security, app-runner ]
 #   user :
 #     name : app-runner
 #     groups : sudo,docker
@@ -15,7 +15,7 @@
  
 
 - name : "Change the ansible users password."
-  tags : [ "install", "security", "app-runner" ]
+  tags : [ install, security, app-runner ]
   user :
     name : ansible
     groups : sudo,docker
@@ -26,14 +26,14 @@
 
 
 - name : "Determine if the vagrant user exists."
-  tags : [ "install", "security", "app-runner" ]
+  tags : [ install, security, app-runner ]
   # Test by looking for the home directory since vagrant always makes a home directory.
   shell : ls /home | grep vagrant | wc --word
   register: vagrant_exists
 
 
 - name : "Change the vagrant user if it exists."
-  tags : [ "install", "security", "app-runner" ]
+  tags : [ install, security, app-runner ]
   user :
     name : vagrant
     password : "{{ password1 | password_hash( 'sha512' ) }}"
@@ -43,34 +43,34 @@
 
 
 
-# RESOURCES
+# CONFIGURATIONS
 # Read this snippet about adding encrypted data: https://ahelpme.com/software/ansible/ansible-using-ansible-vault-with-copy-module-to-decrypt-on-the-fly-files/.
 - name : "RESOURCES: Make a folder for docker-compose.yaml and artifacts"
-  tags : [ "deploy", "docker-container", "app-runner" ]
-  shell : test -d /home/ansible/app || mkdir /home/ansible/app
+  tags : [ deploy, docker-container, app-runner ]
+  shell : "test -d {{ ansible_workdir }} || mkdir {{ ansible_workdir }}"
 
 
 - name : "RESOURCES: Copy docker compose into /home/ansible/app."
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   template : 
     src : ./docker-compose.yaml.j2
-    dest : /home/ansible/app/docker-compose.yaml
+    dest : "{{ ansible_workdir }}/docker-compose.yaml"
     force : true # Because update should be pushed.
 
 
 - name : "RESOURCES: Add the .env for the api container."
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   template : 
     src : ./.env.api_prod.j2
-    dest : /home/ansible/app/.env.api_prod
+    dest : "{{ ansible_workdir }}/.env.api_prod"
     force : true
 
 
 - name : "RESOURCES: Add the dockerfile for the api container to copy the .env into the api container."
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   template : 
     src : ./Dockerfile.api_prod.j2
-    dest : /home/ansible/app/Dockerfile.api_prod
+    dest : "{{ ansible_workdir }}/Dockerfile.api_prod"
     force : true
   
 
@@ -79,7 +79,7 @@
 # Some more stuff following along with ["The Digital Life"'s fantastic tutorial](https://www.youtube.com/watch?v=CQk9AOPh5pw&t=712s).
 # This is a convenient GUI for docker. Note that these ports must also be exposed on the vagrant machine.
 - name : "DOCKER: Add front network"
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   community.docker.docker_network :
     name : front
     driver : 'bridge'
@@ -87,15 +87,17 @@
 
 
 - name : "DOCKER: Add back network"
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   community.docker.docker_network :
     name : back
     driver : 'bridge'
     attachable : true
 
 
+# Extras
+
 - name : "DOCKER: Add portainer"
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   community.docker.docker_container :
     name : portainer
     ports : 
@@ -114,7 +116,7 @@
 
 
 - name : "DOCKER: Add Nginx Proxy Manager Database"
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   community.docker.docker_container :
     # More info: https://github.com/jc21/docker-mariadb-aria
     name : '{{npm_db}}'
@@ -131,7 +133,7 @@
 
 
 - name : "DOCKER: Add Nginx Proxy Manager."
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   community.docker.docker_container : 
     image: 'jc21/nginx-proxy-manager:latest'
     name : NPM
@@ -153,15 +155,17 @@
       - ./app/letsencrypt:/etc/letsencrypt
 
 
-- name : "DOCKER: Login to dockerhub"
-  tags : [ "deploy", "docker-container", "app-runner", "login", "security" ]
+# Pull production images
+
+- name : "DOCKER: login to dockerhub"
+  tags : [ deploy, docker-container, app-runner, login, security ]
   community.docker.docker_login :
     username : '{{dockerhub_username}}'
     password : '{{dockerhub_password}}'
 
 
 - name : "DOCKER: Pull production ui images."
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   community.docker.docker_image:
     repository : '{{dockerhub_repo}}'
     tag : '{{ item }}'
@@ -174,10 +178,32 @@
     - ui_prod
 
 
+# RUN docker compose with v2 by default
+
 - name : "DOCKER: Run the deployment docker compose."
-  tags : [ "deploy", "docker-container", "app-runner" ]
+  tags : [ deploy, docker-container, app-runner ]
   become : true
   community.docker.docker_compose :
-    project_src : "/home/ansible/app"
+    project_src : "{{ docker_compose_destination }}"
     build : true
     state : present
+  when :
+    docker_compose_v1 is defined and docker_compose_v1 == true
+
+
+- name : "DOCKER: Run the deployment docker compose with composev2. "
+  tags : [ deploy, docker-container, app-runner, rnb ]
+  become : false
+  shell : |
+    starting_location=$PWD
+    cd {{ ansible_workdir }}
+    docker compose up --build --detach
+    cd $starting_location
+  register : output
+
+- name : "output"
+  tags : [ deploy, docker-container, app-runner, rnb ]
+  debug :
+    msg : '{{ output }}'
+
+
