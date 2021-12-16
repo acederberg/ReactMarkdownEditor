@@ -16,6 +16,7 @@
 # This will provide great aid in debugging
 # Otherwise I might actually lose my mind.
 
+
 variables :
   COMPOSE_HTTP_TIMEOUT : 3600
   GIT_STRATEGY : none
@@ -23,7 +24,9 @@ variables :
   LAZY_BUILD_DEV_IMAGES : 1
   LAZY_DISTRIBUTE_IMAGES : 1
 
+
 stages:    
+
   - get-git
   - build-dev-images
   - build-api
@@ -34,14 +37,17 @@ stages:
   - distribute-images
   - deploy
 
+
 # list container ids and stop and kill.
 .pre : 
+
   script:
     - echo 'Killing remaining containers.'
     - docker ps -aq | xargs docker stop
     - docker ps -aq | xargs docker rm  
 
 get-git:
+
   tags : [ 'build' ]
   stage : get-git
   script :
@@ -62,6 +68,7 @@ get-git:
 # Build the api using the typescript compiler.
 # Hold on to build.
 build-dev-images:
+
   tags: [ 'build' ]
   stage: build-dev-images
   script:
@@ -74,7 +81,9 @@ build-dev-images:
         docker-compose --file docker-compose.dev.yaml up --detach --build 
       fi
 
+
 build-api:
+
   variables : 
     DIST_IS_EMPTY : ls ./api/dist/ | wc --words
   tags : [ 'build' ]
@@ -89,7 +98,9 @@ build-api:
         echo -e "\e[31mWARNING: Too lazy to compile.\e[0"
       fi
 
+
 build-ui:
+
   tags : [ 'build' ]
   stage : build-ui
   script:
@@ -105,14 +116,17 @@ build-ui:
 
 
 test-api:
+
   tags: [ 'test' ]
   stage: test-api
   script:
     - echo "Testing api..."
     - docker exec api npx env-cmd --file .env.dev jest --forceExit
 
+
 # Clean up to avoid potential naming conflicts.
 teardown-dev: 
+
   tags : [ 'build' ]
   stage : 'teardown-dev'
   script:
@@ -120,8 +134,10 @@ teardown-dev:
     - docker ps -aq | xargs docker stop
     - docker ps -aq | xargs docker rm  
 
+
 # Build the ( production ) containers
 build-production-images: 
+
   tags : [ 'build' ]
   stage : 'build-production-images'
   script :
@@ -132,6 +148,7 @@ build-production-images:
       else
         echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
       fi
+
 
 # distribute-images:
 #   tags : [ 'build' ]
