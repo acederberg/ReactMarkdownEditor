@@ -8,7 +8,7 @@
   tags : [ "security" ]
   become : true
   lineinfile :
-    dest : "/etc/ssh/sshd_config"
+    dest : "{{ ssh_config_path }}"
     regexp : '^PermitRootLogin'
     line : "PermitRootLogin no"
     state : present
@@ -18,7 +18,7 @@
   tags : [ "security" ]
   become : true
   lineinfile :
-    dest : "/etc/ssh/sshd_config"
+    dest : "{{ ssh_config_path }}"
     regexp : "^PasswordAuthentication"
     line : "PasswordAuthentication no"
     state : present
@@ -28,7 +28,7 @@
   tags : [ "security" ]
   become : true
   lineinfile :
-    dest : "/etc/ssh/sshd_config"
+    dest : "{{ ssh_config_path }}"
     line : "AllowUsers vagrant ansible"
     insertbefore : EOF
 
@@ -59,7 +59,7 @@
   become : true
   apt_key :
     state: present
-    url : "https://download.docker.com/linux/ubuntu/gpg"
+    url : "{{ docker_source_url }}"
 
 
 - name : "Add the docker repository to apt"
@@ -67,7 +67,7 @@
   become : true
   apt_repository :
     state : present
-    repo :  deb https://download.docker.com/linux/ubuntu focal stable
+    repo : "{{ docker_repo }}" 
 
 
 - name : "Install docker."
@@ -93,7 +93,7 @@
   tags : [ install, docker, docker-compose ]
   become : true
   get_url :
-    url : "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64"
+    url : "{{ compose_source_url }}" 
     dest: "/usr/local/bin/docker-compose"
     mode : a+x
     force : true
@@ -103,12 +103,11 @@
 
 # COMPOSE V2
 
-- name : "Make the .docker folder and its children"
+- name : "Make the .docker folder and its children."
   tags : [ install, docker, composev2 ]
   file :
     owner : ansible
     group : ansible
-    recurse : true
     state : directory
     path : "{{compose_v2_destination_dir}}"
 
@@ -116,7 +115,7 @@
 - name : "Is docker compose v2 installed?"
   tags : [ install, docker, composev2 ]
   become : true
-  shell : "ls {{compose_v2_source_url}} | wc --word"
+  shell : "ls {{compose_v2_destination_dir}} | wc --word"
   register : docker_compose_v2_exists
 
 
