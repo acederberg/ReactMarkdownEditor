@@ -72,20 +72,20 @@
 
 
 - name : "Check if gitlab runner exists."
-  tags : [ gitlab-runner, rn ]
+  tags : [ gitlab-runner ]
   become : true
   raw : cat /etc/gitlab-runner/config.toml | grep runners | wc --word
   register : runner_exists
 
 
 - name : debug
-  tags : [ gitlab-runner, rn ]
+  tags : [ gitlab-runner ]
   debug : 
     msg : '{{ runner_exists }}'
 
 
 - name : "If no gitlab runner, register one."
-  tags : [ gitlab-runner, rn ]
+  tags : [ gitlab-runner ]
   become : true
   raw : |
     gitlab-runner register \

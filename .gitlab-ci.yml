@@ -76,9 +76,9 @@ build-dev-images:
     - >
       if [ $LAZY -eq 1 || $LAZY_BUILD_DEV_IMAGES -eq 1 ]; then
         echo -e "\e[031mWARNING: LAZY=1 or LAZY_BUILD_DEV_IMAGES=1. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
-        docker compose --file docker compose.dev.yaml up --detach
+        docker compose --file docker-compose.dev.yaml up --detach
       else
-        docker compose --file docker compose.dev.yaml up --detach --build 
+        docker compose --file docker-compose.dev.yaml up --detach --build 
       fi
 
 
