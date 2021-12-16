@@ -7,7 +7,7 @@
 # Objective:
 # 0. Create development image for tests to run in. 
 # 1. Test applications ( if applicable ) in their development containers. 
-# 2. Build production images using docker-compose.
+# 2. Build production images using docker compose.
 # 3. Push the production images to DockerHub.
 # 4. Run an ansible playbook to deploy everything. 
 
@@ -72,13 +72,13 @@ build-dev-images:
   tags: [ 'build' ]
   stage: build-dev-images
   script:
-    - 'echo "Building images using docker-compose."'
+    - 'echo "Building images using docker compose."'
     - >
       if [ $LAZY -eq 1 || $LAZY_BUILD_DEV_IMAGES -eq 1 ]; then
         echo -e "\e[031mWARNING: LAZY=1 or LAZY_BUILD_DEV_IMAGES=1. Too lazy to rebuild devlopment images. These will mount changes to the code but will not rebuild images.\e[0m"
-        docker-compose --file docker-compose.dev.yaml up --detach
+        docker compose --file docker compose.dev.yaml up --detach
       else
-        docker-compose --file docker-compose.dev.yaml up --detach --build 
+        docker compose --file docker compose.dev.yaml up --detach --build 
       fi
 
 
@@ -144,7 +144,7 @@ build-production-images:
     - echo "building production images..."
     - > 
       if [ $LAZY -eq 0 ]; then
-        docker-compose --file docker-compose.prod.yaml build api ux ssl
+        docker compose --file docker compose.prod.yaml build api ux ssl
       else
         echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
       fi
