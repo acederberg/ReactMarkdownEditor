@@ -1,32 +1,37 @@
-# I followed this very helpful tutorial to replace my scripts.
-# https://github.com/xcad2k/ansible-boilerplates/blob/main/Provision/Ubuntu/install_docker.yaml
+- include_vars : "../vars/main.yml"
 
+
+# Security
 # Asssumes that there is already an ansible user and potentially a vagrant user.
+
 - name : "Remove access for non-root users via ssh."
   tags : [ "security" ]
   become : true
   lineinfile :
-    dest : /etc/ssh/sshd_config
+    dest : "/etc/ssh/sshd_config"
     regexp : '^PermitRootLogin'
     line : "PermitRootLogin no"
     state : present
+
 
 - name : "Remove password authentication for ssh"
   tags : [ "security" ]
   become : true
   lineinfile :
-    dest : /etc/ssh/sshd_config
-    regexp : '^PasswordAuthentication'
+    dest : "/etc/ssh/sshd_config"
+    regexp : "^PasswordAuthentication"
     line : "PasswordAuthentication no"
     state : present
+
 
 - name : "Add AllowUsers to ssh"
   tags : [ "security" ]
   become : true
   lineinfile :
-    dest : /etc/ssh/sshd_config
-    line : 'AllowUsers vagrant ansible'
+    dest : "/etc/ssh/sshd_config"
+    line : "AllowUsers vagrant ansible"
     insertbefore : EOF
+
 
 - name : "Restart the ssh daemon"
   tags : [ "security" ]
@@ -35,63 +40,110 @@
     name : sshd
     state : restarted
 
+
+# INSTALL DOCKER
+# I followed this very helpful tutorial to replace my scripts.
+# https://github.com/xcad2k/ansible-boilerplates/blob/main/Provision/Ubuntu/install_docker.yaml
+
 - name : "Install tools for docker installation"
-  tags : [ "install", "docker" ]
+  tags : [ install, docker ]
   become : true
   apt :
     name : [ apt-transport-https, ca-certificates, curl, gnupg-agent, software-properties-common ]
     state : present
     update_cache: true
 
+
 - name : "Add the docker gpg key."
-  tags : [ "install", "docker" ]
+  tags : [ install, docker ]
   become : true
   apt_key :
     state: present
-    url : https://download.docker.com/linux/ubuntu/gpg
+    url : "https://download.docker.com/linux/ubuntu/gpg"
+
 
 - name : "Add the docker repository to apt"
-  tags : [ "install", "docker" ]
+  tags : [ install, docker ]
   become : true
   apt_repository :
     state : present
     repo :  deb https://download.docker.com/linux/ubuntu focal stable
 
+
 - name : "Install docker."
-  tags : [ "install", "docker" ]
+  tags : [ install, docker ]
   become : true
   apt :
     name : [ docker-ce, docker-ce-cli, containerd.io ]
     update_cache: true
 
+
+# DOCKER COMPOSE V1
 # Looked around for a way to go scriptless.
 # Found this: https://www.srijn.net/install-docker-and-docker-compose-using-ansible/
-- name : "Is docker compose installed?"
-  tags : [ "install", "docker" ]
+
+- name : "Is docker compose v1 installed?"
+  tags : [ install, docker, docker-compose ]
   become : true
   shell : "ls /usr/local/bin/ | grep docker-compose | wc --word"
   register: docker_compose_exists
   
 
-- name : "Install docker-compose if it isn't."
-  tags : [ "install", "docker" ]
+- name : "Install docker compose v1."
+  tags : [ install, docker, docker-compose ]
   become : true
   get_url :
     url : "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64"
-    dest: /usr/local/bin/docker-compose
+    dest: "/usr/local/bin/docker-compose"
     mode : a+x
     force : true
   when: >
     docker_compose_exists.stdout == '0'
 
+
+# COMPOSE V2
+
+- name : "Make the .docker folder and its children"
+  tags : [ install, docker, composev2 ]
+  file :
+    owner : ansible
+    group : ansible
+    recurse : true
+    state : directory
+    path : "{{compose_v2_destination_dir}}"
+
+    
+- name : "Is docker compose v2 installed?"
+  tags : [ install, docker, composev2 ]
+  become : true
+  shell : "ls {{compose_v2_source_url}} | wc --word"
+  register : docker_compose_v2_exists
+
+
+- name : "Install compose v2. (Uses GO instead of python. Will require 'raw'."
+  tags : [ install, docker, composev2 ]
+  become : true
+  get_url :
+    url : "{{compose_v2_source_url}}"
+    dest : "{{compose_v2_destination_path}}"
+    mode : +x
+  when : >
+    docker_compose_v2_exists.stdout == '0'
+    
+
+# PYTHON
+
 - name : "Install pip."
-  tags : [ "install", "docker" ]
+  tags : [ install, docker ]
   become : true
   apt :
     name : python3-pip
 
+
 - name : "Install the docker sdk so ansible can do magic."
-  tags : [ "install", "docker" ]
+  tags : [ install, docker ]
   become : true
   pip :
     name : [ docker, docker-compose ]
+
+

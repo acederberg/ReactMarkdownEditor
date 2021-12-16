@@ -1,2 +1,11 @@
 ---
 # vars file for roles/common
+
+
+
+# Compose_v2 vars
+compose_v2_source_url : "https://github.com/docker/compose/releases/download/v2.0.1/docker-compose-linux-x86_64"
+compose_v2_destination_dir : "/home/ansible/.docker/cli-plugins"
+compose_v2_destination_path : "{{compose_v2_destination_dir}}/docker-compose"
+
+
