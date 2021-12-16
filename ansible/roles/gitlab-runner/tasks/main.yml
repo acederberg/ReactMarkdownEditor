@@ -24,6 +24,14 @@
     groups : sudo,docker
     password : "{{ password1 | password_hash('sha512') }}"
 
+
+- name : "Install python-gitlab"    
+  tags : [ install, gitlab-runner, rn ]
+  pip : 
+    name : python-gitlab
+    state : present
+
+
 - name : "Change the vagrant users password."
   tags : [ install, gitlab-runner, security ]
   become : true
@@ -52,6 +60,55 @@
     - .profile
     - .bash_logout
 
+
+- name : "Check if gitlab runner exists."
+  tags : [ gitlab-runner, rn ]
+  become : true
+  raw : $( cat /etc/gitlab-runner/config.toml  | grep runners | test $( wc --word ) -eq 0  ) && echo 1 || echo 0
+  register : runner_exists
+
+
+- name : "print"
+  tags : [ gitlab-runner, rn ]
+  debug : 
+    msg : '{{runner_exists}}'
+
+
+- name : "If no gitlab runner, register one."
+  tags : [ gitlab-runner, rn ]
+  become : true
+  raw : |
+    gitlab-runner register \
+      --non-interactive \
+      --url "https://gitlab.com" \
+      --registration-token "{{ registration_token }}" \
+      --executor "shell" \
+      --description "Vagrant runner." \
+      --tag-list "build,test" 
+
+  when:
+    runner_exists.rc == 0
+
+
+- name : "If fresh gitlab-runner, run the git pull task."
+  tags : [ gitlab-runner, rn ]
+  raw : |
+    gitlab-runner exec shell 
+  when : 
+    runner_exists.rc == 0
+
+
+# - name : "Register gitlab-runner."
+#   community.general.gitlab_runner : 
+#     api_url : https://gitlab.com
+#     api_token : '{{ runner_token }}'
+#     registration_token : '{{ registration_token }}'
+#     description : 'Vagrant runner'
+#     state : present
+#     active : true
+#     project : adrn
+#     tag_list : [ 'build', 'test' ]
+# 
 
 # This will fail before any ci jobs are done on the gitlab runner.
 # For optimal performence, perform the first stage of the pipeline,
