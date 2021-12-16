@@ -41,6 +41,7 @@
     state : restarted
 
 
+
 # INSTALL DOCKER
 # I followed this very helpful tutorial to replace my scripts.
 # https://github.com/xcad2k/ansible-boilerplates/blob/main/Provision/Ubuntu/install_docker.yaml
@@ -78,6 +79,7 @@
     update_cache: true
 
 
+
 # DOCKER COMPOSE V1
 # Looked around for a way to go scriptless.
 # Found this: https://www.srijn.net/install-docker-and-docker-compose-using-ansible/
@@ -99,6 +101,7 @@
     force : true
   when: >
     docker_compose_exists.stdout == '0'
+
 
 
 # COMPOSE V2
@@ -128,7 +131,31 @@
     mode : +x
   when : >
     docker_compose_v2_exists.stdout == '0'
-    
+
+
+- name : "See if a gitlab-runner exists"
+  tags : [ install, docker, composev2 ]
+  raw : "ls /home/gitlab-runner | wc --word"
+  register : gitlab_runner_exists
+
+
+- name : "See if gitlab-runnner has compose-v2."
+  tags : [ install, docker, composev2 ]
+  raw : "ls /home/gitlab-runner/.docker | wc --word" 
+  tags : [ install, docker, composev2 ]
+  register : gitlab_runner_has_compose_v2
+  when : >
+    "1" in gitlab_runner_exists.stdout_lines
+
+
+- name : "Give compose v2 to gitlab-runner when it exists."
+  tags : [ install, docker, composev2 ]
+  become : true
+  raw : cp -r /home/ansible/.docker /home/gitlab-runner/.docker
+  when : >
+    "1" in gitlab_runner_exists.stdout and '0' in gitlab_runner_has_compose_v2.stdout_lines
+
+
 
 # PYTHON
 
