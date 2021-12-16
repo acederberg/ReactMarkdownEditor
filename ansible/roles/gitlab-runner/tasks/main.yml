@@ -1,11 +1,17 @@
 ---
+
 - include_vars : '../vars/main.yml'
+
+# Security
+
+
 - name : "Install gitlab-runner."
   tags : [ install, gitlab-runner ]
   become : true
   apt : 
     deb : "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
     state : 'present'
+
 
 - name : "Add the runner to the docker group and sudoers group."
   tags : [ install, gitlab-runner ]
@@ -14,8 +20,9 @@
     name : gitlab-runner
     groups : docker,sudo
     password : "{{ password0|password_hash('sha512') }}"
-    
-- name : "Add the anisible user to the docker group."
+
+
+- name : "Add the ansible user to the docker group."
   # This user is build in to the vagrantfiles
   tags : [ install, gitlab-runner, security ]
   become : true
@@ -25,19 +32,22 @@
     password : "{{ password1 | password_hash('sha512') }}"
 
 
-- name : "Install python-gitlab"    
-  tags : [ install, gitlab-runner, rn ]
-  pip : 
-    name : python-gitlab
-    state : present
-
-
 - name : "Change the vagrant users password."
   tags : [ install, gitlab-runner, security ]
   become : true
   user :
     name : vagrant
     password : "{{ password2 | password_hash( 'sha512' ) }}"
+
+
+
+# Installation and configuration
+
+- name : "Install python-gitlab"    
+  tags : [ install, gitlab-runner ]
+  pip : 
+    name : python-gitlab
+    state : present
 
 
 - name : "Add a .bashrc for gitlab-ci script to source important environment variables from."
@@ -52,7 +62,7 @@
 
 
 - name : "Remove .bash_logout and .profile file  since it may exist and will cause issues with gitlab."
-  tags : [ gitlab-runner, current ]
+  tags : [ gitlab-runner ]
   file : 
     path : '/home/gitlab-runner/{{item}}'
     state : absent
@@ -62,20 +72,14 @@
 
 
 - name : "Check if gitlab runner exists."
-  tags : [ gitlab-runner, rn ]
+  tags : [ gitlab-runner ]
   become : true
   raw : $( cat /etc/gitlab-runner/config.toml  | grep runners | test $( wc --word ) -eq 0  ) && echo 1 || echo 0
   register : runner_exists
 
 
-- name : "print"
-  tags : [ gitlab-runner, rn ]
-  debug : 
-    msg : '{{runner_exists}}'
-
-
 - name : "If no gitlab runner, register one."
-  tags : [ gitlab-runner, rn ]
+  tags : [ gitlab-runner ]
   become : true
   raw : |
     gitlab-runner register \
@@ -90,36 +94,20 @@
     runner_exists.rc == 0
 
 
-- name : "If fresh gitlab-runner, run the git pull task."
-  tags : [ gitlab-runner, rn ]
-  raw : |
-    gitlab-runner exec shell 
-  when : 
-    runner_exists.rc == 0
-
-
-# - name : "Register gitlab-runner."
-#   community.general.gitlab_runner : 
-#     api_url : https://gitlab.com
-#     api_token : '{{ runner_token }}'
-#     registration_token : '{{ registration_token }}'
-#     description : 'Vagrant runner'
-#     state : present
-#     active : true
-#     project : adrn
-#     tag_list : [ 'build', 'test' ]
-# 
+# Application configs
 
 # This will fail before any ci jobs are done on the gitlab runner.
 # For optimal performence, perform the first stage of the pipeline,
 # stop, run this task and the subsequent task, and restart the pipeline.
-- name : "See if the 'ReactMarkdownEditor/ui' directory exists. If it does, saves its absolute path."
-  tags : [ gitlab-runner ]
-  raw : find /home/gitlab-runner -name ui 
-  register : gitlab_runner_ui_filepath
+
+- name : "See if the 'ReactMarkdownEditor' directory exists. If it does, saves its absolute path."
+  tags : [ gitlab-runner, rn ]
+  raw : find /home/gitlab-runner -name ReactMarkdownEditor 
+  register : gitlab_runner_filepath
 
 
-- name : "Render the template into the appropraite loaction."
+# UI uses this to build in gitlab ci
+- name : "Render ui.env.prod."
   tags : [ gitlab-runner ]
   become : true
   template :
@@ -127,13 +115,27 @@
     owner : gitlab-runner
     force : true
     src : './ui.env.prod'
-    dest : '{{ gitlab_runner_ui_filepath.stdout.__str__( ).strip() }}/.env.prod'
+    dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/ui/.env.prod'
   when : |
-    gitlab_runner_ui_filepath.rc == 0
+    gitlab_runner_filepath.rc == 0
 
+
+# Api uses this to test in gitlab ci
+- name : "Render api.env.prod"
+  tags : [ gitlab-runner, rn ]
+  become : true
+  template : 
+    group : gitlab-runner
+    owner : gitlab-runner
+    force : true
+    src : './api.env.test'
+    dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/api/.env.test'
+
+
+# Image pushing.
 
 - name : "Login to dockerhub."
-  tags : [ gitlab-runner, distribute, current ]
+  tags : [ gitlab-runner, distribute ]
   community.docker.docker_login :
     username : '{{dockerhub_username}}'
     password : '{{dockerhub_password}}'
@@ -141,8 +143,8 @@
     push_to_dockerhub is defined
 
 
-- name : "DOCKER: Pull production ui images."
-  tags : [ gitlab-runner, distribute, current ]
+- name : "DOCKER: Push production images."
+  tags : [ gitlab-runner, distribute ]
   community.docker.docker_image:
     # Object
     repository : '{{ dockerhub_repo }}'
