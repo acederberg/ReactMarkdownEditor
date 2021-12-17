@@ -34,7 +34,7 @@ stages:
   - test-api
   - teardown-dev
   - build-production-images
-  - distribute-images
+  - distribute-production-images
   - deploy
 
 
@@ -151,14 +151,3 @@ build-production-images:
       fi
 
 
-# distribute-images:
-#   tags : [ 'build' ]
-#   stage : 'distribute-images'
-#   script :
-#     - echo "pushing images to dockerhub."
-#     - > 
-#       if [ $LAZY -eq 1 || $LAZY_DISTRIBUTE_IMAGES -eq 1 ]; then
-#         echo "\e[31mWARNING: Too lazy too push images. It makes since as they were not build in the last step."
-#       else
-#         docker push acederberg/portfolio_images:ui_prod && docker push acederberg/portfolio_images:api_prod
-#       fi
