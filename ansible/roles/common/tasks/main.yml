@@ -4,41 +4,38 @@
 # Security
 # Asssumes that there is already an ansible user and potentially a vagrant user.
 
-- name : "Remove access for non-root users via ssh."
-  tags : [ "security" ]
-  become : true
-  lineinfile :
-    dest : "{{ ssh_config_path }}"
-    regexp : '^PermitRootLogin'
-    line : "PermitRootLogin no"
-    state : present
+- name : "SSH stuff."
+  tags : [ common, security, ssh ]
+  block :
 
+  - name : "Remove access for non-root users via ssh."
+    become : true
+    lineinfile :
+      dest : "{{ ssh_config_path }}"
+      regexp : '^PermitRootLogin'
+      line : "PermitRootLogin no"
+      state : present
 
-- name : "Remove password authentication for ssh"
-  tags : [ "security" ]
-  become : true
-  lineinfile :
-    dest : "{{ ssh_config_path }}"
-    regexp : "^PasswordAuthentication"
-    line : "PasswordAuthentication no"
-    state : present
+  - name : "Remove password authentication for ssh"
+    become : true
+    lineinfile :
+      dest : "{{ ssh_config_path }}"
+      regexp : "^PasswordAuthentication"
+      line : "PasswordAuthentication no"
+      state : present
 
+  - name : "Add AllowUsers to ssh"
+    become : true
+    lineinfile :
+      dest : "{{ ssh_config_path }}"
+      line : "AllowUsers vagrant ansible"
+      insertbefore : EOF
 
-- name : "Add AllowUsers to ssh"
-  tags : [ "security" ]
-  become : true
-  lineinfile :
-    dest : "{{ ssh_config_path }}"
-    line : "AllowUsers vagrant ansible"
-    insertbefore : EOF
-
-
-- name : "Restart the ssh daemon"
-  tags : [ "security" ]
-  become : true
-  service :
-    name : sshd
-    state : restarted
+  - name : "Restart the ssh daemon"
+    become : true
+    service :
+      name : sshd
+      state : restarted
 
 
 
@@ -46,140 +43,134 @@
 # I followed this very helpful tutorial to replace my scripts.
 # https://github.com/xcad2k/ansible-boilerplates/blob/main/Provision/Ubuntu/install_docker.yaml
 
-- name : "Install tools for docker installation"
-  tags : [ install, docker ]
-  become : true
-  apt :
-    name : [ apt-transport-https, ca-certificates, curl, gnupg-agent, software-properties-common ]
-    state : present
-    update_cache: true
-
-
-- name : "Add the docker gpg key."
-  tags : [ install, docker ]
-  become : true
-  apt_key :
-    state: present
-    url : "{{ docker_source_url }}"
-
-
-- name : "Add the docker repository to apt"
-  tags : [ install, docker ]
-  become : true
-  apt_repository :
-    state : present
-    repo : "{{ docker_repo }}" 
-
-
 - name : "Install docker."
-  tags : [ install, docker ]
-  become : true
-  apt :
-    name : [ docker-ce, docker-ce-cli, containerd.io ]
-    update_cache: true
+  tags : [ common, docker, install ]
+  block :
 
+  - name : "Install tools for docker installation"
+    become : true
+    apt :
+      name : [ apt-transport-https, ca-certificates, curl, gnupg-agent, software-properties-common ]
+      state : present
+      update_cache: true
+
+  - name : "Add the docker gpg key."
+    become : true
+    apt_key :
+      state: present
+      url : "{{ docker_source_url }}"
+
+  - name : "Add the docker repository to apt"
+    become : true
+    apt_repository :
+      state : present
+      repo : "{{ docker_repo }}" 
+
+  - name : "Install docker."
+    become : true
+    apt :
+      name : [ docker-ce, docker-ce-cli, containerd.io ]
+      update_cache: true
 
 
 # DOCKER COMPOSE V1
 # Looked around for a way to go scriptless.
 # Found this: https://www.srijn.net/install-docker-and-docker-compose-using-ansible/
 
-- name : "Is docker compose v1 installed?"
-  tags : [ install, docker, docker-compose ]
-  become : true
-  shell : "ls /usr/local/bin/ | grep docker-compose | wc --word"
-  register: docker_compose_exists
-  
+- name : "Install docker-compose."
+  tags : [ docker, docker-compose, install ]
+  block : 
 
-- name : "Install docker compose v1."
-  tags : [ install, docker, docker-compose ]
-  become : true
-  get_url :
-    url : "{{ compose_source_url }}" 
-    dest: "/usr/local/bin/docker-compose"
-    mode : a+x
-    force : true
-  when: >
-    docker_compose_exists.stdout == '0'
-
+  - name : "Is docker compose v1 installed?"
+    become : true
+    shell : "ls /usr/local/bin/ | grep docker-compose | wc --word"
+    register: docker_compose_exists
+    
+  - name : "Install docker compose v1."
+    become : true
+    get_url :
+      url : "{{ compose_source_url }}" 
+      dest: "/usr/local/bin/docker-compose"
+      mode : a+x
+      force : true
+    when: >
+      docker_compose_exists.stdout == '0'
 
 
 # COMPOSE V2
 
-- name : "Make the .docker folder and its children."
-  tags : [ install, docker, composev2 ]
-  file :
-    owner : ansible
-    group : ansible
-    state : directory
-    path : "{{compose_v2_destination_dir}}"
+- name : "Install composev2."
+  tags : [ composev2, docker, install ]
+  block :
 
-    
-- name : "Is docker compose v2 installed?"
-  tags : [ install, docker, composev2 ]
-  become : true
-  shell : "ls {{compose_v2_destination_dir}} | wc --word"
-  register : docker_compose_v2_exists
+  - name : "Make the .docker folder and its children."
+    file :
+      owner : ansible
+      group : ansible
+      state : directory
+      path : "{{compose_v2_destination_dir}}"
 
+  - name : "Is docker compose v2 installed?"
+    become : true
+    shell : "ls {{compose_v2_destination_dir}} | wc --word"
+    register : docker_compose_v2_exists
 
-- name : "Install compose v2. (Uses GO instead of python. Will require 'raw'."
-  tags : [ install, docker, composev2 ]
-  become : true
-  get_url :
-    url : "{{compose_v2_source_url}}"
-    dest : "{{compose_v2_destination_path}}"
-    mode : +x
-  when : >
-    docker_compose_v2_exists.stdout == '0'
-
-
-- name : "See if a gitlab-runner exists"
-  tags : [ install, docker, composev2 ]
-  raw : "ls /home/gitlab-runner | wc --word"
-  register : gitlab_runner_exists
-
-
-- name : "See if gitlab-runnner has compose-v2."
-  tags : [ install, docker, composev2 ]
-  raw : "ls /home/gitlab-runner/.docker | wc --word" 
-  tags : [ install, docker, composev2 ]
-  register : gitlab_runner_has_compose_v2
-  when : >
-    "1" in gitlab_runner_exists.stdout_lines
+  - name : "Install compose v2. (Uses GO instead of python. Will require 'raw'."
+    become : true
+    get_url :
+      url : "{{compose_v2_source_url}}"
+      dest : "{{compose_v2_destination_path}}"
+      mode : +x
+    when : >
+      docker_compose_v2_exists.stdout == '0'
 
 
 - name : "Give compose v2 to gitlab-runner when it exists."
-  tags : [ install, docker, composev2 ]
+  tags : [ composev2, docker, gitlab-runner, install ]
   become : true
   block :
 
+    - name : "See if a gitlab-runner exists"
+      tags : [ composev2, docker, install ]
+      raw : "ls /home/gitlab-runner | wc --word"
+      register : gitlab_runner_exists
+
+
+    - name : "See if gitlab-runnner has compose-v2."
+      tags : [ composev2, docker, gitlab-runner, install ]
+      raw : "ls /home/gitlab-runner/.docker | wc --word" 
+      register : gitlab_runner_has_compose_v2
+      when : >
+        "1" in gitlab_runner_exists.stdout_lines
+
     - name : "copy from ansible"
       raw : cp -r /home/ansible/.docker /home/gitlab-runner/.docker
+      when : >
+        "1" in gitlab_runner_exists.stdout_lines and '0' in gitlab_runner_has_compose_v2.stdout_lines
 
     - name : "set correct permissions"
       file :
         path : /home/gitlab-runner/.docker
         owner : gitlab-runner
         group : gitlab-runner
-
-  when : >
-    "1" in gitlab_runner_exists.stdout and '0' in gitlab_runner_has_compose_v2.stdout_lines
-
+      when : >
+        "1" in gitlab_runner_exists.stdout_lines and '0' in gitlab_runner_has_compose_v2.stdout_lines
 
 
 # PYTHON
 
-- name : "Install pip."
-  tags : [ install, docker ]
-  become : true
-  apt :
-    name : python3-pip
+- name : "Python installs."
+  tags : [ install, docker, python ]
+  block :
 
+  - name : "Install pip."
+    become : true
+    apt :
+      name : python3-pip
 
-- name : "Install the docker sdk so ansible can do magic."
-  tags : [ install, docker ]
-  become : true
-  pip :
-    name : [ docker, docker-compose ]
+  - name : "Install the docker sdk so ansible can do magic."
+    become : true
+    pip :
+      name : [ docker, docker-compose ]
 
 

@@ -102,7 +102,7 @@
 # For optimal performence, perform the first stage of the pipeline,
 # stop, run this task and the subsequent task, and restart the pipeline.
 - name : "Distribute configurations for builds and tests."
-  tags : [ gitlab-runner, rn ]
+  tags : [ gitlab-runner, configs ]
   block :
 
   - name : "See if the 'ReactMarkdownEditor' directory exists. If it does, saves its absolute path."
