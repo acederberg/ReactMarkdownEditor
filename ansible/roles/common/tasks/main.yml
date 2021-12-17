@@ -151,7 +151,17 @@
 - name : "Give compose v2 to gitlab-runner when it exists."
   tags : [ install, docker, composev2 ]
   become : true
-  raw : cp -r /home/ansible/.docker /home/gitlab-runner/.docker
+  block :
+
+    - name : "copy from ansible"
+      raw : cp -r /home/ansible/.docker /home/gitlab-runner/.docker
+
+    - name : "set correct permissions"
+      file :
+        path : /home/gitlab-runner/.docker
+        owner : gitlab-runner
+        group : gitlab-runner
+
   when : >
     "1" in gitlab_runner_exists.stdout and '0' in gitlab_runner_has_compose_v2.stdout_lines
 
