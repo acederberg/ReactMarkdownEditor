@@ -121,7 +121,7 @@ test-api:
   stage: test-api
   script:
     - echo "Testing api..."
-    - docker exec api npx env-cmd --file .env.dev jest --forceExit
+    - docker exec api npm run test
 
 
 # Clean up to avoid potential naming conflicts.
