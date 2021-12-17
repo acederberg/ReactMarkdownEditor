@@ -47,7 +47,6 @@ def getJsonFromUserInput( presets : dict = {}, no_ask : bool = None ) -> dict :
 
 def postJsonFromUserInput( presets : dict = {}, verbose : bool = None, no_ask : bool = None ) -> None :
 
-
     data = getJsonFromUserInput( 
         presets = presets,
         no_ask = no_ask
@@ -69,21 +68,21 @@ def postJsonFromUserInput( presets : dict = {}, verbose : bool = None, no_ask : 
     print( f'{ result.status_code } { result.reason }' )
 
     return result
-    
+
 
 
 if __name__ == '__main__' :
 
     presets : dict = {
-        "abs_path" : "/mnt/c/Dev/notes/AboutThePortfolio.md",
+        "abs_path" : "/mnt/c/Dev/notes/Projects.md",
         "author" : "Adrian Cederberg",
         "collection" : "main_articals",
-        "description" : "A brief explanation of the portfolio.",
-        "title" : "About The Portfolio"
+        "description" : "About projects.",
+        "title" : "Projects"
     }
 
     result = postJsonFromUserInput( 
         presets = presets,
-        no_ask = True,
+        no_ask = False,
         verbose = True
     )
