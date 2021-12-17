@@ -4,100 +4,96 @@
 
 # Security
 
-
-- name : "Install gitlab-runner."
+- name : "Install dependencies"
   tags : [ install, gitlab-runner ]
-  become : true
-  apt : 
-    deb : "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
-    state : 'present'
+  block :
+
+  - name : "Install gitlab-runner."
+    become : true
+    apt : 
+      deb : "https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb"
+      state : 'present'
+
+  - name : "Install python-gitlab"    
+    pip : 
+      name : python-gitlab
+      state : present
 
 
-- name : "Add the runner to the docker group and sudoers group."
-  tags : [ install, gitlab-runner ]
-  become : true
-  user :
-    name : gitlab-runner
-    groups : docker,sudo
-    password : "{{ password0|password_hash('sha512') }}"
-
-
-- name : "Add the ansible user to the docker group."
-  # This user is build in to the vagrantfiles
+- name : "Set passwords"
   tags : [ install, gitlab-runner, security ]
-  become : true
-  user :
-    name : ansible
-    groups : sudo,docker
-    password : "{{ password1 | password_hash('sha512') }}"
+  block :
+
+  - name : "Add the runner to the docker group and sudoers group."
+    become : true
+    user :
+      name : gitlab-runner
+      groups : docker,sudo
+      password : "{{ password0|password_hash('sha512') }}"
+
+  - name : "Add the ansible user to the docker group."
+    # This user is build in to the vagrantfiles
+    become : true
+    user :
+      name : ansible
+      groups : sudo,docker
+      password : "{{ password1 | password_hash('sha512') }}"
+
+  - name : "Change the vagrant users password."
+    become : true
+    user :
+      name : vagrant
+      password : "{{ password2 | password_hash( 'sha512' ) }}"
 
 
-- name : "Change the vagrant users password."
-  tags : [ install, gitlab-runner, security ]
-  become : true
-  user :
-    name : vagrant
-    password : "{{ password2 | password_hash( 'sha512' ) }}"
+# registration and configuration
 
-
-
-# Installation and configuration
-
-- name : "Install python-gitlab"    
-  tags : [ install, gitlab-runner ]
-  pip : 
-    name : python-gitlab
-    state : present
-
-
-- name : "Add a .bashrc for gitlab-ci script to source important environment variables from."
+- name : "Configuring gitlab-runner user..."
   tags : [ gitlab-runner ]
-  become : true
-  template :
-    group : gitlab-runner
-    owner : gitlab-runner
-    force : true
-    src : './.bashrc.j2'
-    dest : '/home/gitlab-runner/.bashrc'
+  block :
+  - name : "Add a .bashrc for gitlab-ci script to source important environment variables from."
+    become : true
+    template :
+      group : gitlab-runner
+      owner : gitlab-runner
+      force : true
+      src : './.bashrc.j2'
+      dest : '/home/gitlab-runner/.bashrc'
 
 
-- name : "Remove .bash_logout and .profile file  since it may exist and will cause issues with gitlab."
+  - name : "Remove .bash_logout and .profile file  since it may exist and will cause issues with gitlab."
+    file : 
+      path : '/home/gitlab-runner/{{item}}'
+      state : absent
+    with_items : 
+      - .profile
+      - .bash_logout
+
+
+- name : "Registering gitlab-runner..."
   tags : [ gitlab-runner ]
-  file : 
-    path : '/home/gitlab-runner/{{item}}'
-    state : absent
-  with_items : 
-    - .profile
-    - .bash_logout
+  block :
+  - name : "Check if gitlab runner exists."
+    become : true
+    raw : cat /etc/gitlab-runner/config.toml | grep runners | wc --word
+    register : runner_exists
 
+  - name : debug
+    debug : 
+      msg : '{{ runner_exists }}'
 
-- name : "Check if gitlab runner exists."
-  tags : [ gitlab-runner ]
-  become : true
-  raw : cat /etc/gitlab-runner/config.toml | grep runners | wc --word
-  register : runner_exists
-
-
-- name : debug
-  tags : [ gitlab-runner ]
-  debug : 
-    msg : '{{ runner_exists }}'
-
-
-- name : "If no gitlab runner, register one."
-  tags : [ gitlab-runner ]
-  become : true
-  raw : |
-    gitlab-runner register \
-      --non-interactive \
-      --url "https://gitlab.com" \
-      --registration-token "{{ registration_token }}" \
-      --executor "shell" \
-      --description "Vagrant runner." \
-      --tag-list "build,test" 
-
-  when:
-    runner_exists.stdout == '0'
+  - name : "If no gitlab runner, register one."
+    become : true
+    raw : |
+      gitlab-runner register \
+        --non-interactive \
+        --url "https://gitlab.com" \
+        --registration-token "{{ registration_token }}" \
+        --executor "shell" \
+        --description "Vagrant runner." \
+        --tag-list "build,test" 
+    when:
+      runner_exists.stdout == '0'
 
 
 # Application configs
@@ -105,65 +101,76 @@
 # This will fail before any ci jobs are done on the gitlab runner.
 # For optimal performence, perform the first stage of the pipeline,
 # stop, run this task and the subsequent task, and restart the pipeline.
-
-- name : "See if the 'ReactMarkdownEditor' directory exists. If it does, saves its absolute path."
+- name : "Distribute configurations for builds and tests."
   tags : [ gitlab-runner, rn ]
-  raw : find /home/gitlab-runner -name ReactMarkdownEditor 
-  register : gitlab_runner_filepath
+  block :
+
+  - name : "See if the 'ReactMarkdownEditor' directory exists. If it does, saves its absolute path."
+    raw : find /home/gitlab-runner -name ReactMarkdownEditor 
+    register : gitlab_runner_filepath
 
 
-# UI uses this to build in gitlab ci
-- name : "Render ui.env.prod."
-  tags : [ gitlab-runner ]
-  become : true
-  template :
-    group : gitlab-runner
-    owner : gitlab-runner
-    force : true
-    src : './ui.env.prod'
-    dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/ui/.env.prod'
-  when : |
-    gitlab_runner_filepath.rc == 0
+  # UI uses this to build in gitlab ci
+  - name : "Render ui.env.prod."
+    become : true
+    template :
+      group : gitlab-runner
+      owner : gitlab-runner
+      force : true
+      src : './ui.env.prod'
+      dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/ui/.env.prod'
+    when : |
+      gitlab_runner_filepath.rc == 0
 
+  # Api uses this to test in gitlab ci
+  - name : "Render api.env.prod"
+    become : true
+    template : 
+      group : gitlab-runner
+      owner : gitlab-runner
+      force : true
+      src : './api.env.test'
+      dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/api/.env.test'
+    when : |
+      gitlab_runner_filepath.rc == 0
 
-# Api uses this to test in gitlab ci
-- name : "Render api.env.prod"
-  tags : [ gitlab-runner, rn ]
-  become : true
-  template : 
-    group : gitlab-runner
-    owner : gitlab-runner
-    force : true
-    src : './api.env.test'
-    dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/api/.env.test'
+  # Add a blank prod config for api since we don't actually run the entrypoint for built containers.
+  # Plus it is stupid to share secrets 
+  - name : Touch api/.env.prod for prod build.
+    file :
+      group : gitlab-runner
+      owner : gitlab-runner
+      force : true
+      path : '{{ gitlab_runner_filepath.stdout.__str__().strip() }}/api/.env.prod'
+      state : file
+    when : |
+      gitlab_runner_filepath.rc == 0
 
 
 # Image pushing.
 
-- name : "Login to dockerhub."
+- name : "Push Images"
   tags : [ gitlab-runner, distribute ]
-  community.docker.docker_login :
-    username : '{{dockerhub_username}}'
-    password : '{{dockerhub_password}}'
-  when : 
-    push_to_dockerhub is defined
+  block :
 
+  - name : "Login to dockerhub."
+    community.docker.docker_login :
+      username : '{{dockerhub_username}}'
+      password : '{{dockerhub_password}}'
 
-- name : "DOCKER: Push production images."
-  tags : [ gitlab-runner, distribute ]
-  community.docker.docker_image:
-    # Object
-    repository : '{{ dockerhub_repo }}'
-    name : '{{ dockerhub_repo }}'
-    tag : '{{ item }}'
-    # Action
-    source : local
-    push : true
-    #state : present
-
-  loop :
-  - api_prod
-  - ui_prod  
+  - name : "DOCKER: Push production images."
+    community.docker.docker_image:
+      # Object
+      repository : '{{ dockerhub_repo }}'
+      name : '{{ dockerhub_repo }}'
+      tag : '{{ item }}'
+      # Action
+      source : local
+      push : true
+      #state : present
+    loop :
+    - api_prod
+    - ui_prod  
 
   when :
     push_to_dockerhub is defined
