@@ -57,6 +57,7 @@ get-git:
         if (( $(ls -a | grep --max-count=1 .git | wc --words) == 1 ));
         then
                 echo 'Fetching git repository...'
+                git restore .
                 git fetch && git checkout origin/cicd;
         else
                 echo 'Cloning git repository...'
@@ -121,7 +122,7 @@ test-api:
   stage: test-api
   script:
     - echo "Testing api..."
-    - docker exec api npm run test
+    - docker exec api npx env-cmd --file .env.test jest --forceExit 
 
 
 # Clean up to avoid potential naming conflicts.
