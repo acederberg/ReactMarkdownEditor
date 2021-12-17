@@ -3,7 +3,6 @@ import app from '../src/app'
 import { db } from '../src/app'
 import { content_endpoints as endpoints } from '../src/endpoints'
 
-const test_articals = 'test_articals'
 const id = '_id'
 let ids ;
 const test_articles = 'test_articles'
@@ -144,7 +143,7 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 
 
 	it( "Sending a GET request to clean up tests", () => request( app ).get( endpoints.route )
-		.send( { collection : test_articals, max_count : 1000 } )
+		.send( { collection : test_articles, max_count : 1000 } )
 		.expect( 200 )
 		.then( request => { 
 			ids = request.body.map( item => item._id )
@@ -156,7 +155,7 @@ describe( "Testing the /markdowns/ endpoint.", () => {
 	it( "Sending a DELETE request to clean up tests.", () => {
 		console.log( ids )
 		return request( app ).get( endpoints.route )
-	   	.send( { collection : test_articals, _ids : ids } )
+	   	.send( { collection : test_articles, _ids : ids } )
 			.expect( 200 )
 	} )
 
@@ -205,7 +204,6 @@ describe( "Testing extra endpoints.", () => {
 		.get( '/resources/about' )
 		.expect( 200 )
 	)
-
 
 
 } )
