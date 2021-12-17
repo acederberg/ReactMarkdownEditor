@@ -145,7 +145,7 @@ build-production-images:
     - echo "building production images..."
     - > 
       if [ $LAZY -eq 0 ]; then
-        docker compose --file docker compose.prod.yaml build api ux ssl
+        docker compose --file docker-compose.prod.yaml build api ux ssl
       else
         echo -e "\e[31mWARNING: Too lazy too rebuild images.\e0m]"
       fi
