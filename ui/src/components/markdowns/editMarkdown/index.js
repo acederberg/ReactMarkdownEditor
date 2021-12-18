@@ -35,11 +35,12 @@ export function WithMarkdown({ _id, collection, Etc }){
 
 }
 
+
 // The editor.
 export default function Export({ _id, collection }){
 	const Controls = ( editorClosure, collection, _id ) => {
 		return <>
-		<Pane style = {{ background : '#FFFFFF' }} padding = { 16 } elevation = {4}>
+		<Pane style = {{ background : '#FFFFFF' }} padding = { 16 } paddingBottom = { 64 }>
 			<Inputs editorClosure = { editorClosure }/>
 			<Buttons 
 				editorClosure = { editorClosure }
@@ -48,10 +49,9 @@ export default function Export({ _id, collection }){
 			/>
 		</Pane>
 		<Pane style = {{ background : '#FFFFFF' }} align = 'center' elevation = {1}>
-			<h1 style = {{ color : '#222222'}} >Preview</h1>
 		</Pane>
 		</>
-}
+	}
 	return <WithMarkdown _id = { _id } collection = { collection } Etc = { Controls }/>
 }
 
