@@ -30,8 +30,8 @@ services :
   # The mongodb service.
   mongodb : 
     environment:
-      MONGO_INITDB_ROOT_USERNAME : {{mongo_initdb_root_username}}
-      MONGO_INITDB_ROOT_PASSWORD : {{mongo_initdb_root_password}}
+      MONGO_INITDB_ROOT_USERNAME : {{ mongo_initdb_root_username }}
+      MONGO_INITDB_ROOT_PASSWORD : {{ mongo_initdb_root_password.replace( '$', '$$' ) }}
     container_name: mongo
     image : mongo
     networks : 
