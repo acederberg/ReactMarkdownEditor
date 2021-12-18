@@ -1,7 +1,7 @@
 from main import getHeader, _URI
 import requests
 
-
+_URI = 'https://api.holyportfolio.com'
 URI : str = f'{_URI}/markdown/'
 fields : tuple = ( 'abs_path', 'collection', 'author', 'description', 'title' )
 
@@ -51,18 +51,25 @@ def postJsonFromUserInput( presets : dict = {}, verbose : bool = None, no_ask : 
         presets = presets,
         no_ask = no_ask
     )
+    headers = getHeader()
     
-    if verbose :
-        print( 100 * '=' )
-        print( f'{ data = }' )
-        print( 100 * '=' )
-        print( 'posting...' )
-   
-    print( URI )
+    if verbose : [
+        print( 
+            100 * "=",
+            f'{ key }\n{ value }',
+            sep = "\n"
+        )
+        for key, value in {
+            'data' : data,
+            'headers' : headers,
+            'uri' : URI
+        }.items()
+    ]
+    
     result = requests.post(
         URI,
         json = data,
-        headers = getHeader()
+        headers = headers 
     )
 
     print( f'{ result.status_code } { result.reason }' )
