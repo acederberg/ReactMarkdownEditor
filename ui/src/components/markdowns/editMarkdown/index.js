@@ -2,8 +2,9 @@ import Inputs from './inputs.js'
 import Buttons from './buttons.js'
 import { fetchClosure } from './closure.js'
 import  RenderMarkdownIntoWrapper from '../renderMarkdown.js'
+import CenteredSpinner from '../../centeredSpinner.js'
 
-import { Pane, Spinner } from 'evergreen-ui'
+import { Pane } from 'evergreen-ui'
 import { useEffect, useState } from 'react'
 
 // Creates an editor closure and uses it as state.
@@ -19,15 +20,18 @@ export function WithMarkdown({ _id, collection, Etc }){
 		},
 		setEditorClosure
 	)
+
 	useEffect( getEditorClosure, [] )
+
 	if ( !!editorClosure ) console.log( editorClosure.get() )
+
 	return editorClosure ? <>{ Etc( 
 			editorClosure, 
 			collection, 
 			_id 
 		) }
 		<RenderMarkdownIntoWrapper editorClosure = { editorClosure }/></>
-	: <Spinner/>
+	: <CenteredSpinner/>
 
 }
 
