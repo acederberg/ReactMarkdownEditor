@@ -2,8 +2,9 @@ import Inputs from './inputs.js'
 import Buttons from './buttons.js'
 import { fetchClosure } from './closure.js'
 import  RenderMarkdownIntoWrapper from '../renderMarkdown.js'
+import CenteredSpinner from '../../centeredSpinner.js'
 
-import { Pane, Spinner } from 'evergreen-ui'
+import { Pane } from 'evergreen-ui'
 import { useEffect, useState } from 'react'
 
 // Creates an editor closure and uses it as state.
@@ -19,23 +20,27 @@ export function WithMarkdown({ _id, collection, Etc }){
 		},
 		setEditorClosure
 	)
+
 	useEffect( getEditorClosure, [] )
+
 	if ( !!editorClosure ) console.log( editorClosure.get() )
+
 	return editorClosure ? <>{ Etc( 
 			editorClosure, 
 			collection, 
 			_id 
 		) }
 		<RenderMarkdownIntoWrapper editorClosure = { editorClosure }/></>
-	: <Spinner/>
+	: <CenteredSpinner/>
 
 }
+
 
 // The editor.
 export default function Export({ _id, collection }){
 	const Controls = ( editorClosure, collection, _id ) => {
 		return <>
-		<Pane style = {{ background : '#FFFFFF' }} padding = { 16 } elevation = {4}>
+		<Pane style = {{ background : '#FFFFFF' }} padding = { 16 } paddingBottom = { 64 }>
 			<Inputs editorClosure = { editorClosure }/>
 			<Buttons 
 				editorClosure = { editorClosure }
@@ -44,10 +49,9 @@ export default function Export({ _id, collection }){
 			/>
 		</Pane>
 		<Pane style = {{ background : '#FFFFFF' }} align = 'center' elevation = {1}>
-			<h1 style = {{ color : '#222222'}} >Preview</h1>
 		</Pane>
 		</>
-}
+	}
 	return <WithMarkdown _id = { _id } collection = { collection } Etc = { Controls }/>
 }
 

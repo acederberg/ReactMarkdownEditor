@@ -1,4 +1,5 @@
 import AuthProviderWithHistory from "./auth/AuthProviderWithHistory.js"
+import CenteredSpinner from './centeredSpinner.js'
 import Collections from './collection'
 import View from './view.js'
 import Edit from './edit.js'
@@ -11,6 +12,7 @@ import { ViewerContextProvider } from "./viewerContext.js"
 
 export { 
 	Collections, 
+	CenteredSpinner,
 	View, 
 	Edit, 
 	Home,

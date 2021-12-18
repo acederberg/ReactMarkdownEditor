@@ -1,6 +1,7 @@
 import ViewMarkdown from './markdowns/viewMarkdown.js'
 import { get_markdown_by_title } from './markdowns/fetchMarkdown.js'
 import Navbar from './navbar.js'
+import CenteredSpinner from './centeredSpinner'
 
 import { Spinner } from 'evergreen-ui'
 import { useState, useEffect } from 'react'
@@ -27,7 +28,7 @@ export default function Static({ title })
         collection = { 'main_articles' }
         _id = { data._id } 
       />
-      : <Spinner/>
+      : <CenteredSpinner/>
     }
   </>
 

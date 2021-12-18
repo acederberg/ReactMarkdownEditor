@@ -83,7 +83,7 @@ if __name__ == '__main__' :
     presets : dict = {
         "abs_path" : "/mnt/c/Dev/notes/Projects.md",
         "author" : "Adrian Cederberg",
-        "collection" : "main_articals",
+        "collection" : "main_articles",
         "description" : "About projects.",
         "title" : "Projects"
     }
