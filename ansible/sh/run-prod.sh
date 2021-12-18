@@ -1,1 +1,1 @@
-ansible-playbook playbook.yaml -i ../app/actual_host.ini --ask-vault --extra-vars '@../prod.yaml'
+ansible-playbook playbook.yaml -i ../app/actual_hosts.ini --ask-vault --extra-vars '@../prod.yaml'
