@@ -24,7 +24,7 @@ export default function Static({ title })
     {
       data
       ?  <ViewMarkdown
-        collection = { 'main_articals' }
+        collection = { 'main_articles' }
         _id = { data._id } 
       />
       : <Spinner/>
