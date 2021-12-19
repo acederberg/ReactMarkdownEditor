@@ -15,7 +15,7 @@ export default function Edit(){
 	return props ? <>
 		<Navbar withLogin = { true }/>
 		<EditMarkdown { ...props }/>
-	</> : <Static title = 'BadEditor'>
+	</> : <Static title = 'BadEditor'/>
 }
 
 
