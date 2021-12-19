@@ -31,7 +31,10 @@ export default function App() {
 				path = '/home'
 				component = { Home }
 			/>
-
+			<Route
+				exact path = '/'
+				component = { () => <Redirect to = '/home'/> }
+			/>
 		</ViewerContextProvider>
 	</AuthProviderWithHistory>
 }
