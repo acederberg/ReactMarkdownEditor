@@ -1,5 +1,4 @@
-
-import { AuthProviderWithHistory, Collections, Edit, Home, View, Projects, ProtectedRoute, ViewerContextProvider } from './components'
+import { AuthProviderWithHistory, Collections, TryEdit, Edit, Home, View, Projects, ProtectedRoute, ViewerContextProvider } from './components'
 import { Route, Redirect } from "react-router-dom"
 
 
@@ -34,6 +33,10 @@ export default function App() {
 			<Route
 				exact path = '/'
 				component = { () => <Redirect to = '/home'/> }
+			/>
+			<Route
+				exact path = '/tryEdit'
+				component = { TryEdit }
 			/>
 		</ViewerContextProvider>
 	</AuthProviderWithHistory>
