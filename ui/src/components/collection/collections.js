@@ -7,15 +7,17 @@ import CenteredSpinner from "../centeredSpinner.js"
 import { Pane } from "evergreen-ui"
 import { useState, useEffect } from "react"
 
+
 const DefaultItem = ({collection}) => <Samples 
 	collection = { collection } 
 	key = { collection }
 /> 
 
+
 export default function Collection({ CustomItem })
 {
 	
-	const Item = DefaultItem || CustomItem
+	const Item = CustomItem || DefaultItem
 	const [ collections, setCollections ] = useState()
 
 	useEffect( async () => {
@@ -33,7 +35,7 @@ export default function Collection({ CustomItem })
 					collections
 						? collections.map( collection => {
 							console.log( collection )
-							return <DefaultItem collection = { collection }/> 
+							return <Item collection = { collection }/> 
 						}) 
 						: <CenteredSpinner/>
       	}
