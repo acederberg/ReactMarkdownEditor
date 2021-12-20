@@ -7,26 +7,35 @@ import CenteredSpinner from "../centeredSpinner.js"
 import { Pane } from "evergreen-ui"
 import { useState, useEffect } from "react"
 
+const DefaultItem = ({collection}) => <Samples 
+	collection = { collection } 
+	key = { collection }
+/> 
 
-export default function Collection( props )
+export default function Collection({ CustomItem })
 {
 	
-	const [ state, setState ] = useState({ loading : false, data : undefined })
-  const getContent = () => fetchCollections().then( (data) => setState({ data : data }) )
+	const Item = DefaultItem || CustomItem
+	const [ collections, setCollections ] = useState()
 
-	useEffect( () => getContent(), [] )
+	useEffect( async () => {
+			const fetchedCollections = await fetchCollections()
+			setCollections( fetchedCollections )
+		}, [] 
+	)
+
+	console.log( Item, collections )
 
 	return <>
 		<Navbar withLogin = { true }/>
 		<Pane padding = {1} margin = {1}>
         {
-					state.data ?
-					state.data.map( 
-						collection => <Samples 
-							collection = { collection } 
-							key = { collection }
-						/> 
-					) : <CenteredSpinner/>
+					collections
+						? collections.map( collection => {
+							console.log( collection )
+							return <DefaultItem collection = { collection }/> 
+						}) 
+						: <CenteredSpinner/>
       	}
 		</Pane>
 	</>

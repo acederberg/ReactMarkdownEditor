@@ -6,9 +6,9 @@ import Sample from "./sample.js"
 import defaults from "./defaults.js"
 import CenteredSpinner from "../../centeredSpinner.js"
 
-export default function Samples({ collection, _id })
+export default function Samples({ collection })
 {
-	
+
 	let fetched = false
 	const [ data, setData ] = useState()
 	
