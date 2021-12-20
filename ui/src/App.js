@@ -1,10 +1,17 @@
-import { AuthProviderWithHistory, Collections, TryEdit, Edit, Home, View, Projects, ProtectedRoute, ViewerContextProvider } from './components'
+import { AuthProviderWithHistory, Collections, TryEdit, Edit, Home, New, Projects, ProtectedRoute, View, ViewerContextProvider } from './components'
 import { Route, Redirect } from "react-router-dom"
 
 
 export default function App() {
+
+	console.log( New )
+
 	return <AuthProviderWithHistory>
 		<ViewerContextProvider>
+			<ProtectedRoute
+				path = '/new'
+				component = { New }
+			/>	
 			<Route
 				path = '/collections'
 				component = { Collections }
@@ -15,13 +22,6 @@ export default function App() {
 				path = '/view/:collection/:_id'
 				component = { View }
 			/>
-			<ProtectedRoute
-				// Just uses localStorage.
-				// Must be constant for whitelogging.
-				// The logic of what happens when a sample is clicked will change for users vs admin users.
-				path = '/edit'
-				component = { Edit }
-			/>
 			<Route 
 				path = '/projects'
 				component = { Projects }
@@ -30,22 +30,21 @@ export default function App() {
 				path = '/home'
 				component = { Home }
 			/>
+			<ProtectedRoute
+				// Just uses localStorage.
+				// Must be constant for whitelogging.
+				// The logic of what happens when a sample is clicked will change for users vs admin users.
+				path = '/edit'
+				component = { Edit }
+			/>
+			<Route
+				path = '/tryEdit'
+				component = { TryEdit }
+			/>
 			<Route
 				exact path = '/'
 				component = { () => <Redirect to = '/home'/> }
 			/>
-			<Route
-				exact path = '/tryEdit'
-				component = { TryEdit }
-			/>
 		</ViewerContextProvider>
 	</AuthProviderWithHistory>
 }
-
-			/*
-			<Route 
-				path = '*'
-				element = { <Navigate to = "/home"/> }
-			/>
-			*/
-
