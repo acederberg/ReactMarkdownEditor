@@ -13,6 +13,9 @@ $LOCAL_INVENTORY =  $ANSIBLE_DIR + "/test_hosts.ini"
 $REMOTE_INVENTORY = $ANSIBLE_RUNNER_WORKDIR + "/test_hosts.ini"
 
 
+$hosts = @( 'app-runner'; 'gitlab-runner'; 'dev' )
+
+
 function get-Line{ 	echo "=======================================================" }
 
 
@@ -25,6 +28,7 @@ function get-LocalIPAddr
 
 function new-LocalInventory
 {
+
 	$there = $PWD
 	cd $VAGRANT_DIR
 	
@@ -32,10 +36,11 @@ function new-LocalInventory
 	$outfile = '../test_hosts.ini'
   if ( test-Path $outfile ){ rm $outfile }
 
-	$hosts  = ( @( 'gitlab-runner', 'app-runner' ) | forEach-Object{ get-LocalIPAddr -name $_ } )
+	$hosts_ = ( $hosts | forEach-Object{ get-LocalIPAddr -name $_ } )
 	$addrs = @{
-		my_runner = $hosts[0];
-		my_server = $hosts[1];
+		my_runner = $hosts_[0];
+		my_server = $hosts_[1];
+		dev = $hosts_[2];
 	}
 	
 	# Build file
@@ -85,7 +90,6 @@ function rebuild-LocalAppRunner
 	$there = $PWD
 	cd $VAGRANT_DIR
 
-	$hosts = @( 'app-runner'; 'gitlab-runner' )
 	$hosts | forEach-Object{
 		vagrant.exe destroy -f $_
 	}
