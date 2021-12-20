@@ -1,5 +1,6 @@
 import EditMarkdown from './markdowns/editMarkdown'
 import { ViewerContext } from './viewerContext.js'
+import Navbar from './navbar.js'
 
 import { useContext } from 'react'
 
@@ -10,7 +11,10 @@ import { useContext } from 'react'
 export default function TryEdit(){
 	const value = useContext( ViewerContext )
 	const props = value.get()
-	return <EditMarkdown { ...props } safe = { true }/>
+	return <>
+		<Navbar withLogin = { false }/>
+		<EditMarkdown { ...props } safe = { true }/>
+	</>
 }
 
 

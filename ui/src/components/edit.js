@@ -6,10 +6,10 @@ import Static from './static.js'
 import { useContext } from 'react'
 
 
-
 // Connects edit markdown to the viewer context.
 
-export default function Edit(){
+export default function Edit()
+{
 
 	const value = useContext( ViewerContext )
 	const props = value.get()

@@ -55,6 +55,7 @@ export default function Edit({ _id, collection, safe })
 		</Pane>
 		</>
 	}
+
 	return <WithMarkdown _id = { _id } collection = { collection } Etc = { Controls }/>
 
 }
