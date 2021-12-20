@@ -10,12 +10,15 @@ import { useContext } from 'react'
 // Connects edit markdown to the viewer context.
 
 export default function Edit(){
+
 	const value = useContext( ViewerContext )
 	const props = value.get()
+
 	return props ? <>
 		<Navbar withLogin = { true }/>
 		<EditMarkdown { ...props }/>
 	</> : <Static title = 'BadEditor'/>
+
 }
 
 

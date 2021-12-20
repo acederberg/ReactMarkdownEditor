@@ -7,7 +7,9 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { put_markdown, delete_markdown } from '../fetchMarkdown.js'
 
 function JsonButton({ editorClosure }){
+
 	const [ overlay, setOverlay ] = useState( false )
+
 	return <>
 		<Dialog
 			hasFooter = { false }
@@ -25,51 +27,70 @@ function JsonButton({ editorClosure }){
 			}
 		>JSON</Button>
 	</>
+
 }
+
+const InsufficientPrivilages = () => alert( "Insufficient privilages" )
+
+
 // https://evergreen.segment.com/foundations/icons
-export default function Buttons({ _id, collection, editorClosure }){
+export default function Buttons({ _id, collection, editorClosure, safe }){
 
 	const { getAccessTokenSilently } = useAuth0()
-        return <Pane margin = { 24 }>
-                <ButtonToolbar>
-                        <Button
-                                margin = { 4 }
-                                appearance = "primary"
-                                intent = "primary"
+	const save = !safe ? () => put_markdown(
+
+		{
+			collection : collection,
+			content : editorClosure.get() ,
+			filter : { _id : _id },
+			token : getAccessTokenSilently()
+		}
+
+	) : InsufficientPrivilages
+
+	const destroy = !safe ? ( 
+		
+		() => delete_markdown(
+			{
+				collection : collection, 
+				_id : _id,
+				token : getAccessTokenSilently()
+			}
+		)
+
+	) : InsufficientPrivilages 
+
+
+	return <Pane margin = { 24 }>
+		<ButtonToolbar>
+
+			<Button
+				margin = { 4 }
+				appearance = "primary"
+				intent = "primary"
 				iconBefore = { FloppyDiskIcon } 
-                                onClick = {
-                                        () => put_markdown({
-						collection : collection,
-                                                content : editorClosure.get() ,
-                                                filter : { _id : _id },
-						token : getAccessTokenSilently()
-                                        }) //&& </Toaster>
-                                }
-                        >Save</Button>
+				onClick = { save }
+			>Save</Button>
+
 			<JsonButton editorClosure = { editorClosure }/>
+
 			<Button
 				margin = { 4 }
 				appearance = "primary"
 				intent = "danger"
 				iconBefore = { UndoIcon }
-				onClick = {
-					() => window.location.reload()
-				}
+				onClick = { () => window.location.reload() }
 			>Revert</Button>
+
 			<Button
 				margin = { 4 }
 				appearance = "primary"
 				intent = "danger"
 				iconBefore = { TrashIcon }
-				onClick = {
-					() => delete_markdown({ 
-						collection : collection, 
-						_id : _id,
-						token : getAccessTokenSilently()
-					})
-				}
+				onClick = { destroy }
 			>Delete</Button>
+
 		</ButtonToolbar>
-        </Pane>
+	</Pane>
 }
 
