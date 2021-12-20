@@ -7,15 +7,15 @@ import Edit from "./edit"
 import { fetchCollections } from "./collection"
 import { SampleWrapper } from "./collection/sample"
 
+
 function Sample({ collection, callback })
 {
 	const values = useContext( ViewerContext )
-	console.log( callback )
 
 	return <SampleWrapper onClick = { () => {
 		values.set({ collection : collection })  
 		callback && callback( collection ) 
-	}}>
+	}} _key ={ collection }>
 		<Heading>
 			{ collection }
 		</Heading>
@@ -32,7 +32,6 @@ export default function New()
 		callback = { setCollection }
 	/>
 
-	console.log( collection, setCollection )
 	return !collection 
 		? <Collection CustomItem = { SampleWithSetCollection }/> 
 		: <Edit/>

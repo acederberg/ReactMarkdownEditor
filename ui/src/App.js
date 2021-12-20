@@ -4,8 +4,6 @@ import { Route, Redirect } from "react-router-dom"
 
 export default function App() {
 
-	console.log( New )
-
 	return <AuthProviderWithHistory>
 		<ViewerContextProvider>
 			<ProtectedRoute

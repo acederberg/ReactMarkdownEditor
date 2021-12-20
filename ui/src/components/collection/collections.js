@@ -26,15 +26,12 @@ export default function Collection({ CustomItem })
 		}, [] 
 	)
 
-	console.log( Item, collections )
-
 	return <>
 		<Navbar withLogin = { true }/>
 		<Pane padding = {1} margin = {1}>
         {
 					collections
 						? collections.map( collection => {
-							console.log( collection )
 							return <Item collection = { collection }/> 
 						}) 
 						: <CenteredSpinner/>
