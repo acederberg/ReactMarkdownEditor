@@ -4,7 +4,7 @@ import { ButtonToolbar } from 'react-bootstrap'
 import { useState } from 'react'
 import { useAuth0 } from '@auth0/auth0-react'
 
-import { put_markdown, delete_markdown } from '../fetchMarkdown.js'
+import { post_markdown, put_markdown, delete_markdown } from '../fetchMarkdown.js'
 
 function JsonButton({ editorClosure }){
 
@@ -16,7 +16,11 @@ function JsonButton({ editorClosure }){
 			isShown = { overlay }
 			title = "JSON"
 			onCloseComplete = { () => setOverlay( false ) }
-		><pre>{ JSON.stringify( editorClosure.get(), null, 2 ) }</pre></Dialog>
+		>
+			<pre>
+				{ JSON.stringify( editorClosure.get(), null, 2 ) }
+			</pre>
+		</Dialog>
 		<Button
 			margin = { 4 }
 			appearence = "minimal"
@@ -37,19 +41,36 @@ const InsufficientPrivilages = () => alert( "Insufficient privilages" )
 export default function Buttons({ _id, collection, editorClosure, safe }){
 
 	const { getAccessTokenSilently } = useAuth0()
-	const save = !safe ? () => put_markdown(
+	const save = !safe ? Save : InsufficientPrivilages
+	
+	async function Save()
+	{
 
-		{
-			collection : collection,
-			content : editorClosure.get() ,
-			filter : { _id : _id },
-			token : getAccessTokenSilently()
-		}
-
-	) : InsufficientPrivilages
+		const content = editorClosure.get()
+		const token = getAccessTokenSilently()
+		console.log( _id )
+		if ( _id !== "undefined" ){
+			put_markdown(
+				{
+					collection : collection,
+					content : content,
+					filter : { _id : _id },
+					token : token
+				}
+			)
+		}	
+		else{
+			post_markdown(
+				{
+					collection : collection, 
+					content : content, 
+					token : token 
+				}
+			)
+		}	
+	}
 
 	const destroy = !safe ? ( 
-		
 		() => delete_markdown(
 			{
 				collection : collection, 
@@ -57,7 +78,6 @@ export default function Buttons({ _id, collection, editorClosure, safe }){
 				token : getAccessTokenSilently()
 			}
 		)
-
 	) : InsufficientPrivilages 
 
 

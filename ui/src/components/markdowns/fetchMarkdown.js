@@ -30,8 +30,13 @@ function create( fetcher ){
 	const wrapper = async ( args, callback ) => {
 		console.log( args )
 		const data = await fetcher( args )
-			.then( request => request.body ? request.json() : {} )
-			.catch( err => console.log( err ) )
+			.then( response => response.body ? response.json().catch( err => console.log( err ) ) : {} )
+			.catch( err => {
+					console.log( err )
+					alert( err ) 
+					return err
+				}
+			)
 		return callback ? callback( data ) : data 
 	}
 	return wrapper
@@ -48,7 +53,6 @@ export const get_markdown_by_title = create(
 	( { title } ) => {
 
 		const addr = `${uri}/resources/${title}` 
-		console.log( addr )
 		return fetch( addr )
 
 	}
@@ -57,7 +61,7 @@ export const get_markdown_by_title = create(
 
 export const put_markdown = create( async function( { collection, filter, content, token } ){
 		const headers = await createAuthHeader( token )
-		fetch( `${uri}/markdown/`, {
+		return fetch( `${uri}/markdown/`, {
 			headers : headers,
 			body : JSON.stringify({
 				collection : collection,
@@ -72,9 +76,15 @@ export const put_markdown = create( async function( { collection, filter, conten
 export const post_markdown = create( async function( { collection, content, token } ){
 
 	const headers = await createAuthHeader( token )
-	fetch( `${uri}/markdown/`, {
+	const content_ = { collection : collection, ...content }
+
+	if ( !content_.metadata.author ) content_.metadata.author = 'anon'
+
+
+	console.log( content_ ) 
+	return fetch( `${uri}/markdown/`, {
 		headers : headers,
-		body : JSON.stringify( { collection : collection, ...content } ),
+		body : JSON.stringify( content_ ), 
 		method : 'POST'
 	} )
 
@@ -84,7 +94,7 @@ export const post_markdown = create( async function( { collection, content, toke
 export const delete_markdown = create( async function( { collection, _id, token } ){
 
 	const headers = await createAuthHeader( token )
-	fetch( `${uri}/markdown`, {
+	return fetch( `${uri}/markdown`, {
 		headers : headers,
 		body : JSON.stringify( { collection : collection, _ids : [ _id ] } ),
 		method : 'DELETE'
