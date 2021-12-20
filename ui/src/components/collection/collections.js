@@ -21,10 +21,11 @@ export default function Collection( props )
 		<Pane padding = {1} margin = {1}>
         {
 					state.data ?
-					state.data.map( collection => <Samples 
-						collection = { collection } 
-						key = { collection }
-					/> 
+					state.data.map( 
+						collection => <Samples 
+							collection = { collection } 
+							key = { collection }
+						/> 
 					) : <CenteredSpinner/>
       	}
 		</Pane>

@@ -1,4 +1,12 @@
 import { Pane } from "evergreen-ui"
-const SamplesWrapper = ( props ) => <Pane margin = { 64 } padding = { 32 } elevation = { 2 } background = 'gray50' { ...props }/>
+
+const SamplesWrapper = ( props ) => <Pane 
+	{ ...props }
+	margin = { 0 } 
+	padding = { 0 } 
+	elevation = { 0 } 
+	background = 'gray25'
+/>
+
 export default SamplesWrapper
 

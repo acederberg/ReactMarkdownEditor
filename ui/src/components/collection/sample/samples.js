@@ -1,44 +1,58 @@
-import { Component } from "react"
+import { Component, useState, useEffect } from "react"
 import { Pane, Heading } from "evergreen-ui"
 import SamplesWrapper from "./samplesWrapper.js"
 import fetchSamples from "./fetchSamples.js"
 import Sample from "./sample.js"
+import CenteredSpinner from '../../centeredSpinner.js'
 
-export default class sample extends Component{
+export default function Samples({ collection, _id })
+{
 	
-	constructor( props ){
-		// props = { collection, document }
-		super( props )
-		this.state = { 
-			loaded : false,
-			data : undefined
+	let fetched = false
+	const [ data, setData ] = useState()
+	
+	useEffect( async () => {
+		const fetchedData = await fetchSamples( collection )
+		fetched = true
+		setData( fetchedData )
+	}, [])
+
+	return <SamplesWrapper>
+		{
+		data
+			? <>
+				<Heading 
+					size = { 1200 } 
+					padding = { 32 }
+				>
+					{ `Latest articals in ${ collection }` }
+				</Heading>
+				<Pane 
+					padding = { 32 } 
+					style = {{ alignItems : 'inital', display : 'inline-flex', flexFlow : 'wrap' }}
+				>
+					{
+						Object.keys( data )
+							.map( 
+								_id => {
+									console.log( _id, data[ _id ] )
+									return <Sample 
+										collection = { collection } 
+										{ ...data[ _id ] } 
+									/>
+								}
+							)
+					}
+				</Pane>
+			</>
+			: (
+				fetched 
+					? <CenteredSpinner/>
+					: <div/>
+			)
 		}
-	}
-	getContent = async () => fetchSamples( this.props.collection )
-		.then( ( data ) => this.setState({ loaded : true, data : data }) )
-	componentDidMount(){ 
-		this.getContent() 
-	}
-	render(){
-		// console.log( this.state.data ? "Good" : "Bad" )
-		return this.state.data ?
-		<SamplesWrapper>
-			<Heading size = { 1200 } padding = { 32 }>{ `Latest articals in ${ this.props.collection }` }</Heading>
-			<Pane padding = { 32 } style = {{ alignItems : 'inital', display : 'inline-flex', flexFlow : 'wrap' }}>
-			{ 
-				this.state.loaded
-				?
-				Object.keys( this.state.data ).map( _id => {
-					let props = this.state.data[ _id ]
-					props[ '_id' ] = _id
-					return <Sample collection = { this.props.collection } { ...props }/> 
-				} ) 
-				:
-				'Loading'
-			}
-			</Pane>
-		</SamplesWrapper> 
-		:
-		<div></div>
-	}
+	</SamplesWrapper>
+
 }
+
+

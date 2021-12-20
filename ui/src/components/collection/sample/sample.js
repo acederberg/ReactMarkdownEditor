@@ -7,8 +7,8 @@ import { ViewerContext } from "../../viewerContext.js"
 const defaults = {
 	description : "Could not GET artical. Internal failure or failure within the backend.",
 	title : "Failure :("
-
 }
+
 const Sample = ({ _id, author, collection, description, title }) => {
 
 	const value = useContext( ViewerContext )
@@ -17,6 +17,7 @@ const Sample = ({ _id, author, collection, description, title }) => {
 	const onClick = () => {
 		value.set( { _id : _id, collection : collection } ) 
 	}
+
 	return <a href = { isAuthenticated ?  '/edit' : `/view/${collection}/${_id}` }>
 	<Pane 
 		key = { _id } 
