@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
     app.vm.provider "hyperv" do |vb|
       vb.enable_virtualization_extensions = false
       vb.linked_clone = false
-      vb.memory = 2048
+      vb.memory = 1048
       vb.cpus = 1
     end
     app.vm.network "public_network", bridge: "Default Switch"
@@ -48,6 +48,24 @@ Vagrant.configure("2") do |config|
     gl.vm.network "public_network", bridge: "Default Switch"
 
     gl.vm.provision "shell" do |s|
+      s.path = 'add_ansible.sh'
+    end
+
+  end
+
+  config.vm.define "dev" do |dev|
+    
+    dev.vm.box = "generic/ubuntu2004"
+    dev.vm.hostname = "dev"
+    dev.vm.provider "hyperv" do |vb|
+      vb.enable_virtualization_extensions = false
+      vb.linked_clone = false
+      vb.memory = 2048
+      vb.cpus = 1
+    end
+    dev.vm.network "public_network", bridge: "Default Switch"
+
+    dev.vm.provision "shell" do |s|
       s.path = 'add_ansible.sh'
     end
 
