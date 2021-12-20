@@ -3,7 +3,8 @@ import { Pane, Heading } from "evergreen-ui"
 import SamplesWrapper from "./samplesWrapper.js"
 import fetchSamples from "./fetchSamples.js"
 import Sample from "./sample.js"
-import CenteredSpinner from '../../centeredSpinner.js'
+import defaults from "./defaults.js"
+import CenteredSpinner from "../../centeredSpinner.js"
 
 export default function Samples({ collection, _id })
 {
@@ -22,20 +23,19 @@ export default function Samples({ collection, _id })
 		data
 			? <>
 				<Heading 
-					size = { 1200 } 
-					padding = { 32 }
+					size = { defaults.samples_heading_size } 
+					padding = { defaults.samples_heading_padding }
 				>
 					{ `Latest articals in ${ collection }` }
 				</Heading>
 				<Pane 
-					padding = { 32 } 
+					padding = { defaults.samples_body_padding } 
 					style = {{ alignItems : 'inital', display : 'inline-flex', flexFlow : 'wrap' }}
 				>
 					{
 						Object.keys( data )
 							.map( 
 								_id => {
-									console.log( _id, data[ _id ] )
 									return <Sample 
 										collection = { collection } 
 										{ ...data[ _id ] } 

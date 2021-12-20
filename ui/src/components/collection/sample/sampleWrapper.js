@@ -1,16 +1,15 @@
 import { Pane } from 'evergreen-ui'
+import defaults from './defaults.js'
 
-
-export default function SampleWrapper({ _key, children, size, onClick })
+export default function SampleWrapper({ _key, children, onClick, background, margin, padding, size })
 {
-
 	return <Pane
     key = { _key }
-    background = "gray100"
-    padding = {16}
-    margin = {8}
-    width = { 240 || size }
-    height = { 240 || size }
+    background = { defaults.sample_background || background }
+    padding = { defaults.sample_padding || padding }
+    margin = { defaults.sample_margin || margin }
+    width = { defaults.sample_size || size }
+    height = { defaults.sample_size || size }
     style = {{ display : 'inline-block' }}
     onClick = { onClick }
   >

@@ -4,11 +4,8 @@ import { useAuth0 } from '@auth0/auth0-react'
 
 import { ViewerContext } from "../../viewerContext.js"
 import SampleWrapper from "./sampleWrapper.js"
+import defaults from "./defaults.js"
 
-const defaults = {
-	description : "Could not GET artical. Internal failure or failure within the backend.",
-	title : "Failure :("
-}
 
 const Sample = ({ _id, author, collection, description, title, size }) => {
 
@@ -20,21 +17,21 @@ const Sample = ({ _id, author, collection, description, title, size }) => {
 	}
 
 	return <a href = { isAuthenticated ?  '/edit' : `/view/${collection}/${_id}` }>
-	<SampleWrapper _key = { _id } size = { size } onClick = { onClick }>
-		<Heading size = { 600 }>
-			{ 
-				title ? description : defaults.title
-			}
-		</Heading>
-		<Paragraph>
-			{ 
-				description ? description : defaults.description
-			}
-		</Paragraph>
-		<Paragraph>
-			{ author ?? author }
-		</Paragraph>
-	</SampleWrapper>
+		<SampleWrapper _key = { _id } size = { size } onClick = { onClick }>
+			<Heading size = { defaults.sample_heading_size }>
+				{ 
+					title ? description : defaults.sample_not_found_title
+				}
+			</Heading>
+			<Paragraph>
+				{ 
+					description ? description : defaults.sample_not_found_description
+				}
+			</Paragraph>
+			<Paragraph>
+				{ author ?? author }
+			</Paragraph>
+		</SampleWrapper>
 	</a>
 
 }
