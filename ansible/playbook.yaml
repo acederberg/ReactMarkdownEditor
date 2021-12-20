@@ -16,3 +16,5 @@
     - "./vars/api.env.yml"
   roles : [ common, app-runner ]
 
+- hosts : dev
+  roles : [ common ]
