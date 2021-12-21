@@ -3,20 +3,21 @@ import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 
 import './index.css';
-import App from './App';
+import App from './app';
 import Wrapper from './components/wrapper.js'
 
-async function main(){
-        const root = await document.getElementById( 'root' )
-        await ReactDOM.render(
+async function main()
+{
+	const root = await document.getElementById( 'root' )
+	await ReactDOM.render(
 		<>
 			<Wrapper id = "appWrapper"/>
 			<Wrapper id = "wrapper"/>
 		</>,
 		root
-        )
+	)
 	const appWrapper = await document.getElementById( "appWrapper" )
-        ReactDOM.render( <App/>, appWrapper )
+  ReactDOM.render( <App/>, appWrapper )
 }
 
 // If you want to start measuring performance in your app, pass a function

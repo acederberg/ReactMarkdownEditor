@@ -13,7 +13,7 @@ export default function Navbar_( { withLogin } ){
 					<Nav.Link href = '/collections'>Articles</Nav.Link>
 				</Nav>
 				
-				<Nav className = 'justify-content-end' style = {{ width : "100%", paddingRight : "10%", fontSize : "small" }} >
+				<Nav style = {{ width : "100%", paddingLeft : "3%" }} >
 					<Nav.Link href = 'https://github.com/acederberg'>Github</Nav.Link>
 					<Nav.Link href = 'https://www.linkedin.com/in/adrian-cederberg-b453571b9'>LinkedIn</Nav.Link>
 				</Nav>

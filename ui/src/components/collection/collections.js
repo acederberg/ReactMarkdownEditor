@@ -8,24 +8,34 @@ import { Pane } from "evergreen-ui"
 import { useState, useEffect } from "react"
 
 
-export default function Collection( props )
+const DefaultItem = ({collection}) => <Samples 
+	collection = { collection } 
+	key = { collection }
+/> 
+
+
+export default function Collection({ CustomItem })
 {
 	
-	const [ state, setState ] = useState({ loading : false, data : undefined })
-  const getContent = () => fetchCollections().then( (data) => setState({ data : data }) )
+	const Item = CustomItem || DefaultItem
+	const [ collections, setCollections ] = useState()
 
-	useEffect( () => getContent(), [] )
+	useEffect( async () => {
+			const fetchedCollections = await fetchCollections()
+			console.log( fetchedCollections ) 
+			setCollections( fetchedCollections )
+		}, [] 
+	)
 
 	return <>
 		<Navbar withLogin = { true }/>
 		<Pane padding = {1} margin = {1}>
         {
-					state.data ?
-					state.data.map( collection => <Samples 
-						collection = { collection } 
-						key = { collection }
-					/> 
-					) : <CenteredSpinner/>
+					collections
+						? collections.map( collection => {
+							return <Item collection = { collection }/> 
+						}) 
+						: <CenteredSpinner/>
       	}
 		</Pane>
 	</>
