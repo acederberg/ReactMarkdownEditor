@@ -93,8 +93,8 @@
         --executor "shell" \
         --description "Vagrant runner." \
         --tag-list "build,test" 
-    when:
-      runner_exists.stdout == '0'
+    when: |
+      '0' in runner_exists.stdout
 
 
 # Application configs
@@ -110,6 +110,9 @@
     raw : find /home/gitlab-runner -name ReactMarkdownEditor 
     register : gitlab_runner_filepath
 
+  - name : "Print 'gitlab_runner_filepath'."
+    debug :
+      msg : '{{ gitlab_runner_filepath }}'
 
   # UI uses this to build in gitlab ci
   - name : "Render ui.env.prod."
@@ -121,8 +124,8 @@
       src : './ui.env.prod'
       dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/ui/.env.prod'
     when : |
-      gitlab_runner_filepath.rc == 0
-
+      gitlab_runner_filepath.rc == 0 and gitlab_runner_filepath.stdout != []
+      
   # Api uses this to test in gitlab ci
   - name : "Render api.env.prod"
     become : true
@@ -133,19 +136,19 @@
       src : './api.env.test'
       dest : '{{ gitlab_runner_filepath.stdout.__str__( ).strip() }}/api/.env.test'
     when : |
-      gitlab_runner_filepath.rc == 0
+      gitlab_runner_filepath.rc == 0 and gitlab_runner_filepath.stdout != []
 
   # Add a blank prod config for api since we don't actually run the entrypoint for built containers.
   # Plus it is stupid to share secrets 
   - name : Touch api/.env.prod for prod build.
+    become : true
     file :
       group : gitlab-runner
       owner : gitlab-runner
-      force : true
       path : '{{ gitlab_runner_filepath.stdout.__str__().strip() }}/api/.env.prod'
-      state : file
+      state : touch
     when : |
-      gitlab_runner_filepath.rc == 0
+      gitlab_runner_filepath.rc == 0 and gitlab_runner_filepath != []
 
 
 # Image pushing.
