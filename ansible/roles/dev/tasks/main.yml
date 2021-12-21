@@ -1,2 +1,9 @@
 ---
 # tasks file for dev
+
+- name : "Add vagrant to the docker group"
+  tags : [ dev, docker, security ]
+  user : 
+    - name : vagrant
+      groups : docker
+      append : true
