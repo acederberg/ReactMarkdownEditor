@@ -22,6 +22,7 @@ export default function Collection({ CustomItem })
 
 	useEffect( async () => {
 			const fetchedCollections = await fetchCollections()
+			console.log( fetchedCollections ) 
 			setCollections( fetchedCollections )
 		}, [] 
 	)

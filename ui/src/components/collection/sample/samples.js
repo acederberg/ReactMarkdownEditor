@@ -14,6 +14,9 @@ export default function Samples({ collection })
 	
 	useEffect( async () => {
 		const fetchedData = await fetchSamples( collection )
+		
+		console.log( fetchedData )
+
 		fetched = true
 		setData( fetchedData )
 	}, [])
@@ -39,6 +42,7 @@ export default function Samples({ collection })
 									return <Sample 
 										collection = { collection } 
 										{ ...data[ _id ] } 
+										_id = { _id }
 									/>
 								}
 							)
