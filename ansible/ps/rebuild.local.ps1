@@ -38,8 +38,8 @@ function new-LocalInventory
 
 	$hosts_ = ( $hosts | forEach-Object{ get-LocalIPAddr -name $_ } )
 	$addrs = @{
-		my_runner = $hosts_[0];
-		my_server = $hosts_[1];
+		my_server = $hosts_[0];
+		my_runner = $hosts_[1];
 		dev = $hosts_[2];
 	}
 	
